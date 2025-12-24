@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Token {
+  id String @id @default(uuid())
+  token String @unique
+  createdAt DateTime @default(now())
+  expires_at DateTime
+  
+  @@map("token")
+}
+
+model User {
+  id String @id @default(uuid())
+  email String @unique
+  password String
+
+  referral_code String @unique
+  role Role @default(user)
+
+  first_name String?
+  last_name String?
+  avatar String?
+  avatar_id String?
+  referrerId String?
+
+  referrer User? @relation("ReferredBy", fields: [referrerId], references: [id])
+  referredUsers User[] @relation("ReferredBy")
+
+  created_at DateTime @default(now())
+  updated_at DateTime
+
+  voucher User_Voucher[]
+
+  @@map("users")
+}
+
+enum Role {
+  user
+  admin
+  super
+}
+
+model Voucher {
+  id String @id @default(uuid())
+  voucher_name String @unique
+  voucher_type Type @default(shopping)
+  discount_type String
+  discount_value Decimal
+  max_discount Decimal
+  min_purchase Decimal
+  created_at DateTime
+
+  user User_Voucher[]
+
+  @@map("voucher")
+}
+
+model User_Voucher {
+  id String @id @default(uuid())
+  user_id String
+  voucher_id String
+  is_used Boolean
+  used_at DateTime
+  obtained_at DateTime
+  expired_at DateTime
+
+  userId User @relation(fields: [user_id], references: [id])
+  voucher Voucher @relation(fields: [voucher_id], references: [id])
+
+  @@map("user_voucher")
+}
+
+enum Type {
+  shopping
+  shipping
+}
