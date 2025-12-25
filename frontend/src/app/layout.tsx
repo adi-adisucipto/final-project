@@ -35,12 +35,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.className}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${inter.variable} antialiased`}
       >
         <NotistackProvider>
-          {children}
+        {children}
         </NotistackProvider>
       </body>
     </html>
