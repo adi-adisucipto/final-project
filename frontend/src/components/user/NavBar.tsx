@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Button } from '../ui/button'
 import { useWindowSize } from 'react-use';
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import {
     Drawer,
     DrawerClose,
@@ -20,6 +21,7 @@ import { IconButton } from '../ui/icon-button';
 function NavBar() {
     const [isOpen, setIsOpen] = useState(false);
     const size = useWindowSize();
+    const pathname = usePathname();
 
     useEffect(() => {
         if (size?.width && size?.width > 767 && isOpen) {
@@ -36,10 +38,13 @@ function NavBar() {
                 </Link>
             </div>
 
-            <div className='xl:flex hidden gap-30 text-black/50 justify-between items-center'>
-                {nav_links.map((item, index) => (
-                    <Link key={index} href={item.link} className='hover:text-[#22C55E]'>{item.name}</Link>
-                ))}
+            <div className='xl:flex hidden gap-30 text-black/70 justify-between items-center'>
+                {nav_links.map((item, index) => {
+                    const isActive = pathname === item.link;
+                    return (
+                        <Link key={index} href={item.link} className={`hover:text-[#22C55E] ${isActive ? "text-[#22C55E]" : ""}`}>{item.name}</Link>
+                    )
+                })}
             </div>
 
             <div className='xl:flex hidden gap-5'>
@@ -71,17 +76,20 @@ function NavBar() {
 
                         <div className="p-4 border-b">
                             <ul className="flex flex-col gap-2 font-medium dark:text-white text-gray-600">
-                                {nav_links.map((item, index) => (
-                                    <li key={index}>
-                                        <Link href={item.link} onClick={() => {
-                                            const timeoutId = setTimeout(() => {
-                                            setIsOpen(false);
-                                            clearTimeout(timeoutId);
-                                            }, 500)}}
-                                            className='hover:text-[#22C55E] flex flex-col gap-10'
-                                            >{item.name}</Link>
-                                    </li>
-                                ))}
+                                {nav_links.map((item, index) => {
+                                    const isActive = pathname === item.link;
+                                    return (
+                                        <li key={index}>
+                                            <Link href={item.link} onClick={() => {
+                                                const timeoutId = setTimeout(() => {
+                                                setIsOpen(false);
+                                                clearTimeout(timeoutId);
+                                                }, 500)}}
+                                                className={`hover:text-[#22C55E] flex flex-col gap-10 ? ${isActive ? "text-[#22C55E]" : ""}`}
+                                                >{item.name}</Link>
+                                        </li>
+                                    )
+                                })}
                             </ul>
                         </div>
 
