@@ -48,8 +48,8 @@ function NavBar() {
             </div>
 
             <div className='xl:flex hidden gap-5'>
-                <Link href={"/login"}><Button variant={"outline"}>Login</Button></Link>
-                <Link href={"/registration"}><Button>Sign up</Button></Link>
+                <Link href={"/login"}><Button variant={"outline"} className='rounded-md'>Login</Button></Link>
+                <Link href={"/registration"}><Button className='rounded-md'>Sign up</Button></Link>
             </div>
 
             <Drawer open={isOpen} onOpenChange={setIsOpen} direction='right'>
