@@ -9,6 +9,6 @@ export async function compileRegistrationTemplate(token:string) {
     const compiledTemplate = compile(templateSrc);
 
     return compiledTemplate({
-        redirect_url: `${BASE_WEB_URL}/auth/verify?token=${token}`
+        redirect_url: `${BASE_WEB_URL}/verification?token=${token}`
     });
 }

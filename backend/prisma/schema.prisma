@@ -72,7 +72,7 @@ model User_Voucher {
   id String @id @default(uuid())
   user_id String
   voucher_id String
-  is_used Boolean
+  is_used Boolean @default(false)
   used_at DateTime
   obtained_at DateTime
   expired_at DateTime
