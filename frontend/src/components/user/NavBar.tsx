@@ -13,21 +13,26 @@ import {
     DrawerTrigger,
     DrawerTitle
 } from '../ui/drawer';
-import { Menu, X } from 'lucide-react';
+import { Menu, ShoppingCart, User, X } from 'lucide-react';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { nav_links } from '@/lib/nav-links';
 import { IconButton } from '../ui/icon-button';
+import { useSession } from 'next-auth/react';
+import Dropdown from './Dropdown';
 
 function NavBar() {
     const [isOpen, setIsOpen] = useState(false);
     const size = useWindowSize();
     const pathname = usePathname();
+    const { data: session, status } = useSession();
 
     useEffect(() => {
         if (size?.width && size?.width > 767 && isOpen) {
             setIsOpen(false);
         }
     }, [size, isOpen]);
+
+    console.log(status);
 
   return (
     <div className='sticky top-0 z-30 w-full border-b backdrop-blur-xl'>
@@ -48,8 +53,20 @@ function NavBar() {
             </div>
 
             <div className='xl:flex hidden gap-5'>
-                <Link href={"/login"}><Button variant={"outline"} className='rounded-md'>Login</Button></Link>
-                <Link href={"/registration"}><Button className='rounded-md'>Sign up</Button></Link>
+                {status !== 'authenticated' ? (
+                    <div className='flex gap-5'>
+                        <Link href={"/login"}><Button variant={"outline"} className='rounded-md'>Login</Button></Link>
+                        <Link href={"/registration"}><Button className='rounded-md'>Sign up</Button></Link>
+                    </div>
+                ) : (
+                    <div className='flex gap-4'>
+                        <IconButton>
+                            <ShoppingCart className='w-5 h-5'/>
+                        </IconButton>
+                        <div className='bg-black/20 w-px h-full'></div>
+                        <Dropdown/>
+                    </div>
+                )}
             </div>
 
             <Drawer open={isOpen} onOpenChange={setIsOpen} direction='right'>
@@ -94,8 +111,17 @@ function NavBar() {
                         </div>
 
                         <div className='p-4 flex flex-col gap-4'>
-                            <Link href={"/login"}><Button variant={"outline"} className='w-full'>Login</Button></Link>
-                            <Link href={"/registration"}><Button className='w-full'>Sign up</Button></Link>
+                            {status !== 'authenticated' ? (
+                                <div className='flex flex-col gap-4'>
+                                    <Link href={"/login"}><Button variant={"outline"} className='w-full'>Login</Button></Link>
+                                    <Link href={"/registration"}><Button className='w-full'>Sign up</Button></Link>
+                                </div>
+                            ) : (
+                                <div className='flex flex-col gap-4'>
+                                    <Link href={"/profile"}><Button variant={"outline"} className='w-full'>Profile</Button></Link>
+                                    <Link href={"/cart"}><Button className='w-full'><ShoppingCart/> Cart</Button></Link>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </DrawerContent>

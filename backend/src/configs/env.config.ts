@@ -7,9 +7,14 @@ const GMAIL_APP_PASS = process.env.GMAIL_APP_PASS
 
 const BASE_WEB_URL = process.env.BASE_WEB_URL || ""
 
+const SECRET_KEY_ACCESS = process.env.SECRET_KEY_ACCESS || ""
+const SECRET_KEY_REFRESH = process.env.SECRET_KEY_REFRESH || ""
+
 export {
     SECRET_KEY_REGIS,
     GMAIL_EMAIL,
     GMAIL_APP_PASS,
-    BASE_WEB_URL
+    BASE_WEB_URL,
+    SECRET_KEY_ACCESS,
+    SECRET_KEY_REFRESH
 }
