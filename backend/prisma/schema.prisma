@@ -43,6 +43,7 @@ model User {
   updated_at DateTime
 
   voucher User_Voucher[]
+  refreshTokens RefreshToken[]
 
   @@map("users")
 }
@@ -86,4 +87,13 @@ model User_Voucher {
 enum Type {
   shopping
   shipping
+}
+
+model RefreshToken {
+  id String @id @default(uuid())
+  user_id String
+  token String @unique
+  expires_at DateTime
+
+  user User @relation(fields: [user_id], references: [id])
 }

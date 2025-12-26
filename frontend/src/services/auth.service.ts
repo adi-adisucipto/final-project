@@ -25,3 +25,21 @@ export async function verificationService(password:string, firstName:string, las
         throw error
     }
 }
+
+export async function login(email:string, password:string) {
+    try {
+        const tokens = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`,{
+            email: email,
+            password: password
+        });
+
+        const { accessToken, refreshToken } = tokens.data
+
+        return {
+            accessToken,
+            refreshToken
+        }
+    } catch (error) {
+        throw error
+    }
+}

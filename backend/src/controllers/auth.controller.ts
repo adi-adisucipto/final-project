@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { createRegisTokenService, createUserService } from "../services/auth.service";
+import { createRegisTokenService, createUserService, loginService, refreshTokensService } from "../services/auth.service";
 import { verify } from "jsonwebtoken";
 import { SECRET_KEY_REGIS } from "../configs/env.config";
 import { createCustomError } from "../utils/customError";
@@ -40,6 +40,35 @@ export async function createUserController(req: Request, res: Response, next: Ne
         res.status(200).json({
             message: "User has created successfully! Please Login!"
         });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function loginController(req:Request, res:Response, next:NextFunction) {
+    try {
+        const { email, password } = req.body;
+        const tokens = await loginService(email, password);
+        const { accessToken, refreshToken } = tokens
+
+        res.status(200).json({
+            accessToken,
+            refreshToken
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function refreshTokenController(req: Request, res: Response, next: NextFunction) {
+    try {
+        const refreshToken = req.body.refreshToken;
+        const data = await refreshTokensService(refreshToken);
+
+        res.status(200).json({
+            accessToken: data.accessToken,
+            refreshToken: data.refreshToken
+        })
     } catch (error) {
         next(error);
     }

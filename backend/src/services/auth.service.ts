@@ -1,12 +1,12 @@
 import { sign } from "jsonwebtoken";
 import { prisma } from "../lib/prisma";
 import { createCustomError } from "../utils/customError";
-import { SECRET_KEY_REGIS } from "../configs/env.config";
+import { SECRET_KEY_ACCESS, SECRET_KEY_REFRESH, SECRET_KEY_REGIS } from "../configs/env.config";
 import { Prisma } from "../generated/prisma/browser";
 import { compileRegistrationTemplate } from "../helpers/compileTemplates";
 import { transporter } from "../helpers/transporter";
 import { referralCodeGenerator } from "../helpers/referralCode";
-import { genSaltSync, hashSync } from "bcrypt";
+import { genSaltSync, hashSync, compareSync } from "bcrypt";
 
 export async function checkEmail(email:string) {
     const user = await prisma.user.findUnique({
@@ -101,6 +101,106 @@ export async function createUserService(email:string, password:string, firstName
                 }
             })
         })
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function createTokens(email:string) {
+    try {
+        const user = await checkEmail(email);
+        if(!user) throw new Error("User not found!");
+
+        const payload = {
+            id: user.id,
+            email: user.email,
+            is_verified: user.is_verified,
+            role: user.role,
+            referral_code: user.referral_code,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            avatar: user.avatar
+        }
+
+        const accessToken = sign(payload, SECRET_KEY_ACCESS, {expiresIn: "5m"});
+        const refreshToken = sign(payload, SECRET_KEY_REFRESH, {expiresIn: "30d"});
+
+        return {
+            accessToken,
+            refreshToken
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function loginService(email:string, password:string) {
+    try {
+        const user = await checkEmail(email);
+        if(!user) throw createCustomError(404, "Email or password invalid");
+        const hashPass = user.password
+        if(!hashPass) throw createCustomError(404, "Password not found");
+        const passValid = compareSync(password, hashPass);
+        if(!passValid) throw createCustomError(404, "Email or password invalid");
+
+        const tokens = await createTokens(email);
+        const { accessToken, refreshToken } = tokens;
+
+        const exp = new Date();
+        exp.setDate(exp.getDate() + 30)
+
+        await prisma.refreshToken.create({
+            data: {
+                user_id: user.id,
+                token: refreshToken,
+                expires_at: exp
+            }
+        });
+
+        return {
+            accessToken,
+            refreshToken
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function refreshTokensService(token:string) {
+    try {
+        const findUserId = await prisma.refreshToken.findUnique({
+            where: {token: token},
+            select: {user_id: true}
+        });
+        if(!findUserId) throw createCustomError(404, "InvalidToken");
+
+        const findEmail = await prisma.user.findUnique({
+            where: {id: findUserId.user_id}
+        });
+        if(!findEmail) throw new Error("User not found!");
+
+        const tokens = await createTokens(findEmail?.email);
+
+        const exp = new Date();
+        exp.setDate(exp.getDate() + 30);
+
+        await prisma.$transaction(async(tx: Prisma.TransactionClient) => {
+            await tx.refreshToken.deleteMany({
+                where: {token: token}
+            });
+            await tx.refreshToken.create({
+                data: {
+                user_id: findEmail.id,
+                token: tokens.refreshToken,
+                expires_at: exp
+            }
+            })
+        });
+
+        return {
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken
+        }
     } catch (error) {
         throw error;
     }
