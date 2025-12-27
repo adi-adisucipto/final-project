@@ -53,6 +53,10 @@ function LoginForm() {
             setLoading(false);
         }
     }
+
+    const handleGoogleLogin = async () => {
+        await signIn("google", { callbackUrl: "/" });
+    }
   return (
     <Formik
         initialValues={initialValues}
@@ -110,7 +114,7 @@ function LoginForm() {
                     <hr className='border border-black/20 w-[30%]' />
                 </div>
 
-                <button className='flex justify-center items-center gap-4 bg-[#F3F9FA] w-full p-3 rounded-xl cursor-pointer my-6'>
+                <button onClick={handleGoogleLogin} className='flex justify-center items-center gap-4 bg-[#F3F9FA] w-full p-3 rounded-xl cursor-pointer my-6'>
                     <Image src="/Google.png" alt='pic' width={28} height={28} />
                     <p>Google</p>
                 </button>

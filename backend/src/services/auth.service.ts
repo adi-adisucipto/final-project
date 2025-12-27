@@ -7,6 +7,7 @@ import { compileRegistrationTemplate } from "../helpers/compileTemplates";
 import { transporter } from "../helpers/transporter";
 import { referralCodeGenerator } from "../helpers/referralCode";
 import { genSaltSync, hashSync, compareSync } from "bcrypt";
+import { TokenPayload } from "google-auth-library";
 
 export async function checkEmail(email:string) {
     const user = await prisma.user.findUnique({
@@ -200,6 +201,54 @@ export async function refreshTokensService(token:string) {
         return {
             accessToken: tokens.accessToken,
             refreshToken: tokens.refreshToken
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function googleLoginService(email:string) {
+    try {
+        let user = await checkEmail(email);
+        if(!user) {
+            let isTaken = true;
+            let referralCode = "";
+            while (isTaken) {
+                referralCode = referralCodeGenerator(); 
+                const existingUser = await prisma.user.findUnique({
+                    where: { referral_code: referralCode }
+                });
+
+                if (!existingUser) isTaken = false;
+            }
+
+            user = await prisma.user.create({
+                data: {
+                    email: email,
+                    referral_code: referralCode,
+                    updated_at: new Date()
+                }
+            });
+        }
+
+        if(!user) throw createCustomError(404, "User not found!")
+        const tokens = await createTokens(email);
+        const { accessToken, refreshToken } = tokens;
+
+        const exp = new Date();
+        exp.setDate(exp.getDate() + 30)
+
+        await prisma.refreshToken.create({
+            data: {
+                token: refreshToken,
+                user_id: user.id,
+                expires_at: exp
+            }
+        })
+
+        return {
+            accessToken,
+            refreshToken
         }
     } catch (error) {
         throw error;

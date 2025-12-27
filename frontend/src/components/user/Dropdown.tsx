@@ -13,12 +13,13 @@ import Link from "next/link";
 
 function Dropdown() {
     const { data: session, status } = useSession();
+    console.log(session?.user?.avatar)
   return (
     <div>
       <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className='w-10 cursor-pointer h-10 rounded-full bg-gray-100 flex justify-center items-center border-2 border-black/20'>
-            {session?.user?.avatar !== null ? (
+            {session?.user?.avatar !== null  && session?.user?.avatar !== undefined ? (
                 <Image src={session?.user?.avatar!} alt='cover' width={40} height={40} />
             ) : (
                 <User className='w-6 h-6'/>
@@ -31,21 +32,21 @@ function Dropdown() {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem>
-            <Link href={"/profile"}>Profile</Link>
-        </DropdownMenuItem>
+        <Link href={"/profile"}>
+          <DropdownMenuItem>Profile</DropdownMenuItem>
+        </Link>
 
-        <DropdownMenuItem>
-            <Link href={"/orders"}>My Orders</Link>
-        </DropdownMenuItem>
+        <Link href={"/orders"}>
+          <DropdownMenuItem>Orders</DropdownMenuItem>
+        </Link>
 
-        <DropdownMenuItem>
-            <Link href={"/address"}>Manage Address</Link>
-        </DropdownMenuItem>
+        <Link href={"/address"}>
+          <DropdownMenuItem>Address</DropdownMenuItem>
+        </Link>
 
-        <DropdownMenuItem>
-            <Link href={"/password"}>Password Manager</Link>
-        </DropdownMenuItem>
+        <Link href={"/password"}>
+          <DropdownMenuItem>Password Manager</DropdownMenuItem>
+        </Link>
 
         <DropdownMenuSeparator />
         <DropdownMenuItem className="text-red-600" onClick={() => signOut()}>Log out</DropdownMenuItem>

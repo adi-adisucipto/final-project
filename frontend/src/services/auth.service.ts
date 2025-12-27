@@ -43,3 +43,22 @@ export async function login(email:string, password:string) {
         throw error
     }
 }
+
+export async function googleLogin(token:string) {
+    try {
+        const tokens = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/google-login`, {}, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        const { accessToken, refreshToken } = tokens.data
+
+        return {
+            accessToken,
+            refreshToken
+        }
+    } catch (error) {
+        throw error
+    }
+}

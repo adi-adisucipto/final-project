@@ -1,10 +1,11 @@
-import { login } from "@/services/auth.service";
+import { googleLogin, login } from "@/services/auth.service";
 import { DecodedToken } from "@/types/auth";
 import axios, { AxiosError } from "axios";
 import { jwtDecode } from "jwt-decode";
 import NextAuth from "next-auth";
 import { JWT } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 
 async function refreshAccessToken(token:JWT) {
     try {
@@ -54,11 +55,8 @@ const handler = NextAuth({
             async authorize(credentials) {
                 try {
                     if(!credentials?.email) throw new Error("email not found");
-                    const tokens = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`,{
-                        email: credentials.email,
-                        password: credentials.password
-                    });
-                    const {accessToken, refreshToken} = tokens.data;
+                    const tokens = await login(credentials.email, credentials.password)
+                    const {accessToken, refreshToken} = tokens;
                     if(!accessToken) throw new Error("InvalidAccessToken");
 
                     const decode = jwtDecode<DecodedToken>(accessToken);
@@ -83,11 +81,22 @@ const handler = NextAuth({
                     return null
                 }
             }
+        }),
+        Google({
+            clientId: process.env.GOOGLE_CLIENT_ID || "",
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+            authorization: {
+                params: {
+                    prompt: "consent",
+                    access_type: "online",
+                    response_type: "code"
+                }
+            }
         })
     ],
     callbacks: {
-        async jwt({token, user}) {
-            if(user) {
+        async jwt({token, user, account}) {
+            if(user && account?.provider == "credentials") {
                 return {
                     ...token,
                     id: user.id,
@@ -105,21 +114,44 @@ const handler = NextAuth({
                 }
             }
 
-            if(!token.accessToken) return { ...token, error: "InvalidAccessToken" };
-            
-            let decoded: DecodedToken;
-            try {
-                decoded = jwtDecode<DecodedToken>(token.accessToken as string);
-            } catch (error) {
-                return {...token, error: "InvalidAccessToken"}
+            if(account?.provider == 'google' && account.id_token) {
+                try {
+                    const tokens = await googleLogin(account.id_token);
+                    const {accessToken, refreshToken} = tokens;
+                    const decode = jwtDecode<DecodedToken>(accessToken);
+
+                    return {
+                        ...token,
+                        id: decode.id,
+                        email: decode.email,
+                        is_verified: decode.is_verified,
+                        role: decode.role,
+                        referral_code: decode.referral_code,
+                        first_name: decode.first_name,
+                        last_name: decode.last_name,
+                        avatar: decode.avatar,
+                        exp: decode.exp,
+                        accessToken: accessToken,
+                        refreshToken: refreshToken,
+                        error: null
+                    }
+                } catch (error) {
+                    return {...token, error: "InvalidAccessToken"}
+                }
+            }
+
+            if (token?.accessToken) {
+                const isExpired = (token.exp as number) * 1000 < Date.now();
+                if (!isExpired) return token;
+                
+                console.log("Token expired, refreshing...");
+                return await refreshAccessToken(token);
             }
             
-            const isExipired = decoded.exp * 1000 < Date.now();
-            if(!isExipired) return token;
-            return await refreshAccessToken(token);
+            return token;
         },
         async session({session, token}) {
-            if(!token || token.error) {
+            if(token?.error === "RefreshTokenError" || token.error === "InvalidAccessToken") {
                 return {
                     ...session,
                     user: null,

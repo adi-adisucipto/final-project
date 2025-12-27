@@ -26,13 +26,13 @@ function NavBar() {
     const pathname = usePathname();
     const { data: session, status } = useSession();
 
+    console.log(session)
+
     useEffect(() => {
         if (size?.width && size?.width > 767 && isOpen) {
             setIsOpen(false);
         }
     }, [size, isOpen]);
-
-    console.log(status);
 
   return (
     <div className='sticky top-0 z-30 w-full border-b backdrop-blur-xl'>
