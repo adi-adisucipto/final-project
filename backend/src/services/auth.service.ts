@@ -7,7 +7,6 @@ import { compileRegistrationTemplate } from "../helpers/compileTemplates";
 import { transporter } from "../helpers/transporter";
 import { referralCodeGenerator } from "../helpers/referralCode";
 import { genSaltSync, hashSync, compareSync } from "bcrypt";
-import { TokenPayload } from "google-auth-library";
 
 export async function checkEmail(email:string) {
     const user = await prisma.user.findUnique({
@@ -83,18 +82,34 @@ export async function createUserService(email:string, password:string, firstName
             if(!code) isTaken = false;
         }
 
+        const user = await checkEmail(email);
+
         await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-            await tx.user.create({
-                data: {
-                    email: email,
-                    is_verified: true,
-                    referral_code: referralCode,
-                    password: hashedPassword,
-                    first_name: firstName,
-                    last_name: lastName,
-                    updated_at: new Date()
-                }
-            });
+            if(!user) {
+                await tx.user.create({
+                    data: {
+                        email: email,
+                        is_verified: true,
+                        referral_code: referralCode,
+                        password: hashedPassword,
+                        first_name: firstName,
+                        last_name: lastName,
+                        updated_at: new Date()
+                    }
+                });
+            } else {
+                await tx.user.update({
+                    where: {email: email},
+                    data: {
+                        is_verified: true,
+                        referral_code: referralCode,
+                        password: hashedPassword,
+                        first_name: firstName,
+                        last_name: lastName,
+                        updated_at: new Date()
+                    }
+                });
+            }
 
             await tx.token.delete({
                 where: {
@@ -222,6 +237,8 @@ export async function googleLoginService(email:string) {
                 if (!existingUser) isTaken = false;
             }
 
+            await createRegisTokenService(email);
+
             user = await prisma.user.create({
                 data: {
                     email: email,
@@ -236,14 +253,16 @@ export async function googleLoginService(email:string) {
         const { accessToken, refreshToken } = tokens;
 
         const exp = new Date();
-        exp.setDate(exp.getDate() + 30)
+        exp.setDate(exp.getDate() + 30);
 
-        await prisma.refreshToken.create({
-            data: {
-                token: refreshToken,
-                user_id: user.id,
-                expires_at: exp
-            }
+        prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+            await prisma.refreshToken.create({
+                data: {
+                    token: refreshToken,
+                    user_id: user.id,
+                    expires_at: exp
+                }
+            });
         })
 
         return {
