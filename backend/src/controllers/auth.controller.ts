@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { createRegisTokenService, createUserService, loginService, refreshTokensService } from "../services/auth.service";
+import { createRegisTokenService, createUserService, googleLoginService, loginService, refreshTokensService } from "../services/auth.service";
 import { verify } from "jsonwebtoken";
 import { SECRET_KEY_REGIS } from "../configs/env.config";
 import { createCustomError } from "../utils/customError";
+import { TokenPayload } from "google-auth-library";
 
 export async function createRegisTokenController(req: Request, res: Response, next: NextFunction) {
     try {
@@ -68,6 +69,27 @@ export async function refreshTokenController(req: Request, res: Response, next: 
         res.status(200).json({
             accessToken: data.accessToken,
             refreshToken: data.refreshToken
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+interface CustomRequest extends Request {
+  user?: TokenPayload;
+}
+
+export async function googleLoginController(req:CustomRequest, res:Response, next:NextFunction) {
+    try {
+        const payload = req.user;
+        const email = payload?.email!;
+
+        const tokens = await googleLoginService(email);
+        const { accessToken, refreshToken } = tokens;
+
+        res.status(200).json({
+            accessToken,
+            refreshToken
         })
     } catch (error) {
         next(error);

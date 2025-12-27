@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import Spinner from '@/components/ui/Spinner';
 import { registrationService } from '@/services/auth.service';
 import { Formik, Form, Field } from 'formik';
+import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { enqueueSnackbar } from 'notistack';
@@ -25,6 +26,10 @@ function RegistrationForm() {
       console.log(error);
       setLoading(false)
     }
+  }
+
+  const handleGoogleLogin = () => {
+    signIn("google", { callbackUrl: "/" })
   }
   return (
     <Formik
@@ -64,7 +69,7 @@ function RegistrationForm() {
             <hr className='border border-black/20 w-[30%]' />
           </div>
 
-          <button className='flex justify-center items-center gap-4 bg-[#F3F9FA] w-full p-3 rounded-xl cursor-pointer my-6'>
+          <button onClick={handleGoogleLogin} className='flex justify-center items-center gap-4 bg-[#F3F9FA] w-full p-3 rounded-xl cursor-pointer my-6'>
             <Image src="/Google.png" alt='pic' width={28} height={28} />
             <p>Google</p>
           </button>
