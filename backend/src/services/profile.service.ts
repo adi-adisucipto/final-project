@@ -3,9 +3,9 @@ import { prisma } from "../lib/prisma";
 import { cloudinaryRemove, cloudinaryUplaod } from "../utils/cloudinary";
 import { createCustomError } from "../utils/customError";
 
-export async function updateUser(email:string, first_name?:string, last_name?:string, file?:Express.Multer.File, avatar_id?:string) {
-    let secure_url: string | null = null;
-    let public_id: string | null = null;
+export async function updateUser(email:string, first_name?:string, last_name?:string, file?:Express.Multer.File) {
+    let secure_url: string | undefined = undefined;
+    let public_id: string | undefined = undefined;
 
     if(file) {
         const image = await cloudinaryUplaod(file, "avatar");
@@ -22,7 +22,7 @@ export async function updateUser(email:string, first_name?:string, last_name?:st
         let data
 
         await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-            if(user && user.avatar_id) {
+            if(user && user.avatar_id !== null && file !== null) {
                 await cloudinaryRemove(user.avatar_id)
             }
             
@@ -31,8 +31,8 @@ export async function updateUser(email:string, first_name?:string, last_name?:st
                 data: {
                     first_name: first_name,
                     last_name: last_name,
-                    avatar: secure_url,
-                    avatar_id: public_id
+                    ...(secure_url && { avatar: secure_url }),
+                    ...(public_id && { avatar_id: public_id })
                 }
             });
         });

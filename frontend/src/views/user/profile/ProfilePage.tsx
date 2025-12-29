@@ -7,15 +7,15 @@ import { BadgeCheck, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { updateUser } from "@/services/profile.service";
 import { enqueueSnackbar } from "notistack";
+import { Ring } from 'react-css-spinners'
 import { useState } from "react";
-import Spinner from "@/components/ui/Spinner";
 
 interface SubmitProps {
     firstName: string | null;
     lastName: string | null;
     email: string;
     referralCode: string;
-    avatar: File | null
+    avatar: File | string | null
 }
 
 function ProfilePage() {
@@ -36,15 +36,16 @@ function ProfilePage() {
             formData.append('email', values.email);
             formData.append('first_name', values.firstName || "");
             formData.append('last_name', values.lastName || "");
-            formData.append('avatar', values.avatar || ""); 
+            if (values.avatar instanceof File) {
+                formData.append('avatar', values.avatar);
+            }
             const { message, data } = await updateUser(formData);
 
             await update({
                 ...session,
                 user: {
                     ...session?.user,
-                    avatar: data.avatar,
-                    avatar_id: data.avatar_id
+                    ...data
                 }
             });
 
@@ -132,7 +133,7 @@ function ProfilePage() {
                         <Button className="rounded-md flex justify-center items-center" variant={"outline"} type="submit" disabled={loading}>
                             {loading ? (
                                 <div className="h-full w-full">
-                                    <Spinner size={17} thickness={3}/>
+                                    <Ring size={17} thickness={3} color="#22C55E"/>
                                 </div>
                             ) : (
                                 <div className="h-full w-full">Save Change</div>
