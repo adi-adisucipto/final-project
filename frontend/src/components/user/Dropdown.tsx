@@ -6,10 +6,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { User } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import ExitDialog from "../ExitDialog";
 
 function Dropdown() {
     const { data: session, status } = useSession();
@@ -20,7 +21,7 @@ function Dropdown() {
       <DropdownMenuTrigger asChild>
         <button className='w-10 cursor-pointer h-10 rounded-full bg-gray-100 flex justify-center items-center border-2 border-black/20'>
             {session?.user?.avatar !== null  && session?.user?.avatar !== undefined ? (
-                <Image src={session?.user?.avatar!} alt='cover' width={40} height={40} />
+                <Image src={session?.user?.avatar!} alt='cover' width={40} height={40} className="rounded-full" />
             ) : (
                 <User className='w-6 h-6'/>
             )}
@@ -49,7 +50,9 @@ function Dropdown() {
         </Link>
 
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-red-600" onClick={() => signOut()}>Log out</DropdownMenuItem>
+        <div className="text-red-600 text-[14px] hover:bg-gray-100 rounded-md px-2 py-1">
+          <ExitDialog/>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
     </div>

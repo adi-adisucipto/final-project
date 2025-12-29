@@ -102,7 +102,7 @@ function LoginForm() {
                             <Spinner size={17} thickness={3}/>
                         </div>
                     ) : (
-                        <div>Register</div>
+                        <div>Login</div>
                     )}
                 </Button>
             </Form> 

@@ -1,5 +1,3 @@
-import NotistackProvider from "@/providers/NotistackProvider"
-
 function AuthLayout(
     { children } : { children: React.ReactNode }
 ) {

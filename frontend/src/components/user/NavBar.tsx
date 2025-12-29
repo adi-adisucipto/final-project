@@ -26,8 +26,6 @@ function NavBar() {
     const pathname = usePathname();
     const { data: session, status } = useSession();
 
-    console.log(session)
-
     useEffect(() => {
         if (size?.width && size?.width > 767 && isOpen) {
             setIsOpen(false);

@@ -95,7 +95,7 @@ const handler = NextAuth({
         })
     ],
     callbacks: {
-        async jwt({token, user, account}) {
+        async jwt({token, user, account, trigger, session}) {
             if(user && account?.provider == "credentials") {
                 return {
                     ...token,
@@ -138,6 +138,11 @@ const handler = NextAuth({
                 } catch (error) {
                     return {...token, error: "InvalidAccessToken"}
                 }
+            }
+
+            if (trigger === "update" && session) {
+                token.avatar = session.user.avatar;
+                token.avatar_id = session.user.avatar_id;
             }
 
             if (token?.accessToken) {
