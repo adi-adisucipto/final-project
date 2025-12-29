@@ -143,6 +143,8 @@ const handler = NextAuth({
             if (trigger === "update" && session) {
                 token.avatar = session.user.avatar;
                 token.avatar_id = session.user.avatar_id;
+                token.first_name = session.user.first_name;
+                token.last_name = session.user.last_name;
             }
 
             if (token?.accessToken) {
