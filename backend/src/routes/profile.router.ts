@@ -1,9 +1,14 @@
 import { Router } from "express";
-import { updateUserController } from "../controllers/profile.controller";
+import { changePasswordController, sendEmailChangePasswordController, updateUserController } from "../controllers/profile.controller";
 import uploader from "../utils/uploader";
+import { authMiddleware } from "../middlewares/auth.middleware";
 
 const profileRouter = Router();
 
-profileRouter.post("/update-profile", uploader().single("avatar"), updateUserController);
+// profileRouter.use(authMiddleware);
+
+profileRouter.post("/update-profile", authMiddleware ,uploader().single("avatar"), updateUserController);
+profileRouter.post("/change-password", sendEmailChangePasswordController);
+profileRouter.post("/password-change", changePasswordController)
 
 export default profileRouter

@@ -1,5 +1,4 @@
 import ProfilePage from '@/views/user/profile/ProfilePage'
-import React from 'react'
 
 function Profile() {
   return (

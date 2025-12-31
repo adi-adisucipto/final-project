@@ -39,7 +39,7 @@ function ProfilePage() {
             if (values.avatar instanceof File) {
                 formData.append('avatar', values.avatar);
             }
-            const { message, data } = await updateUser(formData);
+            const { message, data } = await updateUser(formData, session?.accessToken!);
 
             await update({
                 ...session,
@@ -105,7 +105,7 @@ function ProfilePage() {
                                         Verified
                                     </div>
                                 ) : (
-                                    <div className={`flex gap-2 text-red-500`}>
+                                    <div className={`flex gap-2 text-red-500 w-50 justify-end`}>
                                         <BadgeCheck/>
                                         Not Verified
                                     </div>

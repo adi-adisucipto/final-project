@@ -4,11 +4,13 @@ import { GOOGLE_CLIENT_ID } from "../configs/env.config";
 
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
-interface CustomRequest extends Request {
-  user?: TokenPayload;
+declare module "express-serve-static-core" {
+    interface Request {
+      googleUser?: TokenPayload;
+    }
 }
 
-export async function verifyToken(req:CustomRequest, res:Response, next:NextFunction) {
+export async function verifyToken(req:Request, res:Response, next:NextFunction) {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).send('No token provided');
 
@@ -21,7 +23,7 @@ export async function verifyToken(req:CustomRequest, res:Response, next:NextFunc
     });
     const payload = ticket.getPayload();
     
-    req.user = payload; 
+    req.googleUser = payload; 
     next();
   } catch (error) {
     res.status(401).send('Invalid Token');
