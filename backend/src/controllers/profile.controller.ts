@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { updateUser } from "../services/profile.service";
+import { changePasswordService, sendEmailChangePasswordService, updateUser } from "../services/profile.service";
 
 export async function updateUserController(req:Request, res:Response, next:NextFunction) {
     try {
@@ -14,5 +14,32 @@ export async function updateUserController(req:Request, res:Response, next:NextF
         });
     } catch (error) {
         next(error)
+    }
+}
+
+export async function sendEmailChangePasswordController(req: Request, res:Response, next:NextFunction) {
+    try {
+        const { email } = req.body;
+
+        await sendEmailChangePasswordService(email);
+
+        res.status(200).json({
+            message: "Email has been sent. Please check your inbox!"
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function changePasswordController(req:Request, res:Response, next:NextFunction) {
+    try {
+        const {token, password, confirmPassword} = req.body
+        await changePasswordService(token, password, confirmPassword);
+
+        res.status(200).json({
+            message: "Security update successful"
+        })
+    } catch (error) {
+        next(error);
     }
 }

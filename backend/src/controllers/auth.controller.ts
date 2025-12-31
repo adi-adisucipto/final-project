@@ -3,7 +3,6 @@ import { createRegisTokenService, createUserService, googleLoginService, loginSe
 import { verify } from "jsonwebtoken";
 import { SECRET_KEY_REGIS } from "../configs/env.config";
 import { createCustomError } from "../utils/customError";
-import { TokenPayload } from "google-auth-library";
 
 export async function createRegisTokenController(req: Request, res: Response, next: NextFunction) {
     try {
@@ -75,13 +74,9 @@ export async function refreshTokenController(req: Request, res: Response, next: 
     }
 }
 
-interface CustomRequest extends Request {
-  user?: TokenPayload;
-}
-
-export async function googleLoginController(req:CustomRequest, res:Response, next:NextFunction) {
+export async function googleLoginController(req:Request, res:Response, next:NextFunction) {
     try {
-        const payload = req.user;
+        const payload = req.googleUser;
         const email = payload?.email!;
 
         const tokens = await googleLoginService(email);

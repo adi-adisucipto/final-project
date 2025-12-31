@@ -62,3 +62,17 @@ export async function googleLogin(token:string) {
         throw error
     }
 }
+
+export async function changePassword(token:string, password:string, confirmPassword:string) {
+    try {
+        const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/password-change`, {
+            token: token,
+            password: password,
+            confirmPassword: confirmPassword
+        });
+
+        return data
+    } catch (error) {
+        throw error;
+    }
+}

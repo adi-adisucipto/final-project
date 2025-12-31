@@ -21,7 +21,7 @@ function SideBar() {
         }
     }, [status, router])
   return (
-    <div className="w-[35%] h-full p-5 border border-black/30 rounded-xl shadow-xl flex flex-col gap-5">
+    <div className="w-[35%] h-full p-4 border border-black/30 rounded-xl shadow-xl flex flex-col gap-5">
         <div className="flex flex-col gap-4 justify-center items-center">
             {session?.user?.avatar === null ? (
                 <div className="w-17 h-17 rounded-full bg-gray-100 flex justify-center items-center">

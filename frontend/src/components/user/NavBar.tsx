@@ -33,8 +33,8 @@ function NavBar() {
     }, [size, isOpen]);
 
   return (
-    <div className='sticky top-0 z-30 w-full border-b backdrop-blur-xl'>
-        <div className='h-18.75 w-full xl:max-w-7xl px-5 xl:px-0 mx-auto flex justify-between items-center gap-3'>
+    <div className='xl:max-w-7xl mx-auto sticky top-0 z-30 border mt-4 px-4 backdrop-blur-xl rounded-xl shadow-lg'>
+        <div className='xl:max-w-7xl px-5 py-4 xl:px-0 mx-auto flex justify-between items-center gap-3'>
             <div className=''>
                 <Link href={"/"}>
                     <Image src="/logo.png" alt='Logo' width={170} height={40} className='xl:w-42.5 w-30' />
@@ -45,7 +45,7 @@ function NavBar() {
                 {nav_links.map((item, index) => {
                     const isActive = pathname === item.link;
                     return (
-                        <Link key={index} href={item.link} className={`hover:text-[#22C55E] ${isActive ? "text-[#22C55E]" : ""}`}>{item.name}</Link>
+                        <Link key={index} href={item.link} className={`hover:text-[#22C55E] font-medium ${isActive ? "text-[#22C55E]" : ""}`}>{item.name}</Link>
                     )
                 })}
             </div>
