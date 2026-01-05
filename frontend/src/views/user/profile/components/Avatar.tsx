@@ -29,7 +29,7 @@ function Avatar({name, setFieldValue}: FileProps) {
   }
   return (
     <div
-      className="w-37.5 h-37.5 rounded-full bg-gray-100 mb-6 border border-black/30"
+      className="w-37.5 h-37.5 rounded-full bg-gray-100 mb-6 border border-black/30 mx-auto xl:mx-0"
       onClick={() => fileInputRef.current?.click()}
     >
       {imageUrl ? (

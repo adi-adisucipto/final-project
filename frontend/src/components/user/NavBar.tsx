@@ -13,12 +13,13 @@ import {
     DrawerTrigger,
     DrawerTitle
 } from '../ui/drawer';
-import { Menu, ShoppingCart, User, X } from 'lucide-react';
+import { LogOut, Menu, ShoppingCart, User, X } from 'lucide-react';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { nav_links } from '@/lib/nav-links';
 import { IconButton } from '../ui/icon-button';
 import { useSession } from 'next-auth/react';
 import Dropdown from './Dropdown';
+import ExitDialog from '../ExitDialog';
 
 function NavBar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -33,8 +34,8 @@ function NavBar() {
     }, [size, isOpen]);
 
   return (
-    <div className='xl:max-w-7xl mx-auto sticky top-0 z-30 border mt-4 px-4 backdrop-blur-xl rounded-xl shadow-lg'>
-        <div className='xl:max-w-7xl px-5 py-4 xl:px-0 mx-auto flex justify-between items-center gap-3'>
+    <div className='xl:max-w-7xl xl:mx-auto mx-4 sticky top-4 z-30 border mt-4 xl:px-4 backdrop-blur-xl rounded-xl shadow-lg'>
+        <div className='xl:max-w-7xl px-4 xl:py-4 py-2 xl:px-0 mx-auto flex justify-between items-center gap-3'>
             <div className=''>
                 <Link href={"/"}>
                     <Image src="/logo.png" alt='Logo' width={170} height={40} className='xl:w-42.5 w-30' />
@@ -45,7 +46,7 @@ function NavBar() {
                 {nav_links.map((item, index) => {
                     const isActive = pathname === item.link;
                     return (
-                        <Link key={index} href={item.link} className={`hover:text-[#22C55E] font-medium ${isActive ? "text-[#22C55E]" : ""}`}>{item.name}</Link>
+                        <Link key={index} href={item.link} className={`hover:text-[#22C55E] font-semibold ${isActive ? "text-[#22C55E]" : ""}`}>{item.name}</Link>
                     )
                 })}
             </div>
@@ -118,6 +119,10 @@ function NavBar() {
                                 <div className='flex flex-col gap-4'>
                                     <Link href={"/profile"}><Button variant={"outline"} className='w-full'>Profile</Button></Link>
                                     <Link href={"/cart"}><Button className='w-full'><ShoppingCart/> Cart</Button></Link>
+                                    <div className="flex justify-center items-center cursor-pointer gap-2 w-full p-2 rounded-xl bg-red-500 hover:bg-red-500/90 font-medium shadow-md border border-black/20 text-white">
+                                        <LogOut/>
+                                        <ExitDialog/>
+                                    </div>
                                 </div>
                             )}
                         </div>
