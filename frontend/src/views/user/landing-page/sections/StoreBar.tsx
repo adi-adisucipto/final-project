@@ -2,9 +2,14 @@
 
 import { MapPin } from 'lucide-react'
 import useGeolocation from '@/hooks/useGeolocation'
+import { enqueueSnackbar } from 'notistack';
 
 function StoreBar() {
-      const { loaded, coordinates, error } = useGeolocation();
+    const { loaded, coordinates, error } = useGeolocation();
+
+    if(error) {
+        enqueueSnackbar(error.message, {variant: "error"})
+    };
   return (
     <div className='px-4 xl:px-0'>
         <div className='w-full p-4 rounded-2xl bg-[#122017] flex justify-between items-center xl:mt-8 mt-4'>
