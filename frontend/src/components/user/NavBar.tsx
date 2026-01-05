@@ -34,7 +34,7 @@ function NavBar() {
     }, [size, isOpen]);
 
   return (
-    <div className='xl:max-w-7xl xl:mx-auto mx-4 sticky top-4 z-30 border mt-4 xl:px-4 backdrop-blur-xl rounded-xl shadow-lg'>
+    <div className='xl:max-w-7xl xl:mx-auto mx-4 sticky top-4 z-30 border mt-4 xl:px-4 bg-white rounded-xl shadow-lg'>
         <div className='xl:max-w-7xl px-4 xl:py-4 py-2 xl:px-0 mx-auto flex justify-between items-center gap-3'>
             <div className=''>
                 <Link href={"/"}>
