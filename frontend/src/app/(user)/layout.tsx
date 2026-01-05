@@ -4,9 +4,11 @@ function UserLayout(
     { children } : { children : React.ReactNode }
 ) {
   return (
-    <div className="">
+    <div>
       <NavBar/>
-      { children }
+      <main className="flex-1 xl:pt-8 pt-4"> 
+        { children }
+      </main>
     </div>
   )
 }

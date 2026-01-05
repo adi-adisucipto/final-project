@@ -67,8 +67,8 @@ function ProfilePage() {
                 <Form>
                     <Avatar name="avatar" setFieldValue={setFieldValue}/>
 
-                    <div className="flex gap-5 w-full">
-                        <div className="flex flex-col gap-2 w-[50%]">
+                    <div className="flex flex-col xl:flex-row xl:gap-5 gap-6 w-full">
+                        <div className="flex flex-col gap-2 xl:w-[50%]">
                             <label className="text-[20px] font-semibold">First Name</label>
                             <Field
                                 type="text"
@@ -78,7 +78,7 @@ function ProfilePage() {
                             />
                         </div>
 
-                        <div className="flex flex-col gap-2 w-[50%]">
+                        <div className="flex flex-col gap-2 xl:w-[50%]">
                             <label className="text-[20px] font-semibold">Last Name</label>
                             <Field
                                 type="text"

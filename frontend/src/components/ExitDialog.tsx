@@ -9,13 +9,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { LogOut } from "lucide-react"
 import { signOut } from "next-auth/react"
 
 function ExitDialog() {
   return (
     <AlertDialog>
-      <AlertDialogTrigger className="flex gap-2.5 w-full h-full cursor-pointer">
+      <AlertDialogTrigger className="flex gap-2.5 h-full cursor-pointer">
         Logut
       </AlertDialogTrigger>
       <AlertDialogContent>
