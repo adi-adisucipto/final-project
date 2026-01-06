@@ -14,39 +14,41 @@ datasource db {
 }
 
 model Token {
-  id String @id @default(uuid())
-  token String @unique
-  createdAt DateTime @default(now())
+  id         String   @id @default(uuid())
+  token      String   @unique
+  createdAt  DateTime @default(now())
   expires_at DateTime
-  
+
   @@map("token")
 }
 
 model User {
-  id String @id @default(uuid())
-  email String @unique
-  is_verified Boolean @default(false)
-  role Role @default(user)
-  referral_code String @unique
-  
-  password String?
+  id            String  @id @default(uuid())
+  email         String  @unique
+  is_verified   Boolean @default(false)
+  role          Role    @default(user)
+  referral_code String  @unique
+
+  password   String?
   first_name String?
-  last_name String?
-  avatar String?
-  avatar_id String?
+  last_name  String?
+  avatar     String?
+  avatar_id  String?
   referrerId String?
 
-  referrer User? @relation("ReferredBy", fields: [referrerId], references: [id])
+  referrer      User?  @relation("ReferredBy", fields: [referrerId], references: [id])
   referredUsers User[] @relation("ReferredBy")
 
   created_at DateTime @default(now())
   updated_at DateTime
 
-  voucher User_Voucher[]
+  voucher       User_Voucher[]
   refreshTokens RefreshToken[]
-  address UserAddress[]
-  carts   Cart[]
-  orders  Order[]
+  address       UserAddress[]
+  carts         Cart[]
+  orders        Order[]
+
+  storeAdmin StoreAdmin?
 
   @@map("users")
 }
@@ -58,14 +60,14 @@ enum Role {
 }
 
 model Voucher {
-  id String @id @default(uuid())
-  voucher_name String @unique
-  voucher_type Type @default(shopping)
-  discount_type String
+  id             String   @id @default(uuid())
+  voucher_name   String   @unique
+  voucher_type   Type     @default(shopping)
+  discount_type  String
   discount_value Decimal
-  max_discount Decimal
-  min_purchase Decimal
-  created_at DateTime
+  max_discount   Decimal
+  min_purchase   Decimal
+  created_at     DateTime
 
   user User_Voucher[]
 
@@ -73,15 +75,15 @@ model Voucher {
 }
 
 model User_Voucher {
-  id String @id @default(uuid())
-  user_id String
-  voucher_id String
-  is_used Boolean @default(false)
-  used_at DateTime
+  id          String   @id @default(uuid())
+  user_id     String
+  voucher_id  String
+  is_used     Boolean  @default(false)
+  used_at     DateTime
   obtained_at DateTime
-  expired_at DateTime
+  expired_at  DateTime
 
-  userId User @relation(fields: [user_id], references: [id])
+  userId  User    @relation(fields: [user_id], references: [id])
   voucher Voucher @relation(fields: [voucher_id], references: [id])
 
   @@map("user_voucher")
@@ -93,67 +95,74 @@ enum Type {
 }
 
 model RefreshToken {
-  id String @id @default(uuid())
-  user_id String
-  token String @unique
+  id         String   @id @default(uuid())
+  user_id    String
+  token      String   @unique
   expires_at DateTime
 
   user User @relation(fields: [user_id], references: [id])
 }
 
 model UserAddress {
-  id String @id @default(uuid())
-  user_id String
-  first_name String
-  last_name String
-  address String
-  province Int
-  city Int
-  postal_code Int
-  latitude Int
-  longitude Int
+  id              String   @id @default(uuid())
+  user_id         String
+  first_name      String
+  last_name       String
+  address         String
+  province        Int
+  city            Int
+  postal_code     Int
+  latitude        Int
+  longitude       Int
   is_main_address Boolean
-  created_at DateTime @default(now())
-  updated_at DateTime
+  created_at      DateTime @default(now())
+  updated_at      DateTime
 
-  userId User @relation(fields: [user_id], references: [id])
+  userId     User     @relation(fields: [user_id], references: [id])
   provinceId Province @relation(fields: [province], references: [id])
-  userCity City @relation(fields: [city], references: [id])
+  userCity   City     @relation(fields: [city], references: [id])
 
-  orders  Order[]
+  orders Order[]
 
   @@map("user_address")
 }
 
 model Province {
-  id Int @id
+  id            Int    @id
   province_name String
 
   userAddress UserAddress[]
-  cities City[]
+  cities      City[]
+  stores      Store[]
 
   @@map("province")
 }
 
 model City {
-  id Int @id
+  id         Int    @id
   provinceId Int
-  city_name String
-  type String
+  city_name  String
+  type       String
 
-  province Province @relation(fields: [provinceId], references: [id])
-  address UserAddress[]
+  province Province      @relation(fields: [provinceId], references: [id])
+  address  UserAddress[]
+  stores   Store[]
 
   @@map("city")
 }
 
 model Cart {
-  id        String  @id @default(uuid())
+  id String @id @default(uuid())
 
-  quantity  Int     @default(1)
+  productId String  @map("product_id")
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  storeId   String  @map("store_id")
+  store     Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  userId    String  @map("user_id")
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quantity Int @default(1)
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("carts")
 }
@@ -169,53 +178,242 @@ enum OrderStatus {
 }
 
 model Order {
-  id                  String      @id @default(uuid())
-  orderNumber         String      @unique @map("order_number")
+  id          String @id @default(uuid())
+  orderNumber String @unique @map("order_number")
 
-  subtotal            Decimal     @db.Decimal(10, 2)
-  discountAmount      Decimal     @default(0) @map("discount_amount") @db.Decimal(10, 2)
-  shippingCost        Decimal     @map("shipping_cost") @db.Decimal(10, 2)
-  shippingDiscount    Decimal     @default(0) @map("shipping_discount") @db.Decimal(10, 2)
-  totalAmount         Decimal     @map("total_amount") @db.Decimal(10, 2)
+  subtotal         Decimal @db.Decimal(10, 2)
+  discountAmount   Decimal @default(0) @map("discount_amount") @db.Decimal(10, 2)
+  shippingCost     Decimal @map("shipping_cost") @db.Decimal(10, 2)
+  shippingDiscount Decimal @default(0) @map("shipping_discount") @db.Decimal(10, 2)
+  totalAmount      Decimal @map("total_amount") @db.Decimal(10, 2)
 
-  estimatedDelivery   String?     @map("estimated_delivery")
+  estimatedDelivery String? @map("estimated_delivery")
 
-  voucherCodeUsed     String?     @map("voucher_code_used")
+  voucherCodeUsed String? @map("voucher_code_used")
 
-  status              OrderStatus
-  paymentProof        String?     @map("payment_proof")
+  status       OrderStatus
+  paymentProof String?     @map("payment_proof")
 
-  paymentConfirmedAt  DateTime?   @map("payment_confirmed_at")
-  shippedAt           DateTime?   @map("shipped_at")
-  confirmedAt         DateTime?   @map("confirmed_at")
-  cancelledAt         DateTime?   @map("cancelled_at")
-  cancellationReason  String?     @map("cancellation_reason")
+  paymentConfirmedAt DateTime? @map("payment_confirmed_at")
+  shippedAt          DateTime? @map("shipped_at")
+  confirmedAt        DateTime? @map("confirmed_at")
+  cancelledAt        DateTime? @map("cancelled_at")
+  cancellationReason String?   @map("cancellation_reason")
 
-  createdAt           DateTime    @default(now()) @map("created_at")
-  updatedAt           DateTime    @updatedAt @map("updated_at")
-  
-  userId              String      @map("user_id")
-  user                User        @relation(fields: [userId], references: [id], onDelete: Restrict)
-  userAddressId       String      @map("user_address_id")
-  userAddress         UserAddress @relation(fields: [userAddressId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  orderItems          OrderItem[]
+  userId        String      @map("user_id")
+  user          User        @relation(fields: [userId], references: [id], onDelete: Restrict)
+  userAddressId String      @map("user_address_id")
+  userAddress   UserAddress @relation(fields: [userAddressId], references: [id], onDelete: Restrict)
 
+  orderItems     OrderItem[]
+  discountUsages DiscountUsage[]
+
+  storeId String @map("store_id")
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Restrict)
+
+  @@index([storeId])
   @@map("orders")
 }
 
 model OrderItem {
-  id              String    @id @default(uuid())
+  id String @id @default(uuid())
 
-  orderId         String    @map("order_id")
-  order           Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String @map("order_id")
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  quantity        Int
-  price           Decimal   @db.Decimal(10, 2)
-  discountAmount  Decimal   @default(0) @map("discount_amount") @db.Decimal(10, 2)
-  subtotal        Decimal   @db.Decimal(10, 2)
+  productId String  @map("product_id")
+  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
 
-  createdAt       DateTime  @default(now()) @map("created_at")
+  quantity       Int
+  price          Decimal @db.Decimal(10, 2)
+  discountAmount Decimal @default(0) @map("discount_amount") @db.Decimal(10, 2)
+  subtotal       Decimal @db.Decimal(10, 2)
+
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@map("order_items")
+}
+
+enum DiscountType {
+  PERCENT
+  NOMINAL
+}
+
+enum DiscountRule {
+  MANUAL
+  MIN_PURCHASE
+  BOGO
+}
+
+enum StockAction {
+  IN
+  OUT
+}
+
+model Store {
+  id       String  @id @default(uuid())
+  name     String  @unique
+  isActive Boolean @default(true) @map("is_active")
+
+  address    String? @map("address") @db.Text
+  latitude   Float
+  longitude  Float
+  cityId     Int     @map("city_id")
+  provinceId Int     @map("province_id")
+  postalCode String? @map("postal_code")
+
+  city     City     @relation(fields: [cityId], references: [id], onDelete: Restrict)
+  province Province @relation(fields: [provinceId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  admins    StoreAdmin[]
+  products  ProductStock[]
+  orders    Order[]
+  discounts Discount[]
+  cart      Cart[]
+
+  @@index([cityId])
+  @@index([provinceId])
+  @@map("stores")
+}
+
+model StoreAdmin {
+  id String @id @default(uuid())
+
+  userId  String @unique @map("user_id")
+  storeId String @map("store_id")
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@map("store_admins")
+}
+
+model ProductCategory {
+  id   String @id @default(uuid())
+  name String @unique
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  products Product[]
+
+  @@map("product_categories")
+}
+
+model Product {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  description String?
+  price       Decimal @db.Decimal(10, 2)
+  isActive    Boolean @default(true)
+
+  categoryId String          @map("category_id")
+  category   ProductCategory @relation(fields: [categoryId], references: [id])
+
+  images    ProductImage[]
+  stocks    ProductStock[]
+  discounts Discount[]
+  cart      Cart[]
+  product   OrderItem[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("products")
+}
+
+model ProductImage {
+  id        String @id @default(uuid())
+  productId String @map("product_id")
+  imageUrl  String
+  imageKey  String
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("product_images")
+}
+
+model ProductStock {
+  id String @id @default(uuid())
+
+  productId String @map("product_id")
+  storeId   String @map("store_id")
+
+  quantity Int @default(0)
+
+  product Product @relation(fields: [productId], references: [id])
+  store   Store   @relation(fields: [storeId], references: [id])
+
+  journals StockJournal[]
+
+  @@unique([productId, storeId])
+  @@index([storeId])
+  @@index([productId])
+  @@map("product_stocks")
+}
+
+model StockJournal {
+  id             String @id @default(uuid())
+  productStockId String @map("product_stock_id")
+
+  action   StockAction
+  quantity Int
+  note     String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  productStock ProductStock @relation(fields: [productStockId], references: [id], onDelete: Cascade)
+
+  @@index([productStockId])
+  @@index([createdAt])
+  @@map("stock_journals")
+}
+
+model Discount {
+  id String @id @default(uuid())
+
+  storeId   String @map("store_id")
+  productId String @map("product_id")
+
+  type DiscountType
+  rule DiscountRule
+
+  value       Decimal
+  minPurchase Decimal?
+  maxDiscount Decimal?
+
+  startAt DateTime @map("start_at")
+  endAt   DateTime @map("end_at")
+
+  store   Store   @relation(fields: [storeId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  usages DiscountUsage[]
+
+  @@index([storeId])
+  @@index([productId])
+  @@index([startAt, endAt])
+  @@map("discounts")
+}
+
+model DiscountUsage {
+  id         String  @id @default(uuid())
+  discountId String  @map("discount_id")
+  orderId    String  @map("order_id")
+  amount     Decimal @db.Decimal(10, 2)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  discount Discount @relation(fields: [discountId], references: [id])
+  order    Order    @relation(fields: [orderId], references: [id])
+
+  @@unique([discountId, orderId])
+  @@index([orderId])
+  @@map("discount_usages")
 }
