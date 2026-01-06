@@ -247,6 +247,10 @@ model Store {
   name      String   @unique
   isActive  Boolean  @default(true) @map("is_active")
 
+  address   String?  @map("address")
+  city       String? @map("city")
+  province   String? @map("province")
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
