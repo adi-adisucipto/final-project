@@ -105,8 +105,8 @@ model UserAddress {
   first_name String
   last_name String
   address String
-  province String
-  city String
+  province Int
+  city Int
   postal_code Int
   latitude Int
   longitude Int
@@ -122,7 +122,7 @@ model UserAddress {
 }
 
 model Province {
-  id String @id @default(uuid())
+  id Int @id
   province_name String
 
   userAddress UserAddress[]
@@ -132,8 +132,8 @@ model Province {
 }
 
 model City {
-  id String @id @default(uuid())
-  provinceId String
+  id Int @id
+  provinceId Int
   city_name String
   type String
 

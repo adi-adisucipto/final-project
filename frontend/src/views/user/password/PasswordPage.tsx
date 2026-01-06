@@ -67,7 +67,7 @@ function PasswordPage() {
                             </div>
                         )}
                     </div>
-                        </label>
+                </label>
             </div>
 
             <div className="flex items-center mt-6 gap-2.5">
