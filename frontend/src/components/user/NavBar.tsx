@@ -51,7 +51,7 @@ function NavBar() {
                 })}
             </div>
 
-            <div className='xl:flex hidden gap-5'>
+            <div className='xl:flex md:flex hidden gap-5'>
                 {status !== 'authenticated' ? (
                     <div className='flex gap-5'>
                         <Link href={"/login"}><Button variant={"outline"} className='rounded-md'>Login</Button></Link>
@@ -69,7 +69,7 @@ function NavBar() {
             </div>
 
             <Drawer open={isOpen} onOpenChange={setIsOpen} direction='right'>
-                <DrawerTrigger asChild className='flex xl:hidden'>
+                <DrawerTrigger asChild className='flex xl:hidden md:hidden'>
                     <IconButton>
                         <Menu/>
                     </IconButton>
