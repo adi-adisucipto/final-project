@@ -15,7 +15,7 @@ function ExitDialog() {
   return (
     <AlertDialog>
       <AlertDialogTrigger className="flex gap-2.5 h-full cursor-pointer">
-        Logut
+        Logout
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
