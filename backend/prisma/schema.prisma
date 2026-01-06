@@ -203,13 +203,10 @@ model Order {
   orderItems          OrderItem[]
   discountUsages DiscountUsage[]
 
-
-  // added ini supaya bias dapet stock report gampang -felix
   storeId String @map("store_id")
   store   Store  @relation(fields: [storeId], references: [id], onDelete: Restrict)
   
   @@index([storeId])
-  //sampe sini
   @@map("orders")
 }
 
