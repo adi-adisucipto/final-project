@@ -108,12 +108,12 @@ model UserAddress {
   user_id         String
   first_name      String
   last_name       String
-  address         String
+  address         String @db.Text
   province        Int
   city            Int
-  postal_code     Int
-  latitude        Int
-  longitude       Int
+  postal_code     Int?
+  latitude        Float
+  longitude       Float
   is_main_address Boolean
   created_at      DateTime @default(now())
   updated_at      DateTime
