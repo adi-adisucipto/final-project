@@ -1,7 +1,6 @@
+import { RAJAONGKIR_KEY } from "../configs/env.config";
 import { prisma } from "../lib/prisma";
 import axios from "axios";
-
-const RAJAONGKIR_KEY = "hHInmmPoeec3d710d138884eM0TPdURz"
 
 export async function syncRajaOngkirProvincesService() {
     try {
@@ -44,6 +43,28 @@ export async function syncRajaOngkirCitiesService() {
             skipDuplicates: true,
         });
 
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function getProvincesServices() {
+    try {
+        const data = await prisma.province.findMany();
+
+        return data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function getCitesServices(provinceId: number) {
+    try {
+        const data = await prisma.city.findMany({
+            where: {provinceId: provinceId}
+        });
+
+        return data;
     } catch (error) {
         throw error;
     }
