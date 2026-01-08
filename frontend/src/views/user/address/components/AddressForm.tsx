@@ -5,13 +5,17 @@ import { useSession } from "next-auth/react";
 import DropDown from "./DropDown";
 import { useEffect, useState } from "react";
 import { SubmitProps, ProvinceItem, CitiesItem } from "../types/types";
-import { citiesService, provinceService } from "@/services/address.services";
+import { citiesService, provinceService, userAddress } from "@/services/address.services";
 import { Button } from "@/components/ui/button";
+import { Ring } from "react-css-spinners";
+import { enqueueSnackbar } from "notistack";
+import ConfirmDialog from "./ConfirmDialog";
 
 function AddressForm() {
     const { data: session, status, update } = useSession();
     const [provinces, setProvinces] = useState<ProvinceItem[]>([]);
     const [cities, setCities] = useState<CitiesItem[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
     
     const initialValues = {
         firstName: session?.user?.first_name || "",
@@ -45,17 +49,37 @@ function AddressForm() {
     }
 
     const handleSubmit = async (values: SubmitProps) => {
-        console.log(cities)
-    }
+        setIsLoading(true)
+        try {
+            const userId = session?.user?.id || ""
+            await userAddress(
+                values.firstName,
+                values.lastName,
+                values.provinceId,
+                values.cityId,
+                values.address,
+                values.mainAddress,
+                userId
+            );
 
-    console.log(cities)
+            enqueueSnackbar("Alamat berhasil ditambahkan", {variant: "success"});
+            setIsLoading(false);
+            values.address = '',
+            values.provinceId = 0;
+            values.cityId = 0;
+            values.mainAddress = false
+        } catch (error) {
+            console.log(error);
+            setIsLoading(false);
+        }
+    }
   return (
     <Formik
         initialValues={initialValues}
         onSubmit={handleSubmit}
         enableReinitialize={true}
     >
-        {({setFieldValue, values}) => {
+        {({setFieldValue, values, submitForm}) => {
             return (
                 <Form>
                     <div className="flex flex-col gap-1.25 mb-5">
@@ -112,9 +136,44 @@ function AddressForm() {
                         />
                     </div>
 
-                    
+                    <div className="mt-4 flex flex-col gap-2">
+                        <label className="text-[20px] font-semibold">Address</label>
+                        <Field
+                            as="textarea"
+                            name="address"
+                            rows="4"
+                            className={`h-30 w-full rounded-xl bg-[#F7FBFF] border border-[#D4D7E3] p-4 outline-0 ${!session?.user?.is_verified ? "text-black/50": ""}`}
+                            placeholder="Masukkan alamat lengkap termasuk Kecamatan"
+                        />
+                    </div>
 
-                    <Button type="submit" className="mt-5 rounded-md">Submit</Button>
+                    <label className="mt-4 flex gap-2 items-center font-medium">
+                        <Field
+                            type="checkbox"
+                            name="mainAddress"
+                            className="w-5 h-5"
+                        />
+                        This is your main address?
+                    </label>
+
+                    <div className="mt-5">
+                        <ConfirmDialog
+                            onConfirm={submitForm}
+                            trigger={
+                                <Button 
+                                    type="button"
+                                    className="rounded-md" 
+                                    disabled={isLoading}
+                                >
+                                    {!isLoading ? (<span>Submit Address</span>) : (
+                                        <div className="h-full w-full flex justify-center items-center">
+                                            <Ring size={17} thickness={3} color="#FFFFFF"/>
+                                        </div>
+                                    )}
+                                </Button>
+                            }
+                        />
+                    </div>
                 </Form>
             )
         }}

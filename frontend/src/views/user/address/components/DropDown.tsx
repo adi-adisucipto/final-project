@@ -58,7 +58,7 @@ function DropDown<T extends Record<string, any>>({
             <div className="flex justify-between items-center w-full transition-all duration-200">
                 <div>
                     {!seletedItem ? (
-                        <p className="text-gray-500 italic">{placeholder}</p>
+                        <p className="text-gray-400 italic">{placeholder}</p>
                     ) : (
                         <div>{seletedItem[labelKey]}</div>
                     )}
