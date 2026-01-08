@@ -57,7 +57,7 @@ function Hero() {
                     {slides[current].description}
                 </p>
                 
-                <Button className="font-semibold">
+                <Button className="rounded-md">
                     {slides[current].button}
                 </Button>
                 </motion.div>

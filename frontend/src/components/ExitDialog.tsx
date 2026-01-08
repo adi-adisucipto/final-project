@@ -24,8 +24,8 @@ function ExitDialog() {
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
-          <AlertDialogAction className="bg-red-500 hover:bg-red-400" onClick={() => signOut()}>Continue</AlertDialogAction>
+          <AlertDialogCancel className="cursor-pointer rounded-md">Cancel</AlertDialogCancel>
+          <AlertDialogAction className="bg-red-500 hover:bg-red-400 rounded-md" onClick={() => signOut()}>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
