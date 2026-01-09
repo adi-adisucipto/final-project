@@ -111,7 +111,7 @@ model UserAddress {
   address         String @db.Text
   province        Int
   city            Int
-  postal_code     Int?
+  postal_code     String?
   latitude        Float
   longitude       Float
   is_main_address Boolean

@@ -17,3 +17,13 @@ export interface CitiesItem {
     provinceId: number;
     city_name: string;
 }
+
+export interface AddressProps {
+  id: "",
+  first_name: string,
+  last_name: string,
+  provinceId: number,
+  cityId: number,
+  address: string,
+  mainAddress: boolean
+}
