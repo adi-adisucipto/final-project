@@ -73,13 +73,36 @@ export async function getCitesServices(provinceId: number) {
     }
 }
 
-export async function userAddressService(firstName:string, lastName:string, provinceId:number, cityId:number, address:string, mainAddress:boolean, userId:string) {
+export async function getAddressService(userId: string) {
     try {
         const addressUser = await prisma.userAddress.findMany({
-            where: {address: address}
+            where: {user_id: userId}
         });
-        if(addressUser) throw createCustomError(200, "Alamat sudah ada!");
-        
+
+        return addressUser
+    } catch (error) {
+        throw error
+    }
+}
+
+export async function getAddressByIdService(addressId: string) {
+    try {
+        const data = await prisma.userAddress.findUnique({
+            where: {id: addressId},
+            include: {
+                userCity: true,
+                provinceId: true
+            }
+        });
+
+        return data
+    } catch (error) {
+        throw error
+    }
+}
+
+export async function userAddressService(firstName:string, lastName:string, provinceId:number, cityId:number, address:string, mainAddress:boolean, userId:string) {
+    try {
         const cityName = await prisma.city.findUnique({
             where: {id: cityId}
         });
@@ -90,9 +113,7 @@ export async function userAddressService(firstName:string, lastName:string, prov
         });
         if(!provinceName) throw createCustomError(404, "Provinsi tidak ditemukan");
 
-        const isFirstAddress = await prisma.userAddress.findMany({
-            where: {user_id: userId}
-        });
+        const isFirstAddress = await getAddressService(userId);
         if(isFirstAddress.length === 0) mainAddress = true
 
         const fullAddress = `${address}, ${cityName.city_name}, ${provinceName.province_name}, Indonesia`;
@@ -139,5 +160,19 @@ export async function userAddressService(firstName:string, lastName:string, prov
         }
     } catch (error) {
         throw error;
+    }
+}
+
+export async function deleteAddressService(addressId: string) {
+    try {
+        const addressUser = await prisma.userAddress.delete({
+            where: {id: addressId}
+        })
+
+        return {
+            message: "Alamat berhasil dihapus"
+        }
+    } catch (error) {
+        throw error
     }
 }
