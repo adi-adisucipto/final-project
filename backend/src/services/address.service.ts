@@ -163,10 +163,28 @@ export async function userAddressService(firstName:string, lastName:string, prov
     }
 }
 
-export async function deleteAddressService(addressId: string) {
+export async function deleteAddressService(addressId: string, userId: string) {
     try {
-        const addressUser = await prisma.userAddress.delete({
-            where: {id: addressId}
+        const mainAddress = await getAddressByIdService(addressId);
+        await prisma.$transaction(async (tx:Prisma.TransactionClient) => {
+            await tx.userAddress.delete({
+                where: {id: addressId}
+            });
+
+            if(mainAddress?.is_main_address) {
+                const address = await getAddressService(userId);
+                if(address.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * address.length);
+                    const newMainAddress = address[randomIndex];
+
+                    await tx.userAddress.update({
+                        where: {id: newMainAddress.id},
+                        data: {
+                            is_main_address: true
+                        }
+                    })
+                }
+            }
         })
 
         return {

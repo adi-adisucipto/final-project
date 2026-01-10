@@ -62,7 +62,6 @@ function AddressForm({ onSuccess, initialData, isEdit = false }: AddressFormProp
     const handleSubmit = async (values: SubmitProps) => {
         setIsLoading(true)
         try {
-            const userId = session?.user?.id || ""
             if(isEdit && initialData?.id) {
                 await updateAddres(
                     initialData.id,
@@ -72,6 +71,7 @@ function AddressForm({ onSuccess, initialData, isEdit = false }: AddressFormProp
                     values.cityId,
                     values.address,
                     values.mainAddress,
+                    session?.accessToken!
                 )
                 enqueueSnackbar("Alamat berhasil diperbarui", {variant: "success"});
             } else {
@@ -82,7 +82,7 @@ function AddressForm({ onSuccess, initialData, isEdit = false }: AddressFormProp
                     values.cityId,
                     values.address,
                     values.mainAddress,
-                    userId
+                    session?.accessToken!
                 );
                 enqueueSnackbar("Alamat berhasil ditambahkan", {variant: "success"});
             }

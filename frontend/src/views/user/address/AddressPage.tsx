@@ -40,7 +40,7 @@ function AddressPage() {
 
   const handelDelete = async (addressId:string) => {
     try {
-      const { message } = await deleteAddress(addressId);
+      const { message } = await deleteAddress(addressId, session?.accessToken!);
 
       enqueueSnackbar(message, {variant: "success"})
     } catch (error) {
@@ -50,7 +50,7 @@ function AddressPage() {
 
   const handelAddress = async (addressId:string) => {
     try {
-      const {data} = await getAddressById(addressId);
+      const {data} = await getAddressById(addressId, session?.accessToken!);
       setInitialData(data);
       setIsModalOpen(true);
     } catch (error) {
