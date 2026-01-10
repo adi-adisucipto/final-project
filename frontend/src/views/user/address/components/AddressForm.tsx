@@ -4,26 +4,32 @@ import { Field, Form, Formik } from "formik"
 import { useSession } from "next-auth/react";
 import DropDown from "./DropDown";
 import { useEffect, useState } from "react";
-import { SubmitProps, ProvinceItem, CitiesItem } from "../types/types";
+import { SubmitProps, ProvinceItem, CitiesItem, AddressProps } from "../types/types";
 import { citiesService, provinceService, userAddress } from "@/services/address.services";
 import { Button } from "@/components/ui/button";
 import { Ring } from "react-css-spinners";
 import { enqueueSnackbar } from "notistack";
 import ConfirmDialog from "./ConfirmDialog";
 
-function AddressForm() {
+interface AddressFormProps {
+    onSuccess: () => void;
+    initialData?: AddressProps
+    isEdit?: boolean
+}
+
+function AddressForm({ onSuccess, initialData, isEdit = false }: AddressFormProps) {
     const { data: session, status, update } = useSession();
     const [provinces, setProvinces] = useState<ProvinceItem[]>([]);
     const [cities, setCities] = useState<CitiesItem[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    
+
     const initialValues = {
-        firstName: session?.user?.first_name || "",
-        lastName: session?.user?.last_name || "",
-        provinceId: 0,
-        cityId: 0,
-        address: "",
-        mainAddress: false
+        firstName: isEdit && initialData ? initialData.first_name : (session?.user?.first_name || ""),
+        lastName: isEdit && initialData ? initialData.last_name : (session?.user?.last_name || ""),
+        provinceId: isEdit && initialData ? initialData.provinceId : 0,
+        cityId: isEdit && initialData ? initialData.cityId : 0,
+        address: isEdit && initialData ? initialData.address : "",
+        mainAddress: isEdit && initialData ? initialData.mainAddress : false
     }
 
     useEffect(() => {
@@ -33,7 +39,7 @@ function AddressForm() {
 
                 setProvinces(data);
             } catch (error) {
-                
+                console.log(error)
             }
         }
         provinces();
@@ -67,7 +73,8 @@ function AddressForm() {
             values.address = '',
             values.provinceId = 0;
             values.cityId = 0;
-            values.mainAddress = false
+            values.mainAddress = false;
+            onSuccess();
         } catch (error) {
             console.log(error);
             setIsLoading(false);
@@ -82,11 +89,6 @@ function AddressForm() {
         {({setFieldValue, values, submitForm}) => {
             return (
                 <Form>
-                    <div className="flex flex-col gap-1.25 mb-5">
-                        <h3 className="text-[24px] font-semibold">Add New Address</h3>
-                        <hr />
-                    </div>
-
                     <div className="flex flex-col xl:flex-row xl:gap-5 gap-6 w-full">
                         <div className="flex flex-col gap-2 xl:w-[50%]">
                             <label className="text-[20px] font-semibold">First Name</label>
@@ -172,6 +174,8 @@ function AddressForm() {
                                     )}
                                 </Button>
                             }
+                            action="Save Address"
+                            cancel="Cancel"
                         />
                     </div>
                 </Form>

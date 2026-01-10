@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { getCitesServices, getProvincesServices, syncRajaOngkirCitiesService, syncRajaOngkirProvincesService, userAddressService } from "../services/address.service";
+import { deleteAddressService, getAddressByIdService, getAddressService, getCitesServices, getProvincesServices, syncRajaOngkirCitiesService, syncRajaOngkirProvincesService, userAddressService } from "../services/address.service";
 
 export async function syncRajaOngkirProvincesController(req: Request, res: Response, next: NextFunction) {
     try {
@@ -50,6 +50,19 @@ export async function getCitiesController(req:Request, res:Response, next:NextFu
     }
 }
 
+export async function getAddressController(req:Request, res:Response, next:NextFunction) {
+    try {
+        const { userId } = req.body;
+        const data = await getAddressService(userId);
+
+        res.status(200).json({
+            data
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
 export async function userAddressController(req:Request, res:Response, next:NextFunction) {
     try {
         const { firstName, lastName, provinceId, cityId, address, mainAddress, userId } = req.body;
@@ -59,6 +72,32 @@ export async function userAddressController(req:Request, res:Response, next:Next
         res.status(200).json({
             data
         })
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function deleteAddressController(req:Request, res:Response, next:NextFunction) {
+    try {
+        const { addressId } = req.body;
+        const { message } = await deleteAddressService(addressId);
+
+        res.status(200).json({
+            message: message
+        })
+    } catch (error) {
+        
+    }
+}
+
+export async function getAddressByIdController(req:Request, res:Response, next:NextFunction) {
+    try {
+        const { addressId } = req.body;
+        const data = await getAddressByIdService(addressId);
+
+        res.json({
+            data
+        });
     } catch (error) {
         next(error);
     }
