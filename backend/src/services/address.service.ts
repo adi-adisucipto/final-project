@@ -176,3 +176,46 @@ export async function deleteAddressService(addressId: string) {
         throw error
     }
 }
+
+export async function updateAddressService(addressId: string, firstName:string, lastName:string, provinceId:number, cityId:number, address:string, mainAddress:boolean) {
+    try {
+        const userAddress = await prisma.userAddress.findUnique({
+            where: {id: addressId},
+        });
+        if(!userAddress) throw createCustomError(404, "Address not found!");
+
+        const cityName = await prisma.city.findUnique({
+            where: {id: cityId}
+        });
+        if(!cityName) throw createCustomError(404, "City not found");
+
+        const provinceName = await prisma.province.findUnique({
+            where: {id: provinceId}
+        });
+        if(!provinceName) throw createCustomError(404, "Province not found");
+
+        const fullAddress = `${address}, ${cityName.city_name}, ${provinceName.province_name}, Indonesia`;
+        let coordinates = await getCoordinates(fullAddress);
+        if(!coordinates) throw createCustomError(404, "Coordinates not found");
+
+        await prisma.$transaction(async (tx:Prisma.TransactionClient) => {
+            await tx.userAddress.update({
+                where: {id: addressId},
+                data: {
+                    first_name: firstName,
+                    last_name: lastName,
+                    address: address,
+                    province: provinceId,
+                    city: cityId,
+                    postal_code: coordinates.postalCode,
+                    latitude: coordinates.latitude,
+                    longitude: coordinates.longitude,
+                    is_main_address: mainAddress,
+                    updated_at: new Date()
+                }
+            })
+        })
+    } catch (error) {
+        throw error;
+    }
+}

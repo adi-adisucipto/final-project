@@ -138,7 +138,7 @@ export async function createTokens(email:string) {
             avatar: user.avatar
         }
 
-        const accessToken = sign(payload, SECRET_KEY_ACCESS, {expiresIn: "5m"});
+        const accessToken = sign(payload, SECRET_KEY_ACCESS, {expiresIn: "1m"});
         const refreshToken = sign(payload, SECRET_KEY_REFRESH, {expiresIn: "30d"});
 
         return {
@@ -200,22 +200,20 @@ export async function refreshTokensService(token:string) {
         const exp = new Date();
         exp.setDate(exp.getDate() + 30);
 
-        await prisma.$transaction(async(tx: Prisma.TransactionClient) => {
-            await tx.refreshToken.deleteMany({
-                where: {token: token}
-            });
-            await tx.refreshToken.create({
-                data: {
-                user_id: findEmail.id,
-                token: tokens.refreshToken,
-                expires_at: exp
-            }
-            })
-        });
+        // await prisma.$transaction(async(tx: Prisma.TransactionClient) => {
+        //     await tx.refreshToken.update({
+        //         where: {token: token},
+        //         data: {
+        //             user_id: findEmail.id,
+        //             token: tokens.refreshToken,
+        //             expires_at: exp
+        //         }
+        //     })
+        // });
 
         return {
             accessToken: tokens.accessToken,
-            refreshToken: tokens.refreshToken
+            refreshToken: token
         }
     } catch (error) {
         throw error;

@@ -51,8 +51,6 @@ function AddressPage() {
   const handelAddress = async (addressId:string) => {
     try {
       const {data} = await getAddressById(addressId);
-      console.log(data);
-
       setInitialData(data);
       setIsModalOpen(true);
     } catch (error) {
@@ -69,7 +67,7 @@ function AddressPage() {
               <div className='flex justify-between items-center'>
                 <h2 className='text-[24px] font-semibold flex items-center gap-2'>
                   {`${item.first_name} ${item.last_name}`}
-                  <div>{item.mainAddress && (
+                  <div>{item.is_main_address && (
                     <div className='bg-green-100 text-[10px] text-green-500 font-medium py-1 px-2 rounded-xl w-25 flex justify-center items-center'>
                       Main Address
                     </div>
@@ -122,18 +120,18 @@ function AddressPage() {
 
         {isModalOpen && initialData && (
           <EditDialog
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          initialData={initialData}
-        />
-        )}
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            initialData={initialData}
+          />
+          )}
       </div>
 
       <div className="flex flex-col gap-1.25 mb-5">
         <h3 className="text-[24px] font-semibold">Add New Address</h3>
         <hr />
       </div>
-      <AddressForm onSuccess={handleAddressAdded} isEdit/>
+      <AddressForm onSuccess={handleAddressAdded}/>
     </div>
   )
 }
