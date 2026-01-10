@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { deleteAddressService, getAddressByIdService, getAddressService, getCitesServices, getProvincesServices, syncRajaOngkirCitiesService, syncRajaOngkirProvincesService, userAddressService } from "../services/address.service";
+import { deleteAddressService, getAddressByIdService, getAddressService, getCitesServices, getProvincesServices, syncRajaOngkirCitiesService, syncRajaOngkirProvincesService, updateAddressService, userAddressService } from "../services/address.service";
 
 export async function syncRajaOngkirProvincesController(req: Request, res: Response, next: NextFunction) {
     try {
@@ -98,6 +98,20 @@ export async function getAddressByIdController(req:Request, res:Response, next:N
         res.json({
             data
         });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function updateAddressController(req:Request, res:Response, next:NextFunction) {
+    try {
+        const { addressId, firstName, lastName, provinceId, cityId, address, mainAddress } = req.body;
+
+        const data = await updateAddressService(addressId, firstName, lastName, provinceId, cityId, address, mainAddress);
+
+        res.status(200).json({
+            data
+        })
     } catch (error) {
         next(error);
     }

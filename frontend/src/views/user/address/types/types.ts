@@ -19,11 +19,13 @@ export interface CitiesItem {
 }
 
 export interface AddressProps {
-  id: "",
+  id: string,
   first_name: string,
   last_name: string,
-  provinceId: number,
-  cityId: number,
+  province: number,
+  city: number,
   address: string,
-  mainAddress: boolean
+  is_main_address: boolean,
+  provinceId: {id: number, province_name:string},
+  userCity: {id: number, city_name:string}
 }

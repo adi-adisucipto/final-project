@@ -16,6 +16,8 @@ async function refreshAccessToken(token:JWT) {
         const { accessToken, refreshToken } = data;
         const decode = jwtDecode<DecodedToken>(accessToken);
 
+        console.log("berhasil")
+
         return {
             ...token,
             id: decode.id,
@@ -32,6 +34,7 @@ async function refreshAccessToken(token:JWT) {
             error: null
         }
     } catch (error) {
+        console.log(error);
         return {
             ...token,
             error: "RefreshTokenError"
@@ -44,7 +47,8 @@ const handler = NextAuth({
         signIn: "/login"
     },
     session: {
-        strategy: "jwt"
+        strategy: "jwt",
+        maxAge: 30 * 24 * 60 * 60,
     },
     providers: [
         Credentials({
@@ -148,7 +152,7 @@ const handler = NextAuth({
             }
 
             if (token?.accessToken) {
-                const isExpired = (token.exp as number) * 1000 < Date.now();
+                const isExpired = (token.exp as number) * (1000 - 30000) < Date.now();
                 if (!isExpired) return token;
                 
                 console.log("Token expired, refreshing...");

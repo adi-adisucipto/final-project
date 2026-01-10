@@ -29,7 +29,6 @@ export function authMiddleware(req:Request, res:Response, next:NextFunction) {
         }
 
         const token = authHeader.split(" ")[1];
-        console.log(token)
         const decode = verify(token, SECRET_KEY_ACCESS) as Token;
 
         req.user = decode as Token;
