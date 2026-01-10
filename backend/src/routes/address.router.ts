@@ -7,6 +7,9 @@ const addressRouter = Router();
 addressRouter.get("/provinces", getProvincesController);
 addressRouter.post("/cities", getCitiesController);
 addressRouter.post("/address", getAddressController);
+
+addressRouter.use(authMiddleware)
+
 addressRouter.post('/address-id', getAddressByIdController);
 addressRouter.post("/user-address", userAddressController);
 addressRouter.post("/delete-address", deleteAddressController);
