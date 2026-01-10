@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import Spinner from "@/components/ui/Spinner";
 import { Field, Form, Formik } from "formik"
 import { Eye, EyeClosed } from "lucide-react";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -43,7 +43,9 @@ function LoginForm() {
 
             if(tokens?.ok) {
                 enqueueSnackbar("Login success", {variant: "success"});
-                router.push("/")
+                const session = await getSession();
+                const role = session?.user?.role;
+                router.push(role === "super" ? "/admin" : "/")
             } else {
                 enqueueSnackbar("Email or password invalid", {variant: "error"})
             }
