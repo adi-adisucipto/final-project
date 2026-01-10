@@ -16,11 +16,6 @@ import { cn } from "@/lib/utils"
 
 const adminLinks = [
   {
-    label: "Dashboard",
-    href: "/admin",
-    icon: LayoutGrid,
-  },
-  {
     label: "User Data",
     href: "/admin/users",
     icon: Users,
