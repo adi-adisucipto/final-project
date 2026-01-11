@@ -29,6 +29,10 @@ async function refreshAccessToken(token:JWT) {
             exp: decode.exp,
             accessToken: accessToken,
             refreshToken: refreshToken,
+            isStoreAdmin: decode.isStoreAdmin,
+            storeAdminId: decode.storeAdminId,
+            storeId: decode.storeId,
+            storeName: decode.storeName,
             error: null
         }
     } catch (error) {
@@ -72,7 +76,11 @@ const handler = NextAuth({
                         avatar: decode.avatar,
                         exp: decode.exp,
                         accessToken: accessToken,
-                        refreshToken: refreshToken
+                        refreshToken: refreshToken,
+                        isStoreAdmin: decode.isStoreAdmin,
+                        storeAdminId: decode.storeAdminId,
+                        storeId: decode.storeId,
+                        storeName: decode.storeName
                     }
                 } catch (error) {
                     if(error instanceof AxiosError) {
@@ -110,6 +118,10 @@ const handler = NextAuth({
                     exp: user.exp,
                     accessToken: user.accessToken,
                     refreshToken: user.refreshToken,
+                    isStoreAdmin: user.isStoreAdmin,
+                    storeAdminId: user.storeAdminId,
+                    storeId: user.storeId,
+                    storeName: user.storeName,
                     error: null
                 }
             }
@@ -133,6 +145,10 @@ const handler = NextAuth({
                         exp: decode.exp,
                         accessToken: accessToken,
                         refreshToken: refreshToken,
+                        isStoreAdmin: decode.isStoreAdmin,
+                        storeAdminId: decode.storeAdminId,
+                        storeId: decode.storeId,
+                        storeName: decode.storeName,
                         error: null
                     }
                 } catch (error) {
@@ -179,7 +195,11 @@ const handler = NextAuth({
                     first_name: token.first_name,
                     last_name: token.last_name,
                     avatar: token.avatar,
-                    exp: token.exp
+                    exp: token.exp,
+                    isStoreAdmin: token.isStoreAdmin,
+                    storeAdminId: token.storeAdminId,
+                    storeId: token.storeId,
+                    storeName: token.storeName
                 },
                 accessToken: token.accessToken,
                 error: null

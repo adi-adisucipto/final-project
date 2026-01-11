@@ -10,7 +10,20 @@ import { genSaltSync, hashSync, compareSync } from "bcrypt";
 
 export async function checkEmail(email:string) {
     const user = await prisma.user.findUnique({
-        where: {email: email}
+        where: {email: email},
+        include: {
+            storeAdmin: {
+                include: {
+                    store: {
+                        select: {
+                            id: true,
+                            name: true,
+                            isActive: true
+                        }
+                    }
+                }
+            }
+        }
     });
 
     return user
@@ -135,7 +148,11 @@ export async function createTokens(email:string) {
             referral_code: user.referral_code,
             first_name: user.first_name,
             last_name: user.last_name,
-            avatar: user.avatar
+            avatar: user.avatar,
+            isStoreAdmin: !!user.storeAdmin,
+            storeAdminId: user.storeAdmin?.id || null,
+            storeId: user.storeAdmin?.storeId || null,
+            storeName: user.storeAdmin?.store?.name || null
         }
 
         const accessToken = sign(payload, SECRET_KEY_ACCESS, {expiresIn: "5m"});
@@ -239,13 +256,14 @@ export async function googleLoginService(email:string) {
 
             await createRegisTokenService(email);
 
-            user = await prisma.user.create({
+            await prisma.user.create({
                 data: {
-                    email: email,
+                    email,
                     referral_code: referralCode,
                     updated_at: new Date()
                 }
             });
+            user = await checkEmail(email);
         }
 
         if(!user) throw createCustomError(404, "User not found!")

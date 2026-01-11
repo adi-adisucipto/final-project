@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import router from "./routes";
 import errorMiddleware from "./middlewares/error.middleware";
+import storeAdminOrderRoute from "./routes/storeAdmin.orders.route"
 
 const PORT = 8000
 
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
+app.use("/api/store-admin/orders", storeAdminOrderRoute);
 
 app.use(errorMiddleware);
 

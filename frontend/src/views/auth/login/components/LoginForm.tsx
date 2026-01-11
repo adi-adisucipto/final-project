@@ -44,12 +44,33 @@ function LoginForm() {
             if(tokens?.ok) {
                 enqueueSnackbar("Login success", {variant: "success"});
                 const session = await getSession();
-                const role = session?.user?.role;
-                router.push(role === "super" ? "/admin" : "/")
+
+                if (!session?.user) {
+                    throw new Error("Failed to get user session")
+                }
+                console.log("Session user:", session.user); // Debug
+            
+                const { role, isStoreAdmin, storeAdminId } = session.user;
+                 if (role === "super") {
+                router.push("/admin");
+                } else if (role === "admin") {
+                // ✅ FIX: Check isStoreAdmin OR storeAdminId
+                if (isStoreAdmin || storeAdminId) {
+                    router.push("/storeadmin");
+                } else {
+                    enqueueSnackbar("You are not assigned to any store. Please contact support.", {variant: "error"});
+                    router.push("/");
+                }
+            } else if (role === "user") {
+                router.push("/");
             } else {
-                enqueueSnackbar("Email or password invalid", {variant: "error"})
+                enqueueSnackbar("Your account is not properly configured. Please contact support.", {variant: "error"});
+                router.push("/");
             }
-            setLoading(false);
+        } else {
+            enqueueSnackbar("Email or password invalid", {variant: "error"})
+        }
+        setLoading(false);
         } catch (error) {
             console.log(error);
             setLoading(false);
