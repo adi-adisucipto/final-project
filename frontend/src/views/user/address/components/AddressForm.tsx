@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import DropDown from "./DropDown";
 import { useEffect, useState } from "react";
 import { SubmitProps, ProvinceItem, CitiesItem, AddressProps } from "../types/types";
-import { citiesService, provinceService, userAddress } from "@/services/address.services";
+import { citiesService, provinceService, updateAddres, userAddress } from "@/services/address.services";
 import { Button } from "@/components/ui/button";
 import { Ring } from "react-css-spinners";
 import { enqueueSnackbar } from "notistack";
@@ -13,8 +13,8 @@ import ConfirmDialog from "./ConfirmDialog";
 
 interface AddressFormProps {
     onSuccess: () => void;
-    initialData?: AddressProps
-    isEdit?: boolean
+    initialData?: AddressProps;
+    isEdit?:boolean;
 }
 
 function AddressForm({ onSuccess, initialData, isEdit = false }: AddressFormProps) {
@@ -26,17 +26,16 @@ function AddressForm({ onSuccess, initialData, isEdit = false }: AddressFormProp
     const initialValues = {
         firstName: isEdit && initialData ? initialData.first_name : (session?.user?.first_name || ""),
         lastName: isEdit && initialData ? initialData.last_name : (session?.user?.last_name || ""),
-        provinceId: isEdit && initialData ? initialData.provinceId : 0,
-        cityId: isEdit && initialData ? initialData.cityId : 0,
+        provinceId: isEdit && initialData ? initialData.province : 0,
+        cityId: isEdit && initialData ? initialData.city : 0,
         address: isEdit && initialData ? initialData.address : "",
-        mainAddress: isEdit && initialData ? initialData.mainAddress : false
+        mainAddress: isEdit && initialData ? initialData.is_main_address : false
     }
 
     useEffect(() => {
         const provinces = async () => {
             try {
                 const { data } = await provinceService();
-
                 setProvinces(data);
             } catch (error) {
                 console.log(error)
@@ -44,6 +43,12 @@ function AddressForm({ onSuccess, initialData, isEdit = false }: AddressFormProp
         }
         provinces();
     }, []);
+
+    useEffect(() => {
+        if(isEdit && initialData?.province) {
+            getCitiesByProvinces(initialData.province);
+        }
+    }, [isEdit, initialData]);
 
     const getCitiesByProvinces = async (provinceId: number) => {
         try {
@@ -57,23 +62,37 @@ function AddressForm({ onSuccess, initialData, isEdit = false }: AddressFormProp
     const handleSubmit = async (values: SubmitProps) => {
         setIsLoading(true)
         try {
-            const userId = session?.user?.id || ""
-            await userAddress(
-                values.firstName,
-                values.lastName,
-                values.provinceId,
-                values.cityId,
-                values.address,
-                values.mainAddress,
-                userId
-            );
-
-            enqueueSnackbar("Alamat berhasil ditambahkan", {variant: "success"});
+            if(isEdit && initialData?.id) {
+                await updateAddres(
+                    initialData.id,
+                    values.firstName,
+                    values.lastName,
+                    values.provinceId,
+                    values.cityId,
+                    values.address,
+                    values.mainAddress,
+                    session?.accessToken!
+                )
+                enqueueSnackbar("Alamat berhasil diperbarui", {variant: "success"});
+            } else {
+                await userAddress(
+                    values.firstName,
+                    values.lastName,
+                    values.provinceId,
+                    values.cityId,
+                    values.address,
+                    values.mainAddress,
+                    session?.accessToken!
+                );
+                enqueueSnackbar("Alamat berhasil ditambahkan", {variant: "success"});
+            }
             setIsLoading(false);
-            values.address = '',
-            values.provinceId = 0;
-            values.cityId = 0;
-            values.mainAddress = false;
+            if(!isEdit) {
+                values.address = '',
+                values.provinceId = 0;
+                values.cityId = 0;
+                values.mainAddress = false;
+            }
             onSuccess();
         } catch (error) {
             console.log(error);

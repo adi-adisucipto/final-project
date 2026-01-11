@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { deleteAddressService, getAddressByIdService, getAddressService, getCitesServices, getProvincesServices, syncRajaOngkirCitiesService, syncRajaOngkirProvincesService, userAddressService } from "../services/address.service";
+import { deleteAddressService, getAddressByIdService, getAddressService, getCitesServices, getProvincesServices, syncRajaOngkirCitiesService, syncRajaOngkirProvincesService, updateAddressService, userAddressService } from "../services/address.service";
+import { createCustomError } from "../utils/customError";
 
 export async function syncRajaOngkirProvincesController(req: Request, res: Response, next: NextFunction) {
     try {
@@ -65,7 +66,9 @@ export async function getAddressController(req:Request, res:Response, next:NextF
 
 export async function userAddressController(req:Request, res:Response, next:NextFunction) {
     try {
-        const { firstName, lastName, provinceId, cityId, address, mainAddress, userId } = req.body;
+        const { firstName, lastName, provinceId, cityId, address, mainAddress } = req.body;
+        const userId = req.user?.id
+        if(!userId) throw createCustomError(404, "user not found")
 
         const data = await userAddressService(firstName, lastName, provinceId, cityId, address, mainAddress, userId);
 
@@ -80,7 +83,8 @@ export async function userAddressController(req:Request, res:Response, next:Next
 export async function deleteAddressController(req:Request, res:Response, next:NextFunction) {
     try {
         const { addressId } = req.body;
-        const { message } = await deleteAddressService(addressId);
+        const userId = req.user?.id!
+        const { message } = await deleteAddressService(addressId, userId);
 
         res.status(200).json({
             message: message
@@ -98,6 +102,20 @@ export async function getAddressByIdController(req:Request, res:Response, next:N
         res.json({
             data
         });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function updateAddressController(req:Request, res:Response, next:NextFunction) {
+    try {
+        const { addressId, firstName, lastName, provinceId, cityId, address, mainAddress } = req.body;
+
+        const data = await updateAddressService(addressId, firstName, lastName, provinceId, cityId, address, mainAddress);
+
+        res.status(200).json({
+            data
+        })
     } catch (error) {
         next(error);
     }
