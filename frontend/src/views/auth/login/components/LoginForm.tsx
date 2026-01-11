@@ -48,13 +48,11 @@ function LoginForm() {
                 if (!session?.user) {
                     throw new Error("Failed to get user session")
                 }
-                console.log("Session user:", session.user); // Debug
             
                 const { role, isStoreAdmin, storeAdminId } = session.user;
                  if (role === "super") {
                 router.push("/admin");
                 } else if (role === "admin") {
-                // ✅ FIX: Check isStoreAdmin OR storeAdminId
                 if (isStoreAdmin || storeAdminId) {
                     router.push("/storeadmin");
                 } else {
