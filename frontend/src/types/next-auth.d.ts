@@ -14,6 +14,10 @@ declare module "next-auth" {
         exp: number;
         accessToken: string;
         refreshToken: string;
+        isStoreAdmin?: boolean;
+        storeAdminId?: string | null;
+        storeId?: string | null;
+        storeName?: string | null;
     }
 
     interface Session extends DefaultSession {
@@ -39,5 +43,9 @@ declare module "next-auth/jwt" {
         accessToken: string;
         refreshToken: string;
         error: string | null;
+        isStoreAdmin?: boolean;
+        storeAdminId?: string | null;
+        storeId?: string | null;
+        storeName?: string | null;
     }
 }
