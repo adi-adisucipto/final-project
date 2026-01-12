@@ -200,6 +200,13 @@ export async function refreshTokensService(token:string) {
         const exp = new Date();
         exp.setDate(exp.getDate() + 30);
 
+        await prisma.refreshToken.update({
+            where: {token: token},
+            data: {
+                expires_at: exp
+            }
+        })
+
         return {
             accessToken: tokens.accessToken,
             refreshToken: token
