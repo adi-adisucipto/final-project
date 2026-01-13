@@ -3,12 +3,10 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { enqueueSnackbar } from "notistack";
-import OrderFilter from "@/components/OrderFilter";
-import OrderCard from "@/components/OrderCard";
-import Spinner from "@/components/ui/Spinner";
 import { getErrorMessage } from "@/lib/error-handler";
 import { api } from "@/lib/storeAdmin-links";
 import { Order } from "@/types/order";
+import OrdersTable from "../components/OrdersTable";
 
 interface OrdersResponse {
   success: boolean;
@@ -32,6 +30,8 @@ export default function StoreAdminDashboard() {
     total: 0,
     totalPages: 0,
   });
+  const [approvingId, setApprovingId] = useState<string | null>(null);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchOrders();
@@ -68,6 +68,7 @@ export default function StoreAdminDashboard() {
   };
 
   const handleApprove = async (orderId: string) => {
+    setApprovingId(orderId);
     try {
       const response = await api.patch<{ success: boolean; message: string }>(
         `/store-admin/orders/${orderId}/approve`
@@ -83,7 +84,8 @@ export default function StoreAdminDashboard() {
       enqueueSnackbar(getErrorMessage(error), {
         variant: "error",
       });
-      throw error;
+    } finally {
+      setApprovingId(null);
     }
   };
 
@@ -92,9 +94,10 @@ export default function StoreAdminDashboard() {
 
     if (!reason || reason.trim() === "") {
       enqueueSnackbar("Rejection reason is required", { variant: "warning" });
-      throw new Error("Rejection cancelled");
+      return;
     }
 
+    setRejectingId(orderId);
     try {
       const response = await api.patch<{ success: boolean; message: string }>(
         `/store-admin/orders/${orderId}/reject`,
@@ -111,7 +114,8 @@ export default function StoreAdminDashboard() {
       enqueueSnackbar(getErrorMessage(error), {
         variant: "error",
       });
-      throw error;
+    } finally {
+      setRejectingId(null);
     }
   };
 
@@ -121,77 +125,30 @@ export default function StoreAdminDashboard() {
   };
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">Orders</h1>
-        <p className="text-sm text-gray-500">
+    <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-3 duration-700">
+      <header className="space-y-2">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">
+          Order Management
+        </p>
+        <h1 className="text-2xl font-semibold text-slate-900">
+          Manage store orders
+        </h1>
+        <p className="text-sm text-slate-500">
           Managing store: <b>{session?.user?.storeName || "Loading..."}</b>
         </p>
-      </div>
-
-      <div className="mb-6 flex justify-between items-center">
-        <div>
-          <p className="text-lg font-semibold text-gray-900">
-            {pagination.total} Order{pagination.total !== 1 ? "s" : ""}
-          </p>
-        </div>
-        <OrderFilter
-          activeFilter={activeFilter}
-          onFilterChange={handleFilterChange}
-        />
-      </div>
-
-      {loading ? (
-        <div className="flex justify-center items-center min-h-[400px]">
-          <Spinner size={40} thickness={4} />
-        </div>
-      ) : orders.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border">
-          <p className="text-gray-500 text-lg">No orders found</p>
-          <p className="text-gray-400 text-sm mt-2">
-            {activeFilter !== "all"
-              ? "Try changing the filter"
-              : "Orders will appear here when customers place orders"}
-          </p>
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {orders.map((order) => (
-              <OrderCard
-                key={order.id}
-                order={order}
-                onApprove={handleApprove}
-                onReject={handleReject}
-              />
-            ))}
-          </div>
-
-          {pagination.totalPages > 1 && (
-            <div className="mt-8 flex justify-center gap-2">
-              <button
-                onClick={() => fetchOrders(pagination.page - 1)}
-                disabled={pagination.page === 1 || loading}
-                className="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
-
-              <span className="px-4 py-2 bg-white border rounded-lg">
-                Page {pagination.page} of {pagination.totalPages}
-              </span>
-
-              <button
-                onClick={() => fetchOrders(pagination.page + 1)}
-                disabled={pagination.page === pagination.totalPages || loading}
-                className="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
-            </div>
-          )}
-        </>
-      )}
+      </header>
+      <OrdersTable
+        orders={orders}
+        loading={loading}
+        activeFilter={activeFilter}
+        pagination={pagination}
+        approvingId={approvingId}
+        rejectingId={rejectingId}
+        onFilterChange={handleFilterChange}
+        onApprove={handleApprove}
+        onReject={handleReject}
+        onPageChange={fetchOrders}
+      />
     </div>
   );
 }
