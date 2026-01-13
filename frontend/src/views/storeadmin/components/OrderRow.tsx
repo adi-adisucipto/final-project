@@ -1,4 +1,3 @@
-// app/storeadmin/_components/OrderRow.tsx
 import { Order } from "@/types/order";
 import { cn } from "@/lib/utils";
 import OrderStatusBadge from "./OrderStatusBadge";
