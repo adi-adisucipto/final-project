@@ -91,6 +91,7 @@ export async function updateStoreService(
         const fullAddress = `${address}, Indonesia`;
         let coordinates = await getCoordinates(fullAddress);
         if(!coordinates) throw createCustomError(404, "Coordinates not found");
+        console.log(coordinates);
 
         await prisma.store.update({
             where: {id: storeId},
@@ -98,8 +99,8 @@ export async function updateStoreService(
                 name: name,
                 isActive: isActive,
                 address: address,
-                latitude: latitude,
-                longitude: longitude,
+                latitude: coordinates.latitude,
+                longitude: coordinates.longitude,
                 cityId: cityId,
                 provinceId: provinceId,
                 postalCode: postalCode
