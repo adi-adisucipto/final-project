@@ -258,7 +258,7 @@ model Store {
   name     String  @unique
   isActive Boolean @default(true) @map("is_active")
 
-  address    String? @map("address") @db.Text
+  address    String @map("address") @db.Text
   latitude   Float
   longitude  Float
   cityId     Int     @map("city_id")
@@ -271,7 +271,7 @@ model Store {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  admins    StoreAdmin[]
+  admins    StoreAdmin?
   products  ProductStock[]
   orders    Order[]
   discounts Discount[]
@@ -286,7 +286,7 @@ model StoreAdmin {
   id String @id @default(uuid())
 
   userId  String @unique @map("user_id")
-  storeId String @map("store_id")
+  storeId String @unique @map("store_id")
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)

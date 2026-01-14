@@ -26,6 +26,11 @@ const adminLinks = [
     icon: Package,
   },
   {
+    label: "Store Management",
+    href: "/admin/store-management",
+    icon: Warehouse,
+  },
+  {
     label: "Product Categories",
     href: "/admin/categories",
     icon: Tags,

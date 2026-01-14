@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, ChevronUp, Search } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface SearchItem<T> {
     items: T[];
@@ -9,6 +10,7 @@ interface SearchItem<T> {
     placeholder: string;
     onSelect: (item: T) => void;
     value?: number;
+    className?: string
 }
 
 function DropDown<T extends Record<string, any>>({
@@ -16,7 +18,8 @@ function DropDown<T extends Record<string, any>>({
     labelKey,
     placeholder,
     onSelect,
-    value
+    value,
+    className
 }: SearchItem<T>) {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -53,7 +56,7 @@ function DropDown<T extends Record<string, any>>({
     <div className="relative w-full" ref={dropdownRef}>
         <div
             onClick={() => setIsOpen(!isOpen)}
-            className={`px-4 py-3 flex bg-[#F7FBFF] mt-2 mb-1 justify-between border rounded-xl transition-all duration-200 cursor-pointer ${isOpen ? "border-indigo-500 ring-2 ring-indigo-100" : "border-slate-200 hover:border-slate-300"}`}
+            className={cn(`px-4 py-3 flex bg-[#F7FBFF] mt-2 mb-1 justify-between border rounded-xl transition-all duration-200 cursor-pointer ${isOpen ? "border-green-500 ring-2 ring-green-100" : "border-black/20 hover:border-green-300"}`, className)}
         >
             <div className="flex justify-between items-center w-full transition-all duration-200">
                 <div>

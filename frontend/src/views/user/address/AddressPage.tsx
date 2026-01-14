@@ -124,7 +124,7 @@ function AddressPage() {
             onClose={() => setIsModalOpen(false)}
             initialData={initialData}
           />
-          )}
+        )}
       </div>
 
       <div className="flex flex-col gap-1.25 mb-5">
