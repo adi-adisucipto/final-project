@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { createStoreService, deleteStoreService, getStoreService, updateStoreService } from "../services/store.service";
+import { assignAdminService, createStoreService, deleteStoreService, getAdminsService, getStoreService, updateStoreService } from "../services/store.service";
 
 export async function createStoreController(req:Request, res:Response, next:NextFunction) {
     try {
@@ -73,6 +73,31 @@ export async function updateStoreController(req:Request, res:Response, next:Next
             provinceId,
             postalCode
         );
+
+        res.status(200).json({
+            data
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function getAdminsController(req:Request, res:Response, next:NextFunction) {
+    try {
+        const data = await getAdminsService();
+
+        res.status(200).json({
+            data
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function assignAdminController(req:Request, res:Response, next:NextFunction) {
+    try {
+        const { userId, storeId } = req.body;
+        const data = await assignAdminService(userId, storeId);
 
         res.status(200).json({
             data
