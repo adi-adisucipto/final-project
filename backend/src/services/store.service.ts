@@ -110,3 +110,28 @@ export async function updateStoreService(
         throw error;
     }
 }
+
+export async function getAdminsService() {
+    try {
+        return await prisma.user.findMany({
+            where: {role: "admin", storeAdmin: null}
+        });
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function assignAdminService(userId:string, storeId:string) {
+    try {
+        const data = await prisma.storeAdmin.create({
+            data: {
+                userId: userId,
+                storeId: storeId
+            }
+        });
+
+        return data
+    } catch (error) {
+        throw error;
+    }
+}
