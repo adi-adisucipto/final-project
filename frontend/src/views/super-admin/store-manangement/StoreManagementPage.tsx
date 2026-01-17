@@ -4,10 +4,11 @@ import { Plus, Search, Store, X } from "lucide-react"
 import StoreGrid from "./components/StoreGrid"
 import { useEffect, useState } from "react";
 import StoreModal from "./components/StoreModal";
-import { deleteStore, getStore } from "@/services/store.service";
+import { assignAdmin, deleteStore, getStore } from "@/services/store.service";
 import { useSession } from "next-auth/react";
 import { enqueueSnackbar } from "notistack";
-import { StoreProps } from "./types/store";
+import { StoreAdmin, StoreProps } from "./types/store";
+import AssignAdmin from "./components/AssignAdmin";
 
 function StoreManagementPage() {
   const { data: session, status, update } = useSession();
@@ -15,6 +16,7 @@ function StoreManagementPage() {
   const [stores, setStores] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedStore, setSelectedStore] = useState<StoreProps | null>(null);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
 
   const handleAddStore = () => {
     setRefreshKey(prev => prev + 1);
@@ -25,8 +27,6 @@ function StoreManagementPage() {
       const data = await getStore(session?.accessToken!);
 
       setStores(data.data)
-
-      console.log(data.data)
     } catch (error) {
       console.log(error);
     }
@@ -50,6 +50,22 @@ function StoreManagementPage() {
   useEffect(() => {
     store();
   }, [handleAddStore, session])
+
+  const openAssignModal = (store: StoreProps) => {
+    setSelectedStore(store);
+    setIsAssignModalOpen(true);
+  };
+
+  const handleAssignAdmin = async (admin: StoreAdmin) => {
+    try {
+      if (selectedStore) {
+        await assignAdmin(admin.id, selectedStore.id, session?.accessToken!)
+      }
+      enqueueSnackbar("Berhasil!", {variant: "success"})
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div>
         <div className="p-4 border border-black/20 rounded-xl mb-4 flex justify-between items-center">
@@ -75,10 +91,20 @@ function StoreManagementPage() {
           stores={stores}
           onDelete={(id) => handleDelete(id)}
           onEditStore={openEditModal}
+          onAssignAdmin={openAssignModal} 
         />
 
         {isAddModalOpen && (
           <StoreModal isOpen={isAddModalOpen} isClose={() => setIsAddModalOpen(false)} onSuccess={handleAddStore} initialData={selectedStore}/>
+        )}
+
+        {isAssignModalOpen && (
+          <AssignAdmin
+            isOpen={isAssignModalOpen} 
+            onClose={() => setIsAssignModalOpen(false)} 
+            store={selectedStore} 
+            onAssign={handleAssignAdmin} 
+          />
         )}
     </div>
   )

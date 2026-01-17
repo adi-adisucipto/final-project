@@ -13,6 +13,7 @@ function StoreCard({
     index,
     onDelete,
     onEditStore,
+    onAssignAdmin
 }:StoreCardProps) {
     const [isFlipped, setIsFlipped] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -109,6 +110,7 @@ function StoreCard({
                 <button
                     type='button'
                     className='text-white text-[12px] flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 p-2.5 rounded-md cursor-pointer font-bold transition-colors border border-slate-700'
+                    onClick={(e) => { e.stopPropagation(); onAssignAdmin?.(store); }}
                 >
                     <UserPlus size={14}/>
                     Admin

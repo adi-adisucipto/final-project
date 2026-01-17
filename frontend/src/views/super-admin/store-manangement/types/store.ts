@@ -21,4 +21,13 @@ export interface StoreCardProps {
     index: number;
     onDelete: (id:string) => void;
     onEditStore?: (store: StoreProps) => void;
+    onAssignAdmin?: (store: StoreProps) => void;
+}
+
+export interface StoreAdmin {
+    id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    avatar:string
 }

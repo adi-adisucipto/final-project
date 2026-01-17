@@ -95,3 +95,29 @@ export async function updateStore(
         throw error;
     }
 }
+
+export async function getAdmins() {
+    try {
+        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/store/admins`);
+
+        return data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function assignAdmin(userId: string, storeId: string, accessToken: string) {
+    try {
+        const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/store/assign-admin`, {
+            userId, storeId
+        }, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        });
+
+        return data;
+    } catch (error) {
+        throw error;
+    }
+}
