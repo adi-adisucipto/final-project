@@ -11,6 +11,7 @@ import AddOnProduct from "@/components/cart/AddOnProduct";
 import { cartService } from "@/services/cart.services";
 import { CartItem, GroupedCartItems } from "@/types/cart";
 import { getErrorMessage } from "@/lib/error-handler";
+import CartSkeleton from "./CartSkeleton";
 
 export default function CartPage() {
   const router = useRouter();
@@ -23,8 +24,8 @@ export default function CartPage() {
 
   // Mockdata shipping address
   const [shippingAddress] = useState({
-    firstName: "Alamat",
-    lastName: "Pengiriman",
+    firstName: "Awang",
+    lastName: "Syahsiah",
     address: "Perumahan Bumi Suko Indah C3 No.09, Jawa Timur, Sidoarjo, Sidoarjo, 61224, Rumah",
   });
 
@@ -150,14 +151,7 @@ enqueueSnackbar(getErrorMessage(err), { variant: "error" });
   const { subtotal, shipping, discount } = calculateTotals();
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading cart...</p>
-        </div>
-      </div>
-    );
+    return <CartSkeleton />
   }
 
   if (error) {
@@ -201,13 +195,13 @@ enqueueSnackbar(getErrorMessage(err), { variant: "error" });
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">
           Shopping Cart
         </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <ShippingAddress
               firstName={shippingAddress.firstName}
@@ -246,7 +240,7 @@ enqueueSnackbar(getErrorMessage(err), { variant: "error" });
               </div>
             )}
           </div>
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 sticky top-24">
             <CartSummary
               subtotal={subtotal}
               discount={discount}

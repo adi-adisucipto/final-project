@@ -4,6 +4,7 @@ import helmet from "helmet";
 import router from "./routes";
 import errorMiddleware from "./middlewares/error.middleware";
 import storeAdminOrderRoute from "./routes/storeAdmin.orders.route"
+import cartrouter from "./routes/cart.router";
 
 const PORT = 8000
 
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
 app.use("/api/store-admin/orders", storeAdminOrderRoute);
+app.use("/api/cart", cartrouter);
 
 app.use(errorMiddleware);
 

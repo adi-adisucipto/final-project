@@ -2,21 +2,16 @@ import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { CartController } from "../controllers/cart.controller";
 
-const router = Router();
+const cartrouter = Router();
 const cartController = new CartController();
 
-router.use(authMiddleware);
+cartrouter.use(authMiddleware);
 
-router.get("/count", cartController.getCartCount);
+cartrouter.get("/count", cartController.getCartCount);
+cartrouter.get("/", cartController.getCart);
+cartrouter.post("/", cartController.addToCart);
+cartrouter.patch("/:id", cartController.updateCartItem);
+cartrouter.delete("/:id", cartController.removeCartItem);
+cartrouter.delete("/", cartController.clearCart);
 
-router.get("/", cartController.getCart);
-
-router.post("/", cartController.addToCart);
-
-router.patch("/:id", cartController.updateCartItem);
-
-router.delete("/:id", cartController.removeCartItem);
-
-router.delete("/", cartController.clearCart);
-
-export default router;
+export default cartrouter;
