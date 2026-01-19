@@ -20,9 +20,11 @@ import { IconButton } from '../ui/icon-button';
 import { useSession } from 'next-auth/react';
 import Dropdown from './Dropdown';
 import ExitDialog from '../ExitDialog';
+import { cartService } from '@/services/cart.services';
 
 function NavBar() {
     const [isOpen, setIsOpen] = useState(false);
+    const [cartCount, setCartCount] = useState(0);
     const size = useWindowSize();
     const pathname = usePathname();
     const { data: session, status } = useSession();
@@ -32,6 +34,21 @@ function NavBar() {
             setIsOpen(false);
         }
     }, [size, isOpen]);
+
+    useEffect(() => {
+        if (status === 'authenticated') {
+            fetchCartCount();
+        }
+    }, [status]);
+
+    const fetchCartCount = async () => {
+        try {
+            const count = await cartService.getCartCount();
+            setCartCount(count);
+        } catch (error) {
+            console.error('Failded to fetch cart count: ', error);
+        }
+    };
 
   return (
     <div className='xl:max-w-7xl xl:mx-auto mx-4 sticky top-4 z-30 border mt-4 xl:px-4 bg-white rounded-xl shadow-lg'>
@@ -59,9 +76,16 @@ function NavBar() {
                     </div>
                 ) : (
                     <div className='flex gap-4'>
-                        <IconButton>
-                            <ShoppingCart className='w-5 h-5'/>
-                        </IconButton>
+                        <Link href={"/cart"}>
+                            <IconButton className='relative'>
+                                <ShoppingCart className='w-5 h-5'/>
+                                {cartCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-emerald-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                                            {cartCount > 99 ? '99+' : cartCount}
+                                        </span>
+                                )}
+                            </IconButton>
+                        </Link>
                         <div className='bg-black/20 w-px h-full'></div>
                         <Dropdown/>
                     </div>
