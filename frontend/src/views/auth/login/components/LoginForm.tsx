@@ -76,7 +76,7 @@ function LoginForm() {
     }
 
     const handleGoogleLogin = async () => {
-        await signIn("google", { callbackUrl: "/" });
+        await signIn("google", { callbackUrl: "/auth/role-redirect" });
     }
   return (
     <Formik
