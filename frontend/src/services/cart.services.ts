@@ -1,10 +1,11 @@
+import axios, { AxiosRequestConfig, AxiosError } from "axios";
 import {
   CartResponse,
   AddToCartPayload,
   UpdateCartPayload,
   ApiResponse,
   CartItem,
-  Store
+  Store,
 } from "@/types/cart";
 import { getSession } from "next-auth/react";
 
@@ -12,12 +13,12 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const getAuthToken = async (): Promise<string | null> => {
   const session = await getSession();
-  return (session as unknown as { accessToken?: string })?.accessToken ?? null;
+  return (session as { accessToken?: string })?.accessToken ?? null;
 };
 
 async function apiCall<T>(
   endpoint: string,
-  options: RequestInit = {}
+  config: AxiosRequestConfig = {}
 ): Promise<T> {
   if (!API_BASE_URL) {
     throw new Error("API_BASE_URL is not defined");
@@ -25,35 +26,30 @@ async function apiCall<T>(
 
   const token = await getAuthToken();
 
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    ...(options.headers as Record<string, string>),
-  };
+  try {
+    const response = await axios.request<T>({
+      baseURL: API_BASE_URL,
+      url: endpoint,
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...config.headers,
+      },
+      ...config,
+    });
 
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const message =
+      (error.response?.data as {message?: string })?.message ||
+      error.message ||
+      "Something went wrong";
+
+      throw new Error(message);
+    }
+    throw new Error("unexpected error occured");
   }
-
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
-
-  const contentType = response.headers.get("content-type");
-
-  if (!contentType?.includes("application/json")) {
-    const text = await response.text();
-    console.error("Non-JSON response:", text);
-    throw new Error("Server did not return JSON");
-  }
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || "Something went wrong");
-  }
-
-  return data;
 }
 
 export const cartService = {
@@ -67,17 +63,15 @@ export const cartService = {
   async getCartCount(): Promise<number> {
     const response = await apiCall<ApiResponse<{ count: number }>>(
       "/cart/count",
-      {
-        method: "GET",
-      }
+      { method: "GET" }
     );
-    return response.data?.count || 0;
+    return response.data?.count ?? 0;
   },
 
   async addToCart(payload: AddToCartPayload): Promise<CartItem> {
     const response = await apiCall<ApiResponse<CartItem>>("/cart", {
       method: "POST",
-      body: JSON.stringify(payload),
+      data: payload,
     });
     return response.data!;
   },
@@ -86,13 +80,13 @@ export const cartService = {
     cartItemId: string,
     payload: UpdateCartPayload
   ): Promise<CartItem | { deleted: boolean }> {
-    const response = await apiCall<ApiResponse<CartItem | { deleted: boolean }>>(
-      `/cart/${cartItemId}`,
-      {
-        method: "PATCH",
-        body: JSON.stringify(payload),
-      }
-    );
+    const response = await apiCall<
+      ApiResponse<CartItem | { deleted: boolean }>
+    >(`/cart/${cartItemId}`, {
+      method: "PATCH",
+      data: payload,
+    });
+
     return response.data!;
   },
 
@@ -114,6 +108,7 @@ export const cartService = {
       items: CartItem[];
       subtotal: number;
     }
+
     const grouped = items.reduce((acc, item) => {
       const storeId = item.storeId;
 
@@ -126,7 +121,8 @@ export const cartService = {
       }
 
       acc[storeId].items.push(item);
-      acc[storeId].subtotal += Number(item.product.price) * item.quantity;
+      acc[storeId].subtotal +=
+        Number(item.product.price) * item.quantity;
 
       return acc;
     }, {} as Record<string, GroupedStore>);
