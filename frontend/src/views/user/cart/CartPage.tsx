@@ -99,7 +99,6 @@ export default function CartPage() {
           ))}
         </div>
       </div>
-
       <CartSummary
         subtotal={subtotal}
         shipping={shipping}
