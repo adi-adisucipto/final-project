@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { MapPin, SquarePen, Store, Trash, User, UserPlus } from "lucide-react";
+import { LogIn, MapPin, SquarePen, Store, Trash, User, UserPlus } from "lucide-react";
 import { useState } from "react"
 import { StoreCardProps } from "../types/store";
 import Image from "next/image";
@@ -12,6 +12,7 @@ function StoreCard({
     store,
     index,
     onDelete,
+    onActive,
     onEditStore,
     onAssignAdmin
 }:StoreCardProps) {
@@ -33,7 +34,7 @@ function StoreCard({
         style={{ transformStyle: 'preserve-3d' }}
       >
         <div
-            className="absolute inset-0 rounded-xl border border-slate-200 backface-hidden p-4 flex flex-col justify-between"
+            className="absolute inset-0 rounded-xl border border-slate-200 backface-hidden p-4 flex flex-col justify-between bg-white"
         >
             <div className='flex justify-between items-center'>
                 <div className={`w-12 h-12 rounded-[10px] flex justify-center items-center ${store.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
@@ -41,7 +42,7 @@ function StoreCard({
                 </div>
 
                 <div className={`px-2.5 py-1 rounded-xl font-bold text-[12px] ${store.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                    {store ? "Buka" : "Tutup"}
+                    {store.isActive ? "Buka" : "Tutup"}
                 </div>
             </div>
 
@@ -116,27 +117,50 @@ function StoreCard({
                     Admin
                 </button>
 
-                <div className='text-red-400 text-[12px] flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 p-2.5 rounded-md cursor-pointer font-bold transition-colors border border-slate-700'>
-                    <ConfirmDialog
-                        onConfirm={() => onDelete(store.id)}
-                        trigger={
-                            <button 
-                                type="button"
-                                className="rounded-md" 
-                                disabled={isLoading}
-                            >
-                                {!isLoading ? (<span className="flex gap-2 items-center justify-center">
-                                    <Trash size={14}/> Delete
-                                </span>) : (
-                                    <div className="h-full w-full flex justify-center items-center">
-                                        <Ring size={17} thickness={3} color="#FFFFFF"/>
-                                    </div>
-                                )}
-                            </button>
-                        }
-                        action='Delete'
-                        cancel='Cancel'
-                    />
+                <div className='text-[12px] flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 p-2.5 rounded-md cursor-pointer font-bold transition-colors border border-slate-700'>
+                    {store.isActive ? (
+                        <ConfirmDialog
+                            onConfirm={() => onDelete(store.id)}
+                            trigger={
+                                <button 
+                                    type="button"
+                                    className="rounded-md" 
+                                    disabled={isLoading}
+                                >
+                                    {!isLoading ? (<span className="flex gap-2 items-center justify-center text-red-400 ">
+                                        <Trash size={14}/> Delete
+                                    </span>) : (
+                                        <div className="h-full w-full flex justify-center items-center">
+                                            <Ring size={17} thickness={3} color="#FFFFFF"/>
+                                        </div>
+                                    )}
+                                </button>
+                            }
+                            action='Delete'
+                            cancel='Cancel'
+                        />
+                    ) : (
+                        <ConfirmDialog
+                            onConfirm={() => onActive(store.id)}
+                            trigger={
+                                <button 
+                                    type="button"
+                                    className="rounded-md" 
+                                    disabled={isLoading}
+                                >
+                                    {!isLoading ? (<span className="flex gap-2 items-center justify-center text-green-500">
+                                        <LogIn size={14}/> Activate
+                                    </span>) : (
+                                        <div className="h-full w-full flex justify-center items-center">
+                                            <Ring size={17} thickness={3} color="#FFFFFF"/>
+                                        </div>
+                                    )}
+                                </button>
+                            }
+                            action='Activate'
+                            cancel='Cancel'
+                        />
+                    )}
                 </div>
             </div>
         </div>

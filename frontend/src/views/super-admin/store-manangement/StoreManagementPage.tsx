@@ -4,7 +4,7 @@ import { Plus, Search, Store, X } from "lucide-react"
 import StoreGrid from "./components/StoreGrid"
 import { useEffect, useState } from "react";
 import StoreModal from "./components/StoreModal";
-import { assignAdmin, deleteStore, getStore } from "@/services/store.service";
+import { activateStore, assignAdmin, deleteStore, getStore } from "@/services/store.service";
 import { useSession } from "next-auth/react";
 import { enqueueSnackbar } from "notistack";
 import { StoreAdmin, StoreProps } from "./types/store";
@@ -42,6 +42,16 @@ function StoreManagementPage() {
     }
   }
 
+  const handleUpdate = async (id: string) => {
+    try {
+      const {message} = await activateStore(id);
+
+      enqueueSnackbar(message, {variant: "success"})
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const openEditModal = (store: StoreProps) => {
     setSelectedStore(store);
     setIsAddModalOpen(true);
@@ -68,15 +78,13 @@ function StoreManagementPage() {
   };
   return (
     <div>
-        <div className="p-4 border border-black/20 rounded-xl mb-4 flex justify-between items-center">
+        <div className="p-2 border border-black/20 rounded-xl mb-4 flex justify-between items-center">
           <div className="relative flex-1 md:max-w-md">
             <Search className={`absolute left-4 top-1/2 -translate-y-1/2`} size={18} />
             <input 
               type="text" 
-              // value={searchQuery}
-              // onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari nama toko..." 
-              className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-transparent rounded-xl focus:outline-none focus:ring-4 focus:ring-green-100 focus:bg-white focus:border-[#22C55E] transition-all text-sm font-semibold" 
+              className="w-full pl-11 pr-4 py-3 bg-slate-100 border border-transparent rounded-xl focus:outline-none focus:ring-4 focus:ring-green-100 focus:bg-white focus:border-[#22C55E] transition-all text-sm font-semibold" 
             />
           </div>
           <button
@@ -90,6 +98,7 @@ function StoreManagementPage() {
         <StoreGrid
           stores={stores}
           onDelete={(id) => handleDelete(id)}
+          onActive={(id) => handleUpdate(id)}
           onEditStore={openEditModal}
           onAssignAdmin={openAssignModal} 
         />
