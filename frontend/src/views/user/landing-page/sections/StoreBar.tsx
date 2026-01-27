@@ -16,23 +16,23 @@ export interface StoreProps {
 }
 
 function StoreBar() {
-    const { loaded, coordinates, error } = useGeolocation();
+    const { loaded, coordinates, error: geoError } = useGeolocation();
     const [stores, setStores] = useState<StoreProps[]>([]);
     const [store, setStore] = useState<StoreProps | null>(null);
     const [openModal, setOpenModal] = useState(false);
 
     useEffect(() => {
-        if(loaded && coordinates) {
+        if(loaded && coordinates && coordinates.lat && coordinates.lng) {
             const storeNear = async () => {
                 try {
-                    const stores = await nearStore(Number(coordinates.lat), Number(coordinates.lng))
+                    const fetchStores = await nearStore(Number(coordinates.lat), Number(coordinates.lng))
 
-                    setStores(stores);
-                    setStore(stores[0]);
-
-                    return nearStore;
-                } catch (error) {
-                    throw error;
+                    setStores(fetchStores);
+                    if (fetchStores && fetchStores.length > 0) {
+                        setStore(fetchStores[0]);
+                    }
+                } catch (error:any) {
+                    enqueueSnackbar(error.message || "Gagal mengambil data toko", { variant: "error" });
                 }
             };
 
@@ -40,9 +40,11 @@ function StoreBar() {
         }
     }, [loaded, coordinates]);
 
-    if(error) {
-        enqueueSnackbar(error.message, {variant: "error"})
-    };
+    useEffect(() => {
+        if (geoError) {
+            enqueueSnackbar(geoError.message, { variant: "error" });
+        }
+    }, [geoError]);
   return (
     <div className='px-4 xl:px-0'>
         <div className='w-full p-4 rounded-2xl bg-[#122017] flex justify-between items-center xl:mt-8 mt-4'>
