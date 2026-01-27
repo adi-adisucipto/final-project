@@ -6,11 +6,12 @@ import { StoreProps } from "../types/store";
 interface StoreGridProps {
   stores: StoreProps[];
   onDelete: (id:string) => void;
+  onActive: (id:string) => void;
   onEditStore?: (store: StoreProps) => void;
   onAssignAdmin?: (store: StoreProps) => void;
 }
 
-function StoreGrid({stores, onDelete, onEditStore, onAssignAdmin}: StoreGridProps) {
+function StoreGrid({stores, onDelete, onActive, onEditStore, onAssignAdmin}: StoreGridProps) {
   return (
     <div className="grid xl:grid-cols-3 gap-4 grid-cols-1">
       {stores.map((store, index) => (
@@ -19,6 +20,7 @@ function StoreGrid({stores, onDelete, onEditStore, onAssignAdmin}: StoreGridProp
                 store={store}
                 index={index}
                 onDelete={onDelete}
+                onActive={onActive}
                 onEditStore={onEditStore}
                 onAssignAdmin={onAssignAdmin}
             />

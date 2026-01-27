@@ -3,9 +3,42 @@
 import { MapPin } from 'lucide-react'
 import useGeolocation from '@/hooks/useGeolocation'
 import { enqueueSnackbar } from 'notistack';
+import { useEffect, useState } from 'react';
+import { nearStore } from '@/services/nearStores';
+import ModalStore from '../components/ModalStore';
+
+export interface StoreProps {
+    id: string,
+    name: string,
+    latitude: number,
+    longitude: number,
+    distance: number
+}
 
 function StoreBar() {
     const { loaded, coordinates, error } = useGeolocation();
+    const [stores, setStores] = useState<StoreProps[]>([]);
+    const [store, setStore] = useState<StoreProps | null>(null);
+    const [openModal, setOpenModal] = useState(false);
+
+    useEffect(() => {
+        if(loaded && coordinates) {
+            const storeNear = async () => {
+                try {
+                    const stores = await nearStore(Number(coordinates.lat), Number(coordinates.lng))
+
+                    setStores(stores);
+                    setStore(stores[0]);
+
+                    return nearStore;
+                } catch (error) {
+                    throw error;
+                }
+            };
+
+            storeNear();
+        }
+    }, [loaded, coordinates]);
 
     if(error) {
         enqueueSnackbar(error.message, {variant: "error"})
@@ -18,14 +51,24 @@ function StoreBar() {
                     <MapPin/>
                 </div>
                 <p className='text-white/70 flex gap-1'>
-                    <span className='xl:flex hidden'>Shopping at:</span><span className='text-white font-bold'>{coordinates.lat}</span>
+                    <span className='xl:flex hidden'>Shopping at:</span><span className='text-white font-bold'>{store ? store.name : 'Loading...'}</span>
                 </p>
             </div>
 
-            <button className='cursor-pointer text-[#22C55E] hover:underline font-bold'>
+            <button className='cursor-pointer text-[#22C55E] hover:underline font-bold' onClick={() => setOpenModal(!openModal)}>
                 Change Store
             </button>
         </div>
+
+        {openModal && (
+            <div>
+                <ModalStore
+                    onClose={() => setOpenModal(false)}
+                    stores={stores}
+                    onSelect={(store) => setStore(store)}
+                />
+            </div>
+        )}
     </div>
   )
 }

@@ -116,7 +116,7 @@ export async function userAddressService(firstName:string, lastName:string, prov
         const isFirstAddress = await getAddressService(userId);
         if(isFirstAddress.length === 0) mainAddress = true
 
-        const fullAddress = `${address}, ${cityName.city_name}, ${provinceName.province_name}, Indonesia`;
+        const fullAddress = `${address}, Indonesia`;
         let coordinates = await getCoordinates(fullAddress);
 
         if(!coordinates) throw createCustomError(404, "Koordinat tidak ditemukan")

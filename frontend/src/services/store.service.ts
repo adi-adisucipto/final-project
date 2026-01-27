@@ -121,3 +121,15 @@ export async function assignAdmin(userId: string, storeId: string, accessToken: 
         throw error;
     }
 }
+
+export async function activateStore(storeId: string) {
+    try {
+        const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/store/activate-store`, {
+            storeId
+        })
+
+        return data
+    } catch (error) {
+        throw error;
+    }
+}

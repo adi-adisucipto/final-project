@@ -20,6 +20,7 @@ export interface StoreCardProps {
     store: StoreProps;
     index: number;
     onDelete: (id:string) => void;
+    onActive: (id:string) => void;
     onEditStore?: (store: StoreProps) => void;
     onAssignAdmin?: (store: StoreProps) => void;
 }

@@ -1,3 +1,4 @@
+import { Prisma } from "../generated/prisma/client";
 import { getCoordinates } from "../lib/getLatiLng";
 import { prisma } from "../lib/prisma";
 import { createCustomError } from "../utils/customError";
@@ -13,19 +14,26 @@ export async function createStoreService(
     postalCode:string
 ) {
     try {
-        if(latitude == 0 && longitude == 0) {
+        let coordinates
+        let finalLat = latitude;
+        let finalLong = longitude;
+
+        if(latitude === 0 && longitude === 0) {
             const fullAddress = `${address}, Indonesia`;
-            let coordinates = await getCoordinates(fullAddress);
-            latitude = coordinates?.latitude;
-            longitude = coordinates?.longitude;
+            coordinates = await getCoordinates(fullAddress);
+
+            console.log(coordinates)
+
+            finalLat = coordinates?.latitude
+            finalLong = coordinates?.longitude
         }
         const data = await prisma.store.create({
             data: {
                 name: name,
                 isActive: isActive,
                 address: address,
-                latitude: latitude,
-                longitude: longitude,
+                latitude: latitude === 0 ? finalLat : latitude,
+                longitude: longitude === 0 ? finalLong : longitude,
                 cityId: cityId,
                 provinceId: provinceId,
                 postalCode: postalCode
@@ -68,9 +76,16 @@ export async function getStoreService() {
 
 export async function deleteStoreService(storeId: string) {
     try {
-        await prisma.store.delete({
-            where: {id: storeId}
-        });
+        await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+            await tx.store.update({
+                where: {id: storeId},
+                data: {isActive: false}
+            });
+
+            await prisma.storeAdmin.delete({
+                where: {storeId: storeId},
+            })
+        })
     } catch (error) {
         throw error;
     }
@@ -131,6 +146,17 @@ export async function assignAdminService(userId:string, storeId:string) {
         });
 
         return data
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function activateStoreService(storeId: string) {
+    try {
+        return await prisma.store.update({
+            where: {id: storeId},
+            data: {isActive: true}
+        });
     } catch (error) {
         throw error;
     }
