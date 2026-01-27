@@ -19,7 +19,7 @@ function Hero() {
     const next = () => setCurrent((prev) => prev === slides.length - 1 ? 0 : prev + 1);
     const prev = () => setCurrent((prev) => prev === 0 ? slides.length - 1 : prev - 1);
   return (
-    <div className="relative xl:max-w-7xl mx-4 xl:mx-0 xl:h-125 h-110 xl:rounded-[32px] rounded-2xl overflow-hidden group shadow-2xl">
+    <div className="relative xl:max-w-7xl mx-4 xl:mx-0 xl:h-125 h-110 xl:rounded-[32px] z-20 rounded-2xl overflow-hidden group shadow-2xl">
       <AnimatePresence mode="wait">
         <motion.div
             key={current}
