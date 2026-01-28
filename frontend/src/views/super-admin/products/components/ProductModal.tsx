@@ -129,6 +129,7 @@ function ProductModal({
       stock: Number(form.stock),
       categoryId: form.categoryId,
       storeId: form.storeId,
+      previousStoreId: product?.storeId,
       files: form.files,
     })
   }

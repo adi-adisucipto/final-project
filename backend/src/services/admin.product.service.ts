@@ -16,7 +16,11 @@ type BaseParams = {
 
 type CreateParams = BaseParams & { isActive: boolean };
 
-type UpdateParams = BaseParams & { id: string; isActive?: boolean };
+type UpdateParams = BaseParams & {
+  id: string;
+  isActive?: boolean;
+  previousStoreId?: string;
+};
 
 const ensureStore = async (storeId: string) => {
   const store = await prisma.store.findUnique({
@@ -107,6 +111,11 @@ const updateProductRecord = async (params: UpdateParams) => {
     where: { id: params.id },
     data: buildProductUpdateData(params),
   });
+  if (params.previousStoreId && params.previousStoreId !== params.storeId) {
+    await prisma.productStock.deleteMany({
+      where: { productId: params.id, storeId: params.previousStoreId },
+    });
+  }
   await prisma.productStock.upsert(buildStockUpsertData(params));
 };
 

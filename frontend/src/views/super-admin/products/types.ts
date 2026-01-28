@@ -30,6 +30,7 @@ export type ProductFormPayload = {
   stock: number
   categoryId: string
   storeId: string
+  previousStoreId?: string
   files: File[]
 }
 

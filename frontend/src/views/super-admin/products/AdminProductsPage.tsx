@@ -88,6 +88,9 @@ function AdminProductsPage() {
         storeId: payload.storeId,
         isActive: true,
       }
+      if (payload.previousStoreId) {
+        body.previousStoreId = payload.previousStoreId
+      }
       let productId = payload.id
       if (payload.id) {
         const data = await updateAdminProduct(payload.id, body, accessToken)

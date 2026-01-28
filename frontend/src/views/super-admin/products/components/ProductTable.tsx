@@ -35,7 +35,7 @@ function ProductTable({ products, onEdit, onDelete }: ProductTableProps) {
               products.map((product) => {
                 const imageUrl = product.images[0]
                 return (
-                  <tr key={product.id} className="border-t">
+                  <tr key={`${product.id}-${product.storeId}`} className="border-t">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="flex h-12 w-12 items-center justify-center rounded-xl border bg-slate-100">

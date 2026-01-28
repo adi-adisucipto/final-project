@@ -32,6 +32,7 @@ export type AdminProductPayload = {
   categoryId: string;
   storeId: string;
   isActive: boolean;
+  previousStoreId?: string;
 };
 
 export type AdminProductQuery = {

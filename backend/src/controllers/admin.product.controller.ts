@@ -159,6 +159,15 @@ export async function updateAdminProductController(
     if (!storeId) throw createCustomError(400, "storeId");
     if (!isUuid(storeId)) throw createCustomError(400, "storeId");
 
+    const previousStoreIdText = parseString(req.body.previousStoreId);
+    let previousStoreId: string | undefined;
+    if (previousStoreIdText) {
+      if (!isUuid(previousStoreIdText)) {
+        throw createCustomError(400, "previousStoreId");
+      }
+      previousStoreId = previousStoreIdText;
+    }
+
     let isActive: boolean | undefined;
     if (req.body.isActive === true || req.body.isActive === "true") {
       isActive = true;
@@ -175,6 +184,7 @@ export async function updateAdminProductController(
       categoryId,
       storeId,
       isActive,
+      previousStoreId,
     });
     res.status(200).json({ data });
   } catch (error) {
