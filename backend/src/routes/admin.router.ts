@@ -5,6 +5,12 @@ import {
   updateUserRoleController,
 } from "../controllers/admin.controller";
 import {
+  createAdminCategoryController,
+  deleteAdminCategoryController,
+  listAdminCategoriesController,
+  updateAdminCategoryController,
+} from "../controllers/admin.category.controller";
+import {
   createAdminProductController,
   deleteAdminProductController,
   listAdminProductsController,
@@ -22,6 +28,10 @@ adminRouter.use(authMiddleware, adminMiddleware);
 adminRouter.get("/users", listUsersController);
 adminRouter.patch("/users/:userId/role", updateUserRoleController);
 adminRouter.delete("/users/:userId", deleteUserController);
+adminRouter.get("/categories", listAdminCategoriesController);
+adminRouter.post("/categories", createAdminCategoryController);
+adminRouter.patch("/categories/:categoryId", updateAdminCategoryController);
+adminRouter.delete("/categories/:categoryId", deleteAdminCategoryController);
 adminRouter.get("/products", listAdminProductsController);
 adminRouter.post("/products", createAdminProductController);
 adminRouter.patch("/products/:productId", updateAdminProductController);

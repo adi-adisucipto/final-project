@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { enqueueSnackbar } from "notistack";
@@ -24,6 +24,8 @@ function ProductPage() {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [searchError, setSearchError] = useState<string | undefined>();
+  const [minPriceInput, setMinPriceInput] = useState("");
+  const [maxPriceInput, setMaxPriceInput] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
@@ -46,6 +48,17 @@ function ProductPage() {
     coords,
     isReady: loaded,
   });
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMinPrice(minPriceInput);
+      setMaxPrice(maxPriceInput);
+      setPage(1);
+    }, 400);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [minPriceInput, maxPriceInput]);
 
   const handleSearchSubmit = () => {
     const trimmed = searchInput.trim();
@@ -82,13 +95,11 @@ function ProductPage() {
   };
 
   const handleMinPriceChange = (value: string) => {
-    setMinPrice(value.replace(/\D/g, ""));
-    setPage(1);
+    setMinPriceInput(value.replace(/\D/g, ""));
   };
 
   const handleMaxPriceChange = (value: string) => {
-    setMaxPrice(value.replace(/\D/g, ""));
-    setPage(1);
+    setMaxPriceInput(value.replace(/\D/g, ""));
   };
 
   const handleSortChange = (value: string) => {
@@ -114,8 +125,8 @@ function ProductPage() {
         <FiltersSidebar
           categories={categories}
           activeCategory={categoryId}
-          minPrice={minPrice}
-          maxPrice={maxPrice}
+          minPrice={minPriceInput}
+          maxPrice={maxPriceInput}
           priceError={priceError}
           onCategoryChange={handleCategoryChange}
           onMinPriceChange={handleMinPriceChange}
