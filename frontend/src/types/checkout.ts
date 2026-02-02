@@ -37,6 +37,12 @@ export interface VoucherData {
   description: string;
 }
 
+export interface OrderItemPayload {
+  productId: string;
+  price: number;
+  quantity: number;
+}
+
 export interface OrderItem {
   id: string;
   productId: string;
@@ -45,4 +51,44 @@ export interface OrderItem {
   price: number;
   quantity: number;
   storeName: string;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+export interface CreateOrderPayload {
+  userAddressId: string;
+  storeId: string;
+  items: Array<{
+    productId: string;
+    quantity: number;
+    price: number;
+  }>;
+  subtotal: number;
+  shippingCost: number;
+  discountAmount: number;
+  totalAmount: number;
+  voucherCodeUsed?: string;
+  paymentMethod: PaymentMethod;
+}
+
+export interface UploadPaymentProofPayload {
+  paymentProofUrl: string;
+}
+
+export interface Order {
+  id: string;
+  storeId: string;
+  userAddressId: string;
+  subtotal: number;
+  shippingCost: number;
+  discountAmount: number;
+  totalAmount: number;
+  paymentMethod: "TRANSFER" | "COD";
+  status: "PENDING" | "PAID" | "CANCELLED";
+  createdAt: string;
+  items: OrderItemPayload[];
 }
