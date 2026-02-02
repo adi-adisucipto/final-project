@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { assignAdminService, createStoreService, deleteStoreService, getAdminsService, getStoreService, updateStoreService } from "../services/store.service";
+import { activateStoreService, assignAdminService, createStoreService, deleteStoreService, getAdminsService, getStoreService, updateStoreService } from "../services/store.service";
 
 export async function createStoreController(req:Request, res:Response, next:NextFunction) {
     try {
-        const { name, isActive, address, latitude, longitude, cityId, provinceId, postalCode } = req.body
+        const { name, isActive, address, latitude, longitude, cityId, provinceId, postalCode } = req.body;
+
         const data = await createStoreService(
             name,
             isActive,
@@ -101,6 +102,19 @@ export async function assignAdminController(req:Request, res:Response, next:Next
 
         res.status(200).json({
             data
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function activateStoreController(req:Request, res:Response, next:NextFunction) {
+    try {
+        const { storeId } = req.body;
+        await activateStoreService(storeId);
+
+        res.status(200).json({
+            message: "Berhasil mengaktifkan toko"
         })
     } catch (error) {
         next(error);

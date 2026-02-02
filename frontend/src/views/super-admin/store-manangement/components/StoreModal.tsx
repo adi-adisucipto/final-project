@@ -231,7 +231,7 @@ function StoreModal({
                                                     console.log(address)
                                                 }
                                             } else {
-                                                alert("Koordinat belum tersedia. Pastikan GPS aktif.");
+                                                    alert("Koordinat belum tersedia. Pastikan GPS aktif.");
                                                 }
                                             }}
                                         >
