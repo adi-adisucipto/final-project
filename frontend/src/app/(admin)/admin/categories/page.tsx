@@ -1,9 +1,7 @@
-function AdminCategoriesPage() {
-  return (
-    <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-8 text-slate-500">
-      ini categories management
-    </div>
-  )
+import AdminCategoriesPage from "@/views/super-admin/categories/AdminCategoriesPage"
+
+function AdminCategoriesRoute() {
+  return <AdminCategoriesPage />
 }
 
-export default AdminCategoriesPage
+export default AdminCategoriesRoute
