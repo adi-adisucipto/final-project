@@ -13,8 +13,7 @@ export default function CheckoutHeader({ currentStep = 2 }: CheckoutHeaderProps)
   const steps = [
     { label: "Cart", step: 1 },
     { label: "Checkout", step: 2 },
-    { label: "Payment", step: 3 },
-    { label: "Confirmation", step: 4 },
+    { label: "Confirmation", step: 3 },
   ];
 
   return (
