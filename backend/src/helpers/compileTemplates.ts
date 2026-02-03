@@ -22,3 +22,13 @@ export async function compileChangePasswordTemplate(token:string) {
         redirect_url: `${BASE_WEB_URL}/password?token=${token}`
     });
 }
+
+export async function compileChangeEmailTemplate(token:string) {
+    const targetPath = path.join(__dirname, "../templates", "changeEmail.hbs");
+    const templateSrc = await fs.readFile(targetPath, "utf-8");
+    const compiledTemplate = compile(templateSrc);
+
+    return compiledTemplate({
+        redirect_url: `${BASE_WEB_URL}/change-email?token=${token}`
+    });
+}
