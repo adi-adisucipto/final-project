@@ -19,12 +19,6 @@ export default function PaymentMethodSelector({
       description: "Upload bukti transfer setelah pembayaran",
       icon: "🏦",
     },
-    {
-      id: "COD" as PaymentMethod,
-      name: "Bayar di Tempat (COD)",
-      description: "Bayar saat barang diterima",
-      icon: "💵",
-    },
   ];
   return (
     <div className="bg-white border-2 border-cyan-400 rounded-lg p-6 mb-6">
