@@ -26,7 +26,7 @@ export const orderService = {
     };
 
     const res = await axios.post<ApiResponse<Order>>(
-      `${API_BASE_URL}/api/orders`,
+      `${API_BASE_URL}/orders`,
       payload,
       { headers }
     );
@@ -44,7 +44,7 @@ export const orderService = {
     };
 
     const res = await axios.post<ApiResponse<Order>>(
-      `${API_BASE_URL}/api/orders/${orderId}/payment`,
+      `${API_BASE_URL}/orders/${orderId}/payment`,
       payload,
       { headers }
     );
@@ -58,7 +58,7 @@ export const orderService = {
     };
 
     const res = await axios.get<ApiResponse<Order>>(
-      `${API_BASE_URL}/api/orders/${orderId}`,
+      `${API_BASE_URL}/orders/${orderId}`,
       { headers }
     );
 
@@ -71,7 +71,7 @@ export const orderService = {
     };
 
     const res = await axios.get<ApiResponse<Order[]>>(
-      `${API_BASE_URL}/api/orders`,
+      `${API_BASE_URL}/orders`,
       { headers }
     );
 

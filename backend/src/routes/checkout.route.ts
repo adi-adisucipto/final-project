@@ -1,15 +1,16 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { OrderController } from "../controllers/checkout.controller";
+import uploader from "../utils/uploader";
 
-const router = Router();
+const checkoutRouter = Router();
 const orderController = new OrderController();
 
-router.use(authMiddleware);
+checkoutRouter.use(authMiddleware);
 
-router.post("/", orderController.createOrder);
-router.get("/", orderController.getUserOrders);
-router.get("/:id", orderController.getOrderById);
-router.post("/:id/payment", orderController.uploadPaymentProof);
+checkoutRouter.post("/", orderController.createOrder);
+checkoutRouter.get("/", orderController.getUserOrders);
+checkoutRouter.get("/:id", orderController.getOrderById);
+checkoutRouter.post("/:id/payment",uploader().single("file"), orderController.uploadPaymentProof);
 
-export default router;
+export default checkoutRouter;
