@@ -22,7 +22,7 @@ router.use("/shipping", shippingRouter);
 router.use("/stores", nearStoreRouter);
 router.use("/store-admin/orders", storeAdminrouter);
 router.use("/cart", cartrouter);
-router.use("/orders", checkoutRouter);
+router.use("/checkout", checkoutRouter);
 router.use("/upload", paymentProofRouter);
 
 export default router;
