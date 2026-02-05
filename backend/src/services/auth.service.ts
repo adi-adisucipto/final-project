@@ -6,7 +6,7 @@ import { Prisma } from "../generated/prisma/browser";
 import { compileRegistrationTemplate } from "../helpers/compileTemplates";
 import { transporter } from "../helpers/transporter";
 import { referralCodeGenerator } from "../helpers/referralCode";
-import { genSaltSync, hashSync, compareSync } from "bcrypt";
+import { compareSync, hash } from "bcrypt";
 
 export async function checkEmail(email:string) {
     const user = await prisma.user.findUnique({
@@ -30,35 +30,36 @@ export async function checkEmail(email:string) {
 }
 
 export async function createRegisTokenService(email:string) {
-    try {
-        const isExist = await checkEmail(email);
-        if(isExist !== null) {
-            throw createCustomError(200, "User already exist, please login!");
+    const isExist = await checkEmail(email);
+    if(isExist !== null) {
+        throw createCustomError(409, "User already exist, please login!");
+    }
+
+    const payload = { email: email }
+    const token = sign(payload, SECRET_KEY_REGIS, {expiresIn: "1h"});
+    const exp = new Date();
+    exp.setHours(exp.getHours() + 1);
+
+    await prisma.token.create({
+        data: {
+            token: token,
+            expires_at: exp
         }
+    });
+    
+    try {
+        const html = await compileRegistrationTemplate(token);
 
-        const payload = { email: email }
-        const token = sign(payload, SECRET_KEY_REGIS, {expiresIn: "1h"});
-        const exp = new Date();
-        exp.setHours(exp.getHours() + 1);
-
-        await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-            await tx.token.create({
-                data: {
-                    token: token,
-                    expires_at: exp
-                }
-            });
-
-            const html = await compileRegistrationTemplate(token);
-
-            await transporter.sendMail({
-                to: email,
-                subject: "Registration",
-                html
-            });
-        })
+        await transporter.sendMail({
+            to: email,
+            subject: "Registration",
+            html
+        });
     } catch (error) {
-        throw error;
+        await prisma.token.delete({
+            where: {token: token}
+        })
+        throw new Error("Failed to send registration email. Please try again.");
     }
 }
 
@@ -70,36 +71,33 @@ export async function checkRefCode(refCode: string) {
     return user;
 };
 
-export async function createUserService(email:string, password:string, firstName:string, lastName:string, refCode:string, token:string) {
+export async function createUserService(
+    email:string,
+    password:string,
+    firstName:string,
+    lastName:string,
+    refCode:string | null,
+    token:string
+) {
     try {
-        if (refCode && refCode.trim() !== "") {
-            const refCodeExist = await checkRefCode(refCode);
-            if (!refCodeExist) {
-                throw createCustomError(404, "Referral code not found");
+        const validToken = await prisma.token.findFirst({
+            where: { 
+                token: token,
+                expires_at: { gt: new Date() } 
             }
+        });
+        if (!validToken) {
+            throw createCustomError(400, "Invalid or expired token");
         }
-
-        const salt = genSaltSync(10);
-        const hashedPassword = hashSync(password, salt);
-
-        let isTaken = true;
-        let referralCode: string 
-        while(isTaken) {
-            referralCode = referralCodeGenerator();
-            const code = await prisma.user.findUnique({
-                where: {
-                    referral_code: referralCode
-                }
-            });
-
-            if(!code) isTaken = false;
-        }
+        
+        const hashedPassword = await hash(password, 10);
+        const referralCode = await referralCodeGenerator();
 
         const user = await checkEmail(email);
 
         await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
             if(!user) {
-                await tx.user.create({
+                const newUser = await tx.user.create({
                     data: {
                         email: email,
                         is_verified: true,
@@ -110,6 +108,22 @@ export async function createUserService(email:string, password:string, firstName
                         updated_at: new Date()
                     }
                 });
+
+                if (refCode && refCode.trim() !== "") {
+                    const refCodeExist = await checkRefCode(refCode);
+                    if (!refCodeExist) throw createCustomError(404, "Referral code not found");
+                    const exp = new Date();
+                    exp.setMonth(exp.getMonth() + 1);
+
+                    await tx.user_Voucher.create({
+                        data: {
+                            user_id: newUser.id,
+                            voucher_id: 'REFERRAL-REWARD',
+                            obtained_at: new Date(),
+                            expired_at: exp
+                        }
+                    })
+                }
             } else {
                 await tx.user.update({
                     where: {email: email},
@@ -237,17 +251,7 @@ export async function googleLoginService(email:string) {
     try {
         let user = await checkEmail(email);
         if(!user) {
-            let isTaken = true;
-            let referralCode = "";
-            while (isTaken) {
-                referralCode = referralCodeGenerator(); 
-                const existingUser = await prisma.user.findUnique({
-                    where: { referral_code: referralCode }
-                });
-
-                if (!existingUser) isTaken = false;
-            }
-
+            const referralCode = await referralCodeGenerator(); ;
             await createRegisTokenService(email);
 
             await prisma.user.create({
