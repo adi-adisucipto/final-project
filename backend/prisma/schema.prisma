@@ -61,15 +61,26 @@ enum Role {
 
 model Voucher {
   id             String   @id @default(uuid())
-  voucher_name   String   @unique
-  voucher_type   Type     @default(shopping)
-  discount_type  String
-  discount_value Decimal
-  max_discount   Decimal
-  min_purchase   Decimal
-  created_at     DateTime
+  store_id       String?
+  product_id     String?
 
-  user User_Voucher[]
+  voucher_code   String   @unique
+  voucher_type   Type     @default(shopping)
+  discount_type  DiscountType
+  discount_value Decimal
+  max_discount   Decimal?
+  min_purchase   Decimal?
+
+  stock          Int?
+  start_date     DateTime?
+  end_date       DateTime?
+  
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+
+  store        Store?          @relation(fields: [store_id], references: [id])
+  product      Product?        @relation(fields: [product_id], references: [id])
+  users        User_Voucher[]
 
   @@map("voucher")
 }
@@ -78,8 +89,10 @@ model User_Voucher {
   id          String   @id @default(uuid())
   user_id     String
   voucher_id  String
+
   is_used     Boolean  @default(false)
-  used_at     DateTime
+  used_at     DateTime?
+
   obtained_at DateTime
   expired_at  DateTime
 
@@ -276,6 +289,7 @@ model Store {
   orders    Order[]
   discounts Discount[]
   cart      Cart[]
+  voucher   Voucher[]
 
   @@index([cityId])
   @@index([provinceId])
@@ -321,6 +335,7 @@ model Product {
   discounts Discount[]
   cart      Cart[]
   product   OrderItem[]
+  voucher   Voucher[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
