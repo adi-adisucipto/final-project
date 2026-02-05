@@ -18,7 +18,7 @@ import { CategoryFormPayload, CategoryItem } from "./types"
 
 function AdminCategoriesPage() {
   const { data: session } = useSession()
-  const accessToken = session?.accessToken
+  const accessToken = session?.accessToken!
   const user = session?.user as
     | { role?: string; isStoreAdmin?: boolean; storeAdminId?: string }
     | undefined

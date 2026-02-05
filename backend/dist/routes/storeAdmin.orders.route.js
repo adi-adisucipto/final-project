@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_middleware_1 = require("../middlewares/auth.middleware");
+const roleGuard_middleware_1 = require("../middlewares/roleGuard.middleware");
+const storeAdmin_orders_controller_1 = require("../controllers/storeAdmin.orders.controller");
+const storeAdminrouter = (0, express_1.Router)();
+const ordersController = new storeAdmin_orders_controller_1.StoreAdminOrdersController();
+storeAdminrouter.use(auth_middleware_1.authMiddleware, (0, roleGuard_middleware_1.allowStoreAdmin)());
+storeAdminrouter.get("/stats", ordersController.getOrderStats);
+storeAdminrouter.get("/", ordersController.getOrders);
+storeAdminrouter.get("/:id", ordersController.getOrderById);
+storeAdminrouter.patch("/:id/approve", ordersController.approveOrder);
+storeAdminrouter.patch("/:id/reject", ordersController.rejectOrder);
+exports.default = storeAdminrouter;
