@@ -104,7 +104,11 @@ function StoreManagementPage() {
         />
 
         {isAddModalOpen && (
-          <StoreModal isOpen={isAddModalOpen} isClose={() => setIsAddModalOpen(false)} onSuccess={handleAddStore} initialData={selectedStore}/>
+          <StoreModal
+            isOpen={isAddModalOpen}
+            isClose={() => setIsAddModalOpen(false)}
+            onSuccess={handleAddStore}
+            initialData={selectedStore}/>
         )}
 
         {isAssignModalOpen && (

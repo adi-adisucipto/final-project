@@ -6,6 +6,11 @@ import adminRouter from "./admin.router";
 import storeRouter from "./store.router";
 import shippingRouter from "./shippingCost.router";
 import productRouter from "./product.router";
+import nearStoreRouter from "./nearStore.router";
+import storeAdminrouter from "./storeAdmin.orders.route";
+import cartrouter from "./cart.router";
+import paymentProofRouter from "./PaymentProof.router";
+import checkoutRouter from "./checkout.route";
 
 const router = Router();
 
@@ -16,5 +21,10 @@ router.use("/admin", adminRouter);
 router.use("/store", storeRouter);
 router.use("/shipping", shippingRouter);
 router.use("/products", productRouter);
+router.use("/stores", nearStoreRouter);
+router.use("/store-admin/orders", storeAdminrouter);
+router.use("/cart", cartrouter);
+router.use("/checkout", checkoutRouter);
+router.use("/upload", paymentProofRouter);
 
 export default router;
