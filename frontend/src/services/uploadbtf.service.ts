@@ -29,7 +29,7 @@ export const uploadService = {
 
     try {
       const res = await axios.post<UploadResponse>(
-        `${API_BASE_URL}/api/upload/payment-proof`,
+        `${API_BASE_URL}/upload/payment-proof`,
         formData,
         {
           headers: {

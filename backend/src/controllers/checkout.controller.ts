@@ -57,24 +57,53 @@ export class OrderController {
     }
   }
 
+  async uploadPaymentProofFile(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: "No file uploaded",
+        });
+      }
+      const uploadResult = await cloudinaryUplaod(req.file, "payment_proofs");
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          url: uploadResult.secure_url,
+        },
+        message: "File uploaded successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async uploadPaymentProof(req: Request, res: Response, next: NextFunction) {
   try {
     const userId = req.user!.id;
     const { id } = req.params;
 
-    if (!req.file) {
+    let paymentProofUrl: string;
+
+    if (req.body.paymentProofUrl) {
+      paymentProofUrl = req.body.paymentProofUrl;
+    }
+    else if (req.file) {
+      const uploadResult = await cloudinaryUplaod(req.file, "payment_proofs");
+      paymentProofUrl = uploadResult.secure_url;
+    }
+    else {
       return res.status(400).json({
         success: false,
-        message: "Payment proof file is required",
-      });
+        message: "Payment Proof file is required",
+      })
     }
-    const uploadResult = await cloudinaryUplaod(req.file, "payment_proofs",
-    );
 
     const order = await orderService.uploadPaymentProof(
       id,
       userId,
-      uploadResult.secure_url
+      paymentProofUrl
     );
 
     res.status(200).json({
@@ -84,8 +113,8 @@ export class OrderController {
     });
   } catch (error) {
     next(error);
+    }
   }
-}
 
 
   async getOrderById(req: Request, res: Response, next: NextFunction) {
