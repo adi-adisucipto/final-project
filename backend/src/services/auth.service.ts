@@ -80,6 +80,17 @@ export async function createUserService(
     token:string
 ) {
     try {
+        let isTaken = true;
+        let referralCode = "";
+        
+        while(isTaken) {
+            referralCode = referralCodeGenerator()
+            const existingUser = await prisma.user.findUnique({
+                where: { referral_code: referralCode }
+            });
+            if(!existingUser) isTaken = false;
+        }
+
         const validToken = await prisma.token.findFirst({
             where: { 
                 token: token,
@@ -91,11 +102,11 @@ export async function createUserService(
         }
         
         const hashedPassword = await hash(password, 10);
-        const referralCode = await referralCodeGenerator();
 
         const user = await checkEmail(email);
 
         await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+            let userIdForReward = null;
             if(!user) {
                 const newUser = await tx.user.create({
                     data: {
@@ -108,24 +119,12 @@ export async function createUserService(
                         updated_at: new Date()
                     }
                 });
-
-                if (refCode && refCode.trim() !== "") {
-                    const refCodeExist = await checkRefCode(refCode);
-                    if (!refCodeExist) throw createCustomError(404, "Referral code not found");
-                    const exp = new Date();
-                    exp.setMonth(exp.getMonth() + 1);
-
-                    await tx.user_Voucher.create({
-                        data: {
-                            user_id: newUser.id,
-                            voucher_id: 'REFERRAL-REWARD',
-                            obtained_at: new Date(),
-                            expired_at: exp
-                        }
-                    })
-                }
+                userIdForReward = newUser.id
             } else {
-                await tx.user.update({
+                if (user.is_verified) {
+                    throw createCustomError(409, "Email is already registered and verified");
+                }
+                const updateUser = await tx.user.update({
                     where: {email: email},
                     data: {
                         is_verified: true,
@@ -136,6 +135,23 @@ export async function createUserService(
                         updated_at: new Date()
                     }
                 });
+                userIdForReward = updateUser.id
+            }
+
+            if (refCode && refCode.trim() !== "") {
+                const refCodeExist = await checkRefCode(refCode);
+                if (!refCodeExist) throw createCustomError(404, "Referral code not found");
+                const exp = new Date();
+                exp.setMonth(exp.getMonth() + 1);
+
+                await tx.user_Voucher.create({
+                    data: {
+                        user_id: userIdForReward,
+                        voucher_code: 'REFERRAL-REWARD',
+                        obtained_at: new Date(),
+                        expired_at: exp
+                    }
+                })
             }
 
             await tx.token.delete({

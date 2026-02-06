@@ -88,7 +88,7 @@ model Voucher {
 model User_Voucher {
   id          String   @id @default(uuid())
   user_id     String
-  voucher_id  String
+  voucher_code  String
 
   is_used     Boolean  @default(false)
   used_at     DateTime?
@@ -97,7 +97,7 @@ model User_Voucher {
   expired_at  DateTime
 
   userId  User    @relation(fields: [user_id], references: [id])
-  voucher Voucher @relation(fields: [voucher_id], references: [id])
+  voucher Voucher @relation(fields: [voucher_code], references: [voucher_code])
 
   @@map("user_voucher")
 }
