@@ -3,7 +3,7 @@ import { createRegisTokenService, createUserService, googleLoginService, loginSe
 import { verify } from "jsonwebtoken";
 import { SECRET_KEY_REGIS } from "../configs/env.config";
 import { createCustomError } from "../utils/customError";
-import { registerSchema } from "../validations/auth.validation";
+import { createUserSchema, registerSchema } from "../validations/auth.validation";
 
 export async function createRegisTokenController(req: Request, res: Response, next: NextFunction) {
     try {
@@ -11,7 +11,7 @@ export async function createRegisTokenController(req: Request, res: Response, ne
         
         await createRegisTokenService(email);
 
-        res.status(201).json({
+        res.status(200).json({
             message: "Email Registration has been sent. Please check your inbox!"
         })
     } catch (error) {
@@ -21,14 +21,13 @@ export async function createRegisTokenController(req: Request, res: Response, ne
 
 export async function createUserController(req: Request, res: Response, next: NextFunction) {
     try {
-        const {password, firstName, lastName, refCode} = req.body;
+        const {password, firstName, lastName, refCode} = createUserSchema.parse(req.body);
 
         const authHeader = req.headers.authorization;
         if(!authHeader || !authHeader.startsWith("Bearer ")) {
             throw createCustomError(401, "Unauthorize");
         }
         const token = authHeader.split(" ")[1];
-
         const decoded = verify(token, SECRET_KEY_REGIS) as { email: string }
         if (!decoded || !decoded.email) { 
             throw createCustomError(401, "Invalid Token Payload"); 
@@ -37,7 +36,7 @@ export async function createUserController(req: Request, res: Response, next: Ne
 
         await createUserService(email, password, firstName, lastName, refCode, token);
 
-        res.status(200).json({
+        res.status(201).json({
             message: "User has created successfully! Please Login!"
         });
     } catch (error) {
