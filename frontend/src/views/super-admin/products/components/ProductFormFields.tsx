@@ -1,11 +1,9 @@
 import { ChangeEvent } from "react"
-import { CategoryOption, StoreOption } from "../types"
+import { CategoryOption } from "../types"
 export type ProductFormState = {
   name: string
   categoryId: string
-  storeId: string
   price: string
-  stock: string
   description: string
   files: File[]
 }
@@ -17,7 +15,6 @@ type ProductFormFieldsProps = {
   form: ProductFormState
   errors: FormErrors
   fileError: string
-  stores: StoreOption[]
   categories: CategoryOption[]
   onFieldChange: FieldChangeHandler
   onFilesChange: (event: ChangeEvent<HTMLInputElement>) => void
@@ -27,7 +24,6 @@ function ProductFormFields({
   form,
   errors,
   fileError,
-  stores,
   categories,
   onFieldChange,
   onFilesChange,
@@ -48,24 +44,6 @@ function ProductFormFields({
         />
         {errors.name && (
           <p className="mt-1 text-xs text-rose-500">{errors.name}</p>
-        )}
-      </div>
-      <div>
-        <label className="text-sm font-semibold text-slate-700">Store *</label>
-        <select
-          value={form.storeId}
-          onChange={onFieldChange("storeId")}
-          className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-600"
-        >
-          <option value="">Select store</option>
-          {stores.map((store) => (
-            <option key={store.id} value={store.id}>
-              {store.name}
-            </option>
-          ))}
-        </select>
-        {errors.storeId && (
-          <p className="mt-1 text-xs text-rose-500">{errors.storeId}</p>
         )}
       </div>
       <div>
@@ -103,20 +81,6 @@ function ProductFormFields({
           />
           {errors.price && (
             <p className="mt-1 text-xs text-rose-500">{errors.price}</p>
-          )}
-        </div>
-        <div>
-          <label className="text-sm font-semibold text-slate-700">Stock *</label>
-          <input
-            value={form.stock}
-            onChange={onFieldChange("stock")}
-            type="number"
-            min={0}
-            className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 focus:border-emerald-500 focus:bg-white focus:outline-none"
-            placeholder="0"
-          />
-          {errors.stock && (
-            <p className="mt-1 text-xs text-rose-500">{errors.stock}</p>
           )}
         </div>
       </div>

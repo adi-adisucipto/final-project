@@ -11,11 +11,8 @@ export const mapAdminProduct = (product: AdminProduct): ProductItem => ({
   name: product.name,
   description: product.description,
   price: product.price,
-  stock: product.stock,
   isActive: product.isActive,
   categoryId: product.category?.id ?? "",
   categoryName: product.category?.name ?? "Uncategorized",
-  storeId: product.store?.id ?? "",
-  storeName: product.store?.name ?? "Unknown store",
   images: product.images ?? [],
 })

@@ -134,7 +134,6 @@ export class OrderService {
               productStockId: productStock.id,
               action: "OUT",
               quantity: item.quantity,
-              note: `Order ${newOrder.orderNumber}`,
             },
           });
         }

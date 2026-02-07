@@ -22,16 +22,14 @@ function AdminProductsPage() {
   const accessToken = session?.accessToken
   const [search, setSearch] = useState("")
   const [categoryId, setCategoryId] = useState("")
-  const [storeId, setStoreId] = useState("")
   const [sort, setSort] = useState<SortOption>(defaultSort)
   const [page, setPage] = useState(1)
   const [refreshKey, setRefreshKey] = useState(0)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState<ProductItem | null>(null)
-  const filters = { search, categoryId, storeId, sort, page }
-  const { products: catalogProducts, pagination, categories, stores, isLoading } =
+  const filters = { search, categoryId, sort, page }
+  const { products: catalogProducts, pagination, categories, isLoading } =
     useAdminProducts(filters, accessToken, refreshKey)
-  const totalStock = catalogProducts.reduce((sum, item) => sum + item.stock, 0)
   const totalProducts = pagination.total || catalogProducts.length
   const refreshProducts = () => setRefreshKey((prev) => prev + 1)
   const handleSearchChange = (value: string) => {
@@ -40,10 +38,6 @@ function AdminProductsPage() {
   }
   const handleCategoryChange = (value: string) => {
     setCategoryId(value)
-    setPage(1)
-  }
-  const handleStoreChange = (value: string) => {
-    setStoreId(value)
     setPage(1)
   }
   const handleSortChange = (value: SortOption) => {
@@ -83,13 +77,8 @@ function AdminProductsPage() {
         name: payload.name,
         description: payload.description,
         price: payload.price,
-        stock: payload.stock,
         categoryId: payload.categoryId,
-        storeId: payload.storeId,
         isActive: true,
-      }
-      if (payload.previousStoreId) {
-        body.previousStoreId = payload.previousStoreId
       }
       let productId = payload.id
       if (payload.id) {
@@ -121,7 +110,7 @@ function AdminProductsPage() {
               Products
             </h1>
             <p className="mt-1 text-sm text-slate-500">
-              Manage products for each store in one place.
+              Manage product details. Use Inventory Management for stock updates.
             </p>
           </div>
         </div>
@@ -131,20 +120,14 @@ function AdminProductsPage() {
             onSearchChange={handleSearchChange}
             categoryId={categoryId}
             onCategoryChange={handleCategoryChange}
-            storeId={storeId}
-            onStoreChange={handleStoreChange}
             sort={sort}
             onSortChange={handleSortChange}
             categories={categories}
-            stores={stores}
             onAdd={openAddModal}
           />
         </div>
       </section>
-      <ProductStats
-        totalProducts={totalProducts}
-        totalStock={totalStock}
-      />
+      <ProductStats totalProducts={totalProducts} />
       {isLoading && (
         <p className="text-sm font-semibold text-slate-500">
           Loading products...
@@ -167,7 +150,6 @@ function AdminProductsPage() {
         onClose={closeModal}
         onSave={handleSave}
         product={editingProduct}
-        stores={stores}
         categories={categories}
         existingProducts={catalogProducts}
       />

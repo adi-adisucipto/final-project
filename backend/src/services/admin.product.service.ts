@@ -9,9 +9,7 @@ type BaseParams = {
   name: string;
   description: string;
   price: number;
-  stock: number;
   categoryId: string;
-  storeId: string;
 };
 
 type CreateParams = BaseParams & { isActive: boolean };
@@ -19,15 +17,6 @@ type CreateParams = BaseParams & { isActive: boolean };
 type UpdateParams = BaseParams & {
   id: string;
   isActive?: boolean;
-  previousStoreId?: string;
-};
-
-const ensureStore = async (storeId: string) => {
-  const store = await prisma.store.findUnique({
-    where: { id: storeId },
-    select: { id: true },
-  });
-  if (!store) throw createCustomError(404, "storeId");
 };
 
 const ensureCategory = async (categoryId: string) => {
@@ -73,18 +62,9 @@ const buildProductCreateData = (params: CreateParams) => ({
   isActive: params.isActive,
 });
 
-const buildStockCreateData = (params: CreateParams, productId: string) => ({
-  productId,
-  storeId: params.storeId,
-  quantity: params.stock,
-});
-
 const createProductRecord = async (params: CreateParams) => {
   const product = await prisma.product.create({
     data: buildProductCreateData(params),
-  });
-  await prisma.productStock.create({
-    data: buildStockCreateData(params, product.id),
   });
   return product.id;
 };
@@ -100,23 +80,11 @@ const buildProductUpdateData = (params: UpdateParams) => {
   return data;
 };
 
-const buildStockUpsertData = (params: UpdateParams) => ({
-  where: { productId_storeId: { productId: params.id, storeId: params.storeId } },
-  update: { quantity: params.stock },
-  create: { productId: params.id, storeId: params.storeId, quantity: params.stock },
-});
-
 const updateProductRecord = async (params: UpdateParams) => {
   await prisma.product.update({
     where: { id: params.id },
     data: buildProductUpdateData(params),
   });
-  if (params.previousStoreId && params.previousStoreId !== params.storeId) {
-    await prisma.productStock.deleteMany({
-      where: { productId: params.id, storeId: params.previousStoreId },
-    });
-  }
-  await prisma.productStock.upsert(buildStockUpsertData(params));
 };
 
 const deleteProductRecord = async (productId: string) => {
@@ -126,20 +94,18 @@ const deleteProductRecord = async (productId: string) => {
 };
 
 export async function createAdminProduct(params: CreateParams) {
-  await ensureStore(params.storeId);
   await ensureCategory(params.categoryId);
   await ensureUniqueName(params.name);
   const productId = await createProductRecord(params);
-  return getAdminProductItem(params.storeId, productId);
+  return getAdminProductItem(productId);
 }
 
 export async function updateAdminProduct(params: UpdateParams) {
   await ensureProduct(params.id);
-  await ensureStore(params.storeId);
   await ensureCategory(params.categoryId);
   await ensureUniqueName(params.name, params.id);
   await updateProductRecord(params);
-  return getAdminProductItem(params.storeId, params.id);
+  return getAdminProductItem(params.id);
 }
 
 export async function deleteAdminProduct(productId: string) {
