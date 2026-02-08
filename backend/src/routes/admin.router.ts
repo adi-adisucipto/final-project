@@ -11,6 +11,13 @@ import {
   updateAdminCategoryController,
 } from "../controllers/admin.category.controller";
 import {
+  createAdminDiscountController,
+  deleteAdminDiscountController,
+  listAdminDiscountsController,
+  listDiscountProductsController,
+  updateAdminDiscountController,
+} from "../controllers/admin.discount.controller";
+import {
   adjustInventoryController,
   deleteInventoryController,
   listInventoryController,
@@ -38,6 +45,11 @@ adminRouter.get("/categories", listAdminCategoriesController);
 adminRouter.post("/categories", createAdminCategoryController);
 adminRouter.patch("/categories/:categoryId", updateAdminCategoryController);
 adminRouter.delete("/categories/:categoryId", deleteAdminCategoryController);
+adminRouter.get("/discounts", listAdminDiscountsController);
+adminRouter.get("/discounts/products", listDiscountProductsController);
+adminRouter.post("/discounts", createAdminDiscountController);
+adminRouter.patch("/discounts/:discountId", updateAdminDiscountController);
+adminRouter.delete("/discounts/:discountId", deleteAdminDiscountController);
 adminRouter.get("/inventory", listInventoryController);
 adminRouter.get("/inventory/products", listInventoryProductsController);
 adminRouter.post("/inventory/adjust", adjustInventoryController);

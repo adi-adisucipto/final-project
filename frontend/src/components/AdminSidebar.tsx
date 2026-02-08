@@ -41,7 +41,7 @@ const adminLinks = [
     icon: Warehouse,
   },
   {
-    label: "Store Discount",
+    label: "Discount Management",
     href: "/admin/store-discount",
     icon: Percent,
   },
