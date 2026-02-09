@@ -64,7 +64,7 @@ export function useAdminProducts(
         const storesResponse = await getStore(accessToken)
         if (!active) return
         setCategories(categoriesData)
-        const stores = (storesResponse.data || []).map((store) => ({
+        const stores = (storesResponse.data || []).map((store: StoreOption) => ({
           id: store.id,
           name: store.name,
         }))
