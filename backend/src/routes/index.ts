@@ -20,6 +20,10 @@ router.use("/store", storeRouter);
 router.use("/shipping", shippingRouter);
 router.use("/products", productRouter);
 router.use("/stores", nearStoreRouter);
+router.use("/store-admin/orders", storeAdminrouter);
+router.use("/cart", cartrouter);
+router.use("/checkout", checkoutRouter);
+router.use("/upload", paymentProofRouter);
 router.use("/change-email", changeEmailRouter);
 router.use("/voucher", voucherRouter);
 

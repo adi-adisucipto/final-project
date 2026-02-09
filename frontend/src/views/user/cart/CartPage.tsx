@@ -13,7 +13,7 @@ import { useCart } from "@/hooks/useCart";
 import { useShippingAddress } from "@/hooks/useShippingAddress";
 import { ADD_ON_PRODUCTS } from "./komponent/addOnProducts";
 import { calculateCartTotals } from "@/lib/cart.utils";
-import { cartService } from "@/services/cart.services";
+import { updateCartItem, removeCartItem, addToCart } from "@/services/cart.services";
 
 export default function CartPage() {
   const router = useRouter();
@@ -73,11 +73,11 @@ export default function CartPage() {
             storeAddress={group.store.address}
             items={group.items}
             onUpdateQuantity={async (id, qty) => {
-              await cartService.updateCartItem(id, { quantity: qty });
+              await updateCartItem(id, { quantity: qty });
               await fetchCart();
             }}
             onRemove={async (id) => {
-              await cartService.removeCartItem(id);
+              await removeCartItem(id);
               await fetchCart();
             }}
           />
@@ -88,7 +88,7 @@ export default function CartPage() {
               key={p.id}
               {...p}
               onAddToCart={async (id) => {
-                await cartService.addToCart({
+                await addToCart({
                   productId: id,
                   storeId: groupedItems[0]?.store.id,
                   quantity: 1,
