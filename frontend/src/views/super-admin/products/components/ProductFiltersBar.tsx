@@ -1,17 +1,14 @@
 import { Plus, Search } from "lucide-react"
-import { CategoryOption, SortOption, StoreOption } from "../types"
+import { CategoryOption, SortOption } from "../types"
 
 type ProductFiltersBarProps = {
   search: string
   onSearchChange: (value: string) => void
   categoryId: string
   onCategoryChange: (value: string) => void
-  storeId: string
-  onStoreChange: (value: string) => void
   sort: SortOption
   onSortChange: (value: SortOption) => void
   categories: CategoryOption[]
-  stores: StoreOption[]
   onAdd: () => void
 }
 
@@ -20,12 +17,9 @@ function ProductFiltersBar({
   onSearchChange,
   categoryId,
   onCategoryChange,
-  storeId,
-  onStoreChange,
   sort,
   onSortChange,
   categories,
-  stores,
   onAdd,
 }: ProductFiltersBarProps) {
   return (
@@ -41,18 +35,6 @@ function ProductFiltersBar({
         />
       </div>
       <div className="flex flex-wrap gap-3">
-        <select
-          value={storeId}
-          onChange={(event) => onStoreChange(event.target.value)}
-          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600"
-        >
-          <option value="">All Stores</option>
-          {stores.map((store) => (
-            <option key={store.id} value={store.id}>
-              {store.name}
-            </option>
-          ))}
-        </select>
         <select
           value={categoryId}
           onChange={(event) => onCategoryChange(event.target.value)}

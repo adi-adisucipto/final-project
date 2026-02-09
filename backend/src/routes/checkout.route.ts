@@ -9,6 +9,7 @@ const orderController = new OrderController();
 checkoutRouter.use(authMiddleware);
 
 checkoutRouter.post("/", orderController.createOrder);
+checkoutRouter.post("/preview", orderController.previewDiscounts);
 checkoutRouter.get("/", orderController.getUserOrders);
 checkoutRouter.get("/:id", orderController.getOrderById);
 checkoutRouter.post("/:id/payment",uploader().single("file"), orderController.uploadPaymentProof);

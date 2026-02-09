@@ -45,13 +45,6 @@ export async function listAdminProductsController(
     const search = parseString(req.query.search) || undefined;
     const categoryId = parseString(req.query.categoryId) || undefined;
 
-    const storeIdText = parseString(req.query.storeId);
-    let storeId: string | undefined;
-    if (storeIdText) {
-      if (!isUuid(storeIdText)) throw createCustomError(400, "storeId");
-      storeId = storeIdText;
-    }
-
     const minPrice = parseNumber(req.query.minPrice);
     if (minPrice !== undefined && minPrice < 0) {
       throw createCustomError(400, "minPrice");
@@ -72,7 +65,6 @@ export async function listAdminProductsController(
       limit,
       search,
       categoryId,
-      storeId,
       minPrice,
       maxPrice,
       sort,
@@ -99,15 +91,8 @@ export async function createAdminProductController(
     const price = parseNumber(req.body.price);
     if (price === undefined || price <= 0) throw createCustomError(400, "price");
 
-    const stock = parseNumber(req.body.stock);
-    if (stock === undefined || stock < 0) throw createCustomError(400, "stock");
-
     const categoryId = parseString(req.body.categoryId);
     if (!categoryId) throw createCustomError(400, "categoryId");
-
-    const storeId = parseString(req.body.storeId);
-    if (!storeId) throw createCustomError(400, "storeId");
-    if (!isUuid(storeId)) throw createCustomError(400, "storeId");
 
     let isActive = true;
     if (req.body.isActive === false || req.body.isActive === "false") {
@@ -118,9 +103,7 @@ export async function createAdminProductController(
       name,
       description,
       price,
-      stock,
       categoryId,
-      storeId,
       isActive,
     });
     res.status(201).json({ data });
@@ -149,24 +132,8 @@ export async function updateAdminProductController(
     const price = parseNumber(req.body.price);
     if (price === undefined || price <= 0) throw createCustomError(400, "price");
 
-    const stock = parseNumber(req.body.stock);
-    if (stock === undefined || stock < 0) throw createCustomError(400, "stock");
-
     const categoryId = parseString(req.body.categoryId);
     if (!categoryId) throw createCustomError(400, "categoryId");
-
-    const storeId = parseString(req.body.storeId);
-    if (!storeId) throw createCustomError(400, "storeId");
-    if (!isUuid(storeId)) throw createCustomError(400, "storeId");
-
-    const previousStoreIdText = parseString(req.body.previousStoreId);
-    let previousStoreId: string | undefined;
-    if (previousStoreIdText) {
-      if (!isUuid(previousStoreIdText)) {
-        throw createCustomError(400, "previousStoreId");
-      }
-      previousStoreId = previousStoreIdText;
-    }
 
     let isActive: boolean | undefined;
     if (req.body.isActive === true || req.body.isActive === "true") {
@@ -180,11 +147,8 @@ export async function updateAdminProductController(
       name,
       description,
       price,
-      stock,
       categoryId,
-      storeId,
       isActive,
-      previousStoreId,
     });
     res.status(200).json({ data });
   } catch (error) {

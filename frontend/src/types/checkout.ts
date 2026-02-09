@@ -84,6 +84,20 @@ export interface CreateOrderPayload {
   paymentMethod: PaymentMethod;
 }
 
+export interface DiscountPreviewPayload {
+  storeId: string;
+  items: Array<{
+    productId: string;
+    quantity: number;
+    price: number;
+  }>;
+}
+
+export interface DiscountPreviewResponse {
+  subtotal: number;
+  discountAmount: number;
+}
+
 export interface UploadPaymentProofPayload {
   paymentProofUrl: string;
 }

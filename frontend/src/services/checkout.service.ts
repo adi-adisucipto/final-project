@@ -3,6 +3,8 @@ import { getSession } from "next-auth/react";
 import {
   ApiResponse,
   CreateOrderPayload,
+  DiscountPreviewPayload,
+  DiscountPreviewResponse,
   UploadPaymentProofPayload,
   OrderDetail,
 } from "@/types/checkout";
@@ -27,6 +29,25 @@ export const orderService = {
 
     const res = await axios.post<ApiResponse<OrderDetail>>(
       `${API_BASE_URL}/checkout`,
+      payload,
+      { headers }
+    );
+
+    return res.data.data;
+  },
+
+  async previewDiscounts(
+    payload: DiscountPreviewPayload
+  ): Promise<DiscountPreviewResponse> {
+    if (!API_BASE_URL) throw new Error("API_BASE_URL is not defined");
+
+    const headers = {
+      "Content-Type": "application/json",
+      ...(await getAuthHeader()),
+    };
+
+    const res = await axios.post<ApiResponse<DiscountPreviewResponse>>(
+      `${API_BASE_URL}/checkout/preview`,
       payload,
       { headers }
     );

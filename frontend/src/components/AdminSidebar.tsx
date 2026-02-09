@@ -36,12 +36,12 @@ const adminLinks = [
     icon: Tags,
   },
   {
-    label: "Store Stocks",
+    label: "Inventory Management",
     href: "/admin/store-stocks",
     icon: Warehouse,
   },
   {
-    label: "Store Discount",
+    label: "Discount Management",
     href: "/admin/store-discount",
     icon: Percent,
   },

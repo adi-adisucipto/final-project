@@ -1,7 +1,7 @@
 import Image from "next/image"
 import { Pencil, Trash2 } from "lucide-react"
 import { ProductItem } from "../types"
-import { formatCurrency, formatNumber } from "../utils"
+import { formatCurrency } from "../utils"
 
 type ProductTableProps = {
   products: ProductItem[]
@@ -19,7 +19,6 @@ function ProductTable({ products, onEdit, onDelete }: ProductTableProps) {
               <th className="px-6 py-4">Product</th>
               <th className="px-6 py-4">Category</th>
               <th className="px-6 py-4">Price</th>
-              <th className="px-6 py-4">Stock</th>
               <th className="px-6 py-4">Description</th>
               <th className="px-6 py-4 text-right">Actions</th>
             </tr>
@@ -27,7 +26,7 @@ function ProductTable({ products, onEdit, onDelete }: ProductTableProps) {
           <tbody>
             {products.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
+                <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
                   No products found.
                 </td>
               </tr>
@@ -35,7 +34,7 @@ function ProductTable({ products, onEdit, onDelete }: ProductTableProps) {
               products.map((product) => {
                 const imageUrl = product.images[0]
                 return (
-                  <tr key={`${product.id}-${product.storeId}`} className="border-t">
+                  <tr key={product.id} className="border-t">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="flex h-12 w-12 items-center justify-center rounded-xl border bg-slate-100">
@@ -53,9 +52,6 @@ function ProductTable({ products, onEdit, onDelete }: ProductTableProps) {
                           <p className="font-semibold text-slate-900">
                             {product.name}
                           </p>
-                          <p className="text-xs text-slate-500">
-                            {product.storeName}
-                          </p>
                         </div>
                       </div>
                     </td>
@@ -64,9 +60,6 @@ function ProductTable({ products, onEdit, onDelete }: ProductTableProps) {
                   </td>
                   <td className="px-6 py-4 font-semibold text-slate-900">
                     {formatCurrency(product.price)}
-                  </td>
-                  <td className="px-6 py-4 text-slate-600">
-                    {formatNumber(product.stock)}
                   </td>
                   <td className="px-6 py-4 text-slate-500">
                     <span className="line-clamp-2">{product.description}</span>
