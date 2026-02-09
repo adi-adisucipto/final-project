@@ -20,7 +20,7 @@ import { IconButton } from '../ui/icon-button';
 import { useSession } from 'next-auth/react';
 import Dropdown from './Dropdown';
 import ExitDialog from '../ExitDialog';
-import { cartService } from '@/services/cart.services';
+import { getCartCount } from '@/services/cart.services';
 
 function NavBar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -43,7 +43,7 @@ function NavBar() {
 
     const fetchCartCount = async () => {
         try {
-            const count = await cartService.getCartCount();
+            const count = await getCartCount();
             setCartCount(count);
         } catch (error) {
             console.error('Failded to fetch cart count: ', error);

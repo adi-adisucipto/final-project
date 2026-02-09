@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { cartService } from "@/services/cart.services";
+import { getCart, groupCartItemsByStore } from "@/services/cart.services";
 import { CartItem, GroupedCartItems } from "@/types/cart";
 
 export function useCart() {
@@ -12,9 +12,9 @@ export function useCart() {
     try {
       setIsLoading(true);
       setError(null);
-      const data = await cartService.getCart();
+      const data = await getCart();
       setCartItems(data.items);
-      setGroupedItems(cartService.groupCartItemsByStore(data.items));
+      setGroupedItems(groupCartItemsByStore(data.items));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load cart");
     } finally {
