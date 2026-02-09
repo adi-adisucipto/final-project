@@ -6,7 +6,7 @@ import {
   DiscountPreviewPayload,
   DiscountPreviewResponse,
   UploadPaymentProofPayload,
-  Order,
+  OrderDetail,
 } from "@/types/checkout";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -19,7 +19,7 @@ const getAuthHeader = async () => {
 };
 
 export const orderService = {
-  async createOrder(payload: CreateOrderPayload): Promise<Order> {
+  async createOrder(payload: CreateOrderPayload): Promise<OrderDetail> {
     if (!API_BASE_URL) throw new Error("API_BASE_URL is not defined");
 
     const headers = {
@@ -27,7 +27,7 @@ export const orderService = {
       ...(await getAuthHeader()),
     };
 
-    const res = await axios.post<ApiResponse<Order>>(
+    const res = await axios.post<ApiResponse<OrderDetail>>(
       `${API_BASE_URL}/checkout`,
       payload,
       { headers }
@@ -58,13 +58,13 @@ export const orderService = {
   async uploadPaymentProof(
     orderId: string,
     payload: UploadPaymentProofPayload
-  ): Promise<Order> {
+  ): Promise<OrderDetail> {
     const headers = {
       "Content-Type": "application/json",
       ...(await getAuthHeader()),
     };
 
-    const res = await axios.post<ApiResponse<Order>>(
+    const res = await axios.post<ApiResponse<OrderDetail>>(
       `${API_BASE_URL}/checkout/${orderId}/payment`,
       payload,
       { headers }
@@ -73,12 +73,12 @@ export const orderService = {
     return res.data.data;
   },
 
-  async getOrderById(orderId: string): Promise<Order> {
+  async getOrderById(orderId: string): Promise<OrderDetail> {
     const headers = {
       ...(await getAuthHeader()),
     };
 
-    const res = await axios.get<ApiResponse<Order>>(
+    const res = await axios.get<ApiResponse<OrderDetail>>(
       `${API_BASE_URL}/checkout/${orderId}`,
       { headers }
     );
@@ -86,12 +86,12 @@ export const orderService = {
     return res.data.data;
   },
 
-  async getUserOrders(): Promise<Order[]> {
+  async getUserOrders(): Promise<OrderDetail[]> {
     const headers = {
       ...(await getAuthHeader()),
     };
 
-    const res = await axios.get<ApiResponse<Order[]>>(
+    const res = await axios.get<ApiResponse<OrderDetail[]>>(
       `${API_BASE_URL}/checkout`,
       { headers }
     );

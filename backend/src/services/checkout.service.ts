@@ -246,10 +246,12 @@ export class OrderService {
           storeId,
           subtotal: computedSubtotal,
           shippingCost,
-          discountAmount: combinedDiscount,
-          totalAmount: computedTotal,
+          discountAmount,
+          shippingDiscount: 0,
+          totalAmount,
           voucherCodeUsed,
           status: initialStatus,
+          updatedAt: new Date(),
         },
       });
 
@@ -317,12 +319,17 @@ export class OrderService {
           include: {
             product: {
               include: {
-                images: { take: 1 },
+                images: true,
               },
             },
           },
         },
-        userAddress: true,
+        userAddress: {
+          include: {
+            userCity: true,
+            provinceId: true,
+          },
+        },
         store: true,
       },
     });
@@ -352,6 +359,24 @@ export class OrderService {
       data: {
         paymentProof: proofUrl,
         status: "WAITING_CONFIRMATION",
+        updatedAt: new Date(),
+      },
+      include: {
+        orderItems: {
+          include: {
+            product: {
+              include: {
+                images: true,
+              },
+            },
+          },
+        },
+        userAddress: {
+          include: {
+            userCity: true,
+            provinceId: true,
+          },
+        },
       },
     });
 
@@ -366,12 +391,17 @@ export class OrderService {
           include: {
             product: {
               include: {
-                images: { take: 1 },
+                images: true,
               },
             },
           },
         },
-        userAddress: true,
+        userAddress: {
+          include: {
+            userCity: true,
+            provinceId: true,
+          },
+        },
         store: true,
       },
     });
@@ -387,23 +417,44 @@ export class OrderService {
   }
 
   async getUserOrders(userId: string) {
-    const orders = await prisma.order.findMany({
-      where: { userId },
-      include: {
-        orderItems: {
-          include: {
-            product: {
-              include: {
-                images: { take: 1 },
-              },
+  const orders = await prisma.order.findMany({
+    where: { userId },
+    include: {
+      userAddress: {
+        include: {
+          userCity: true,
+          provinceId: true,
+        },
+      },
+      orderItems: {
+        include: {
+          product: {
+            include: {
+              images: true,
             },
           },
         },
-        store: true,
       },
-      orderBy: { createdAt: "desc" },
-    });
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
 
-    return orders;
-  }
+  return orders.map(order => ({
+    ...order,
+    items: order.orderItems.map(item => ({
+      id: item.id,
+      productId: item.productId,
+      price: item.price,
+      quantity: item.quantity,
+      discountAmount: item.discountAmount,
+      subtotal: item.subtotal,
+      product: {
+        name: item.product.name,
+        images: item.product.images,
+      },
+    })),
+  }));
+}
 }
