@@ -9,6 +9,10 @@ import productRouter from "./product.router";
 import nearStoreRouter from "./nearStore.router";
 import changeEmailRouter from "./changeEmail.router";
 import voucherRouter from "./voucher.router";
+import storeAdminrouter from "./storeAdmin.orders.route";
+import cartrouter from "./cart.router";
+import checkoutRouter from "./checkout.route";
+import paymentProofRouter from "./PaymentProof.router";
 
 const router = Router();
 
