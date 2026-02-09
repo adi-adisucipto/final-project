@@ -7,14 +7,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { CategoryOption, ProductFormPayload, ProductItem, StoreOption } from "../types"
+import { CategoryOption, ProductFormPayload, ProductItem } from "../types"
 import ProductFormFields, { FormErrors, ProductFormState } from "./ProductFormFields"
 type ProductModalProps = {
   open: boolean
   onClose: () => void
   onSave: (payload: ProductFormPayload) => void
   product: ProductItem | null
-  stores: StoreOption[]
   categories: CategoryOption[]
   existingProducts: ProductItem[]
 }
@@ -24,9 +23,7 @@ const maxFileSize = 1024 * 1024
 const buildFormState = (product?: ProductItem | null): ProductFormState => ({
   name: product?.name ?? "",
   categoryId: product?.categoryId ?? "",
-  storeId: product?.storeId ?? "",
   price: product ? String(product.price) : "",
-  stock: product ? String(product.stock) : "",
   description: product?.description ?? "",
   files: [],
 })
@@ -35,7 +32,6 @@ function ProductModal({
   onClose,
   onSave,
   product,
-  stores,
   categories,
   existingProducts,
 }: ProductModalProps) {
@@ -91,23 +87,12 @@ function ProductModal({
     }
 
     if (!form.categoryId) nextErrors.categoryId = "Category is required."
-    if (!form.storeId) nextErrors.storeId = "Store is required."
-
     if (!form.price.trim()) {
       nextErrors.price = "Price must be greater than 0."
     } else {
       const price = Number(form.price)
       if (!Number.isFinite(price) || price <= 0) {
         nextErrors.price = "Price must be greater than 0."
-      }
-    }
-
-    if (!form.stock.trim()) {
-      nextErrors.stock = "Stock must be 0 or more."
-    } else {
-      const stock = Number(form.stock)
-      if (!Number.isFinite(stock) || stock < 0) {
-        nextErrors.stock = "Stock must be 0 or more."
       }
     }
 
@@ -126,10 +111,7 @@ function ProductModal({
       name,
       description: form.description.trim(),
       price: Number(form.price),
-      stock: Number(form.stock),
       categoryId: form.categoryId,
-      storeId: form.storeId,
-      previousStoreId: product?.storeId,
       files: form.files,
     })
   }
@@ -148,7 +130,6 @@ function ProductModal({
           form={form}
           errors={errors}
           fileError={fileError}
-          stores={stores}
           categories={categories}
           onFieldChange={updateField}
           onFilesChange={handleFilesChange}

@@ -7,36 +7,28 @@ export type AdminListParams = {
   limit: number;
   search?: string;
   categoryId?: string;
-  storeId?: string;
   minPrice?: number;
   maxPrice?: number;
   sort: "newest" | "price_asc" | "price_desc";
 };
 
 const adminInclude = {
-  product: {
-    include: {
-      category: { select: { id: true, name: true } },
-      images: true,
-    },
-  },
-  store: { select: { id: true, name: true } },
+  category: { select: { id: true, name: true } },
+  images: true,
 } as const;
 
-type AdminItem = Prisma.ProductStockGetPayload<{
+type AdminItem = Prisma.ProductGetPayload<{
   include: typeof adminInclude;
 }>;
 
 const mapAdminItem = (item: AdminItem) => ({
-  id: item.product.id,
-  name: item.product.name,
-  description: item.product.description || "",
-  price: Number(item.product.price),
-  isActive: item.product.isActive,
-  stock: item.quantity,
-  category: item.product.category,
-  store: item.store,
-  images: item.product.images.map((image) => image.imageUrl),
+  id: item.id,
+  name: item.name,
+  description: item.description || "",
+  price: Number(item.price),
+  isActive: item.isActive,
+  category: item.category,
+  images: item.images.map((image) => image.imageUrl),
 });
 
 const buildPagination = (page: number, limit: number, total: number) => ({
@@ -61,34 +53,24 @@ const buildSearchFilter = (search?: string) =>
       ]
     : undefined;
 
-const buildProductWhere = (params: AdminListParams) => {
-  const product: Prisma.ProductWhereInput = {};
+const buildProductWhere = (params: AdminListParams): Prisma.ProductWhereInput => {
+  const where: Prisma.ProductWhereInput = {};
   const price = buildPriceFilter(params);
   const searchFilter = buildSearchFilter(params.search);
-  if (params.categoryId) product.categoryId = params.categoryId;
-  if (price) product.price = price;
-  if (searchFilter) product.OR = searchFilter;
-  return product;
-};
-
-const buildAdminWhere = (params: AdminListParams) => {
-  const where: Prisma.ProductStockWhereInput = {
-    product: buildProductWhere(params),
-  };
-  if (params.storeId) where.storeId = params.storeId;
+  if (params.categoryId) where.categoryId = params.categoryId;
+  if (price) where.price = price;
+  if (searchFilter) where.OR = searchFilter;
   return where;
 };
 
 const buildOrderBy = (sort: AdminListParams["sort"]) => {
-  if (sort === "price_asc") return { product: { price: Prisma.SortOrder.asc } };
-  if (sort === "price_desc") {
-    return { product: { price: Prisma.SortOrder.desc } };
-  }
-  return { product: { createdAt: Prisma.SortOrder.desc } };
+  if (sort === "price_asc") return { price: Prisma.SortOrder.asc };
+  if (sort === "price_desc") return { price: Prisma.SortOrder.desc };
+  return { createdAt: Prisma.SortOrder.desc };
 };
 
 const buildListQuery = (params: AdminListParams) => ({
-  where: buildAdminWhere(params),
+  where: buildProductWhere(params),
   orderBy: buildOrderBy(params.sort),
   skip: (params.page - 1) * params.limit,
   take: params.limit,
@@ -97,8 +79,8 @@ const buildListQuery = (params: AdminListParams) => ({
 const getAdminListResults = (params: AdminListParams) => {
   const query = buildListQuery(params);
   return prisma.$transaction([
-    prisma.productStock.findMany({ ...query, include: adminInclude }),
-    prisma.productStock.count({ where: query.where }),
+    prisma.product.findMany({ ...query, include: adminInclude }),
+    prisma.product.count({ where: query.where }),
   ]);
 };
 
@@ -110,9 +92,9 @@ export async function listAdminProducts(params: AdminListParams) {
   };
 }
 
-export async function getAdminProductItem(storeId: string, productId: string) {
-  const item = await prisma.productStock.findFirst({
-    where: { storeId, productId },
+export async function getAdminProductItem(productId: string) {
+  const item = await prisma.product.findUnique({
+    where: { id: productId },
     include: adminInclude,
   });
   if (!item) throw createCustomError(404, "Product not found");

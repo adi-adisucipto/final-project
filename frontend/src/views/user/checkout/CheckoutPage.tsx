@@ -27,9 +27,11 @@ export default function CheckoutPage() {
   const { address, isLoading: isLoadingAddress } = useShippingAddress(
     session?.user?.id
   );
+  const storeId = groupedItems[0]?.store.id;
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   const [paymentProof, setPaymentProof] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [productDiscount, setProductDiscount] = useState(0);
 
   const [appliedVoucher, setAppliedVoucher] = useState<VoucherData | null>(null);
   const [availableVouchers] = useState<VoucherData[]>([
@@ -76,7 +78,38 @@ export default function CheckoutPage() {
     storeName: item.store.name,
   }));
 
-  const { subtotal, shipping, discount: cartDiscount } = calculateCartTotals(cartItems);
+  useEffect(() => {
+    if (!storeId || cartItems.length === 0) {
+      setProductDiscount(0);
+      return;
+    }
+
+    let active = true;
+    const items = cartItems.map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity,
+      price: Number(item.product.price),
+    }));
+
+    const loadPreview = async () => {
+      try {
+        const data = await orderService.previewDiscounts({
+          storeId,
+          items,
+        });
+        if (active) setProductDiscount(Number(data.discountAmount) || 0);
+      } catch (error) {
+        if (active) setProductDiscount(0);
+      }
+    };
+
+    loadPreview();
+    return () => {
+      active = false;
+    };
+  }, [storeId, cartItems]);
+
+  const { subtotal, shipping } = calculateCartTotals(cartItems);
   let voucherDiscount = 0;
   if (appliedVoucher) {
     if (appliedVoucher.type === "PERCENTAGE") {
@@ -86,7 +119,7 @@ export default function CheckoutPage() {
     }
   }
 
-  const totalDiscount = cartDiscount + voucherDiscount;
+  const totalDiscount = productDiscount + voucherDiscount;
   const total = subtotal - totalDiscount + shipping;
 
   const handleApplyVoucher = async (code: string) => {
@@ -138,7 +171,6 @@ export default function CheckoutPage() {
       return;
     }
 
-    const storeId = groupedItems[0]?.store.id;
     if (!storeId) {
       enqueueSnackbar("Store ID tidak ditemukan", { variant: "error" });
       return;
@@ -164,7 +196,7 @@ export default function CheckoutPage() {
       })),
       subtotal: subtotal,
       shippingCost: shipping,
-      discountAmount: totalDiscount,
+      discountAmount: voucherDiscount,
       totalAmount: total,
       voucherCodeUsed: appliedVoucher?.code,
       paymentMethod: paymentMethod,

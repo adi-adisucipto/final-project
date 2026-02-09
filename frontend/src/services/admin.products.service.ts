@@ -12,10 +12,8 @@ export type AdminProduct = {
   name: string;
   description: string;
   price: number;
-  stock: number;
   isActive: boolean;
   category: { id: string; name: string } | null;
-  store: { id: string; name: string } | null;
   images: string[];
 };
 
@@ -28,11 +26,8 @@ export type AdminProductPayload = {
   name: string;
   description: string;
   price: number;
-  stock: number;
   categoryId: string;
-  storeId: string;
   isActive: boolean;
-  previousStoreId?: string;
 };
 
 export type AdminProductQuery = {
@@ -40,7 +35,6 @@ export type AdminProductQuery = {
   limit: number;
   search?: string;
   categoryId?: string;
-  storeId?: string;
   sort?: "newest" | "price_asc" | "price_desc";
 };
 

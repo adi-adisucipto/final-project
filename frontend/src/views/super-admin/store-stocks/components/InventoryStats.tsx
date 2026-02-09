@@ -1,20 +1,29 @@
+import { Stats } from "../types"
 import { formatNumber } from "../utils"
 
-type ProductStatsProps = {
-  totalProducts: number
-}
+type InventoryStatsProps = Stats
 
-function ProductStats({ totalProducts }: ProductStatsProps) {
+function InventoryStats({ totalProducts, totalUnits, lowStock }: InventoryStatsProps) {
   const stats = [
     {
       label: "Total Products",
       value: formatNumber(totalProducts),
-      description: "Items listed",
+      description: "Products in stock",
+    },
+    {
+      label: "Total Units",
+      value: formatNumber(totalUnits),
+      description: "Units across stores",
+    },
+    {
+      label: "Low Stock",
+      value: formatNumber(lowStock),
+      description: "Products below threshold",
     },
   ]
 
   return (
-    <section className="grid gap-4 sm:grid-cols-2">
+    <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {stats.map((stat) => (
         <div
           key={stat.label}
@@ -33,4 +42,4 @@ function ProductStats({ totalProducts }: ProductStatsProps) {
   )
 }
 
-export default ProductStats
+export default InventoryStats
