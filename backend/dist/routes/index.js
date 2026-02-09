@@ -1,0 +1,28 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_router_1 = __importDefault(require("./auth.router"));
+const profile_router_1 = __importDefault(require("./profile.router"));
+const address_router_1 = __importDefault(require("./address.router"));
+const admin_router_1 = __importDefault(require("./admin.router"));
+const store_router_1 = __importDefault(require("./store.router"));
+const shippingCost_router_1 = __importDefault(require("./shippingCost.router"));
+const product_router_1 = __importDefault(require("./product.router"));
+const nearStore_router_1 = __importDefault(require("./nearStore.router"));
+const changeEmail_router_1 = __importDefault(require("./changeEmail.router"));
+const voucher_router_1 = __importDefault(require("./voucher.router"));
+const router = (0, express_1.Router)();
+router.use("/auth", auth_router_1.default);
+router.use("/user", profile_router_1.default);
+router.use("/address", address_router_1.default);
+router.use("/admin", admin_router_1.default);
+router.use("/store", store_router_1.default);
+router.use("/shipping", shippingCost_router_1.default);
+router.use("/products", product_router_1.default);
+router.use("/stores", nearStore_router_1.default);
+router.use("/change-email", changeEmail_router_1.default);
+router.use("/voucher", voucher_router_1.default);
+exports.default = router;

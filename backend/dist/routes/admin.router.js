@@ -1,0 +1,28 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const admin_controller_1 = require("../controllers/admin.controller");
+const admin_category_controller_1 = require("../controllers/admin.category.controller");
+const admin_product_controller_1 = require("../controllers/admin.product.controller");
+const admin_product_images_controller_1 = require("../controllers/admin.product.images.controller");
+const admin_middleware_1 = require("../middlewares/admin.middleware");
+const auth_middleware_1 = require("../middlewares/auth.middleware");
+const uploader_1 = __importDefault(require("../utils/uploader"));
+const adminRouter = (0, express_1.Router)();
+adminRouter.use(auth_middleware_1.authMiddleware, admin_middleware_1.adminMiddleware);
+adminRouter.get("/users", admin_controller_1.listUsersController);
+adminRouter.patch("/users/:userId/role", admin_controller_1.updateUserRoleController);
+adminRouter.delete("/users/:userId", admin_controller_1.deleteUserController);
+adminRouter.get("/categories", admin_category_controller_1.listAdminCategoriesController);
+adminRouter.post("/categories", admin_category_controller_1.createAdminCategoryController);
+adminRouter.patch("/categories/:categoryId", admin_category_controller_1.updateAdminCategoryController);
+adminRouter.delete("/categories/:categoryId", admin_category_controller_1.deleteAdminCategoryController);
+adminRouter.get("/products", admin_product_controller_1.listAdminProductsController);
+adminRouter.post("/products", admin_product_controller_1.createAdminProductController);
+adminRouter.patch("/products/:productId", admin_product_controller_1.updateAdminProductController);
+adminRouter.post("/products/:productId/images", (0, uploader_1.default)().array("images", 5), admin_product_images_controller_1.uploadAdminProductImagesController);
+adminRouter.delete("/products/:productId", admin_product_controller_1.deleteAdminProductController);
+exports.default = adminRouter;

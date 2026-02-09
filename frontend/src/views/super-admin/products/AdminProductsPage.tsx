@@ -19,7 +19,7 @@ import { ProductFormPayload, ProductItem, SortOption } from "./types"
 const defaultSort: SortOption = "newest"
 function AdminProductsPage() {
   const { data: session } = useSession()
-  const accessToken = session?.accessToken
+  const accessToken = session?.accessToken!
   const [search, setSearch] = useState("")
   const [categoryId, setCategoryId] = useState("")
   const [storeId, setStoreId] = useState("")
@@ -87,6 +87,7 @@ function AdminProductsPage() {
         categoryId: payload.categoryId,
         storeId: payload.storeId,
         isActive: true,
+        previousStoreId: payload.previousStoreId
       }
       if (payload.previousStoreId) {
         body.previousStoreId = payload.previousStoreId

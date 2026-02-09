@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const store_controller_1 = require("../controllers/store.controller");
+const auth_middleware_1 = require("../middlewares/auth.middleware");
+const storeRouter = (0, express_1.Router)();
+storeRouter.post("/store-address", auth_middleware_1.authMiddleware, store_controller_1.createStoreController);
+storeRouter.get("/stores", auth_middleware_1.authMiddleware, store_controller_1.getStoreController);
+storeRouter.post("/delete", auth_middleware_1.authMiddleware, store_controller_1.deleteStoreController);
+storeRouter.post("/update", auth_middleware_1.authMiddleware, store_controller_1.updateStoreController);
+storeRouter.get("/admins", store_controller_1.getAdminsController);
+storeRouter.post("/assign-admin", auth_middleware_1.authMiddleware, store_controller_1.assignAdminController);
+storeRouter.post("/activate-store", store_controller_1.activateStoreController);
+exports.default = storeRouter;
