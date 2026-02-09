@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const address_controller_1 = require("../controllers/address.controller");
+const auth_middleware_1 = require("../middlewares/auth.middleware");
+const addressRouter = (0, express_1.Router)();
+addressRouter.get("/provinces", address_controller_1.getProvincesController);
+addressRouter.post("/cities", address_controller_1.getCitiesController);
+addressRouter.post("/address", address_controller_1.getAddressController);
+addressRouter.use(auth_middleware_1.authMiddleware);
+addressRouter.post('/address-id', address_controller_1.getAddressByIdController);
+addressRouter.post("/user-address", address_controller_1.userAddressController);
+addressRouter.post("/delete-address", address_controller_1.deleteAddressController);
+addressRouter.post("/update-address", address_controller_1.updateAddressController);
+// addressRouter.get("/provinces", syncRajaOngkirProvincesController);
+// addressRouter.get('/cities', syncRajaOngkirCitiesController);
+exports.default = addressRouter;

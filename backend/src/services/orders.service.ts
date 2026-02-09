@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma";
-import { OrderStatus } from "../generated/prisma/client";
+import { OrderStatus, Prisma } from "../generated/prisma/client";
 import { createCustomError } from "../utils/customError";
 
 interface GetOrdersParams {
@@ -26,7 +26,9 @@ export class OrdersService {
     }) {
         const skip = (page - 1) * limit;
 
-        const where: any = { storeId };
+        const where: Prisma.OrderWhereInput = {
+            storeId
+        }
 
         if (status && status !== "all") {
             where.status = status as OrderStatus;

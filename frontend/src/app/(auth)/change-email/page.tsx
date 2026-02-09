@@ -1,10 +1,11 @@
 import ChangeEmail from '@/views/auth/changeEmail/ChangeEmail'
+import { Suspense } from 'react'
 
 function ChangeEmailPage() {
   return (
-    <div>
-      <ChangeEmail/>
-    </div>
+    <Suspense fallback={<div>Loading verification data...</div>}>
+      <ChangeEmail />
+    </Suspense>
   )
 }
 
