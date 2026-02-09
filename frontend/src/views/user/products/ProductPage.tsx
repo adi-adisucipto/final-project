@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { enqueueSnackbar } from "notistack";
 import useGeolocation from "@/hooks/useGeolocation";
-import { cartService } from "@/services/cart.services";
+import { addToCart } from "@/services/cart.services";
 import { useProductCatalog } from "./hooks/useProductCatalog";
 import FiltersSidebar from "./components/FiltersSidebar";
 import PaginationControls from "./components/PaginationControls";
@@ -78,7 +78,7 @@ function ProductPage() {
     }
     if (!catalog?.store.id) return;
     try {
-      await cartService.addToCart({
+      await addToCart({
         productId,
         storeId: catalog.store.id,
         quantity: 1,

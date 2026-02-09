@@ -2,6 +2,15 @@ import { CartItem } from "./cart";
 
 export type PaymentMethod = "TRANSFER" | "COD";
 
+export type OrderStatus = 
+  | "WAITING_PAYMENT"
+  | "WAITING_CONFIRMATION"
+  | "CONFIRMED"
+  | "CANCELLED"
+  | "PRESCRIBED"
+  | "SHIPPED"
+  | "DELIVERED";
+
 export interface CheckoutData {
   cartItems: CartItem[];
   subtotal: number;
@@ -91,4 +100,62 @@ export interface Order {
   status: "PENDING" | "PAID" | "CANCELLED";
   createdAt: string;
   items: OrderItemPayload[];
+}
+
+export interface OrderDetail {
+  id: string;
+  orderNumber: string;
+  storeId: string;
+  userAddressId: string;
+  
+  subtotal: number;
+  discountAmount: number;
+  shippingCost: number;
+  shippingDiscount: number;
+  totalAmount: number;
+  
+  estimatedDelivery?: string | null;
+  voucherCodeUsed?: string | null;
+  
+  status: OrderStatus;
+  paymentProof?: string | null;
+  paymentMethod: PaymentMethod;
+  
+  paymentConfirmedAt?: string | null;
+  shippedAt?: string | null;
+  confirmedAt?: string | null;
+  cancelledAt?: string | null;
+  cancellationReason?: string | null;
+  
+  createdAt: string;
+  updatedAt: string;
+  
+  userAddress?: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    address: string;
+    city: {
+      city_name: string;
+    };
+    provinceId: {
+      province_name: string;
+    };
+    postal_code?: string | null;
+  };
+  
+  items: Array<{
+    id: string;
+    productId: string;
+    price: number;
+    quantity: number;
+    discountAmount: number;
+    subtotal: number;
+    product?: {
+      name: string;
+      images: Array<{
+        imageUrl: string;
+      }>;
+    };
+  }>;
 }
