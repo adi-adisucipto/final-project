@@ -21,7 +21,7 @@ export default function CartPage() {
   const { data: session } = useSession();
 
   const { cartItems, groupedItems, isLoading, error, fetchCart } = useCart();
-  const { address, isLoading: isLoadingAddress } = useShippingAddress(session?.user?.id);
+  const { address, isLoading: isLoadingAddress } = useShippingAddress();
 
   const handleCheckout = () => {
     if (!cartItems.length) {
