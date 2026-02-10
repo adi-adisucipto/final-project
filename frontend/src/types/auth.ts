@@ -13,3 +13,8 @@ export interface DecodedToken {
     storeId?: string | null;
     storeName?: string | null;
 }
+
+export interface TokenPayload {
+    id: string,
+    email: string
+}
