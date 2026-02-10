@@ -13,6 +13,7 @@ export interface Product {
   name: string;
   description?: string;
   price: number;
+  weight: 100;
   isActive: boolean;
   images: ProductImage[];
   category?: ProductCategory;
@@ -21,6 +22,7 @@ export interface Product {
 export interface Store {
   id: string;
   name: string;
+  cityId: number;
   address?: string;
 }
 

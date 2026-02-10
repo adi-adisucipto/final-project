@@ -7,6 +7,7 @@ interface UserAddress {
   firstName: string;
   lastName: string;
   address: string;
+  city: number;
   isMainAddress: boolean;
 }
 

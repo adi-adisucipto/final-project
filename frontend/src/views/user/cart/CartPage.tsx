@@ -35,7 +35,7 @@ export default function CartPage() {
     router.push("/checkout");
   };
 
-  const { subtotal, shipping, discount } = calculateCartTotals(cartItems);
+  const { subtotal, discount } = calculateCartTotals(cartItems);
 
   if (isLoading || isLoadingAddress) return <CartSkeleton />;
 
@@ -101,7 +101,6 @@ export default function CartPage() {
       </div>
       <CartSummary
         subtotal={subtotal}
-        shipping={shipping}
         discount={discount}
         onCheckout={handleCheckout}
       />

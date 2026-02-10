@@ -22,6 +22,7 @@ export class CartService {
           select: {
             id: true,
             name: true,
+            cityId: true,
           },
         },
       },
@@ -102,6 +103,7 @@ export class CartService {
             select: {
               id: true,
               name: true,
+              cityId: true,
             },
           },
         },
@@ -127,6 +129,7 @@ export class CartService {
           select: {
             id: true,
             name: true,
+            cityId: true,
           },
         },
       },
@@ -188,6 +191,7 @@ export class CartService {
           select: {
             id: true,
             name: true,
+            cityId: true,
           },
         },
       },

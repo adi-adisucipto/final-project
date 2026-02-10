@@ -11,29 +11,38 @@ import OrderItemsList from "@/components/checkout/OrderItemList";
 import PromoCodeInput from "@/components/checkout/PromoCodeInput";
 import PaymentProofUpload from "@/components/checkout/PaymentProofUpload";
 import CheckoutSummary from "@/components/checkout/CheckoutSummary";
-import { PaymentMethod, VoucherData, OrderItem, CreateOrderPayload } from "@/types/checkout";
+import ShippingMethodSelector from "@/components/checkout/shippingCostSection";
+import { 
+  PaymentMethod, 
+  VoucherData, 
+  OrderItem, 
+  CreateOrderPayload 
+} from "@/types/checkout";
 import { orderService } from "@/services/checkout.service";
 import { uploadService } from "@/services/uploadbtf.service";
-
+import { shippingService, ShippingService } from "@/services/shipping.service";
 import { useCart } from "@/hooks/useCart";
 import { useShippingAddress } from "@/hooks/useShippingAddress";
-import { calculateCartTotals } from "@/lib/cart.utils";
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { data: session } = useSession();
   const { cartItems, groupedItems, isLoading: isLoadingCart } = useCart();
-  const { address, isLoading: isLoadingAddress } = useShippingAddress(
-    session?.user?.id
-  );
+  const { address, isLoading: isLoadingAddress } = useShippingAddress();
   const storeId = groupedItems[0]?.store.id;
+
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   const [paymentProof, setPaymentProof] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [productDiscount, setProductDiscount] = useState(0);
 
+  const [productDiscount, setProductDiscount] = useState(0);
   const [appliedVoucher, setAppliedVoucher] = useState<VoucherData | null>(null);
+
+  const [shippingServices, setShippingServices] = useState<ShippingService[]>([]);
+  const [selectedShipping, setSelectedShipping] = useState<ShippingService | null>(null);
+  const [isLoadingShipping, setIsLoadingShipping] = useState(false);
+
   const [availableVouchers] = useState<VoucherData[]>([
     {
       code: "FREESHIP",
@@ -109,7 +118,66 @@ export default function CheckoutPage() {
     };
   }, [storeId, cartItems]);
 
-  const { subtotal, shipping } = calculateCartTotals(cartItems);
+useEffect(() => {
+  const loadShippingCost = async () => {
+
+    if (!address?.city) {
+      return;
+    }
+
+    if (!groupedItems[0]?.store?.cityId) {
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      return;
+    }
+    setIsLoadingShipping(true);
+    
+    try {
+      const totalWeight = cartItems.reduce((sum, item) => {
+        const weight = item.product.weight || 100;
+        return sum + (weight * item.quantity);
+      }, 0);
+
+      const params = {
+        storeCityId: groupedItems[0].store.cityId,
+        userCityId: address.city,
+        weightInGrams: totalWeight,
+        courierCode: "jne",
+      };
+
+      const services = await shippingService.calculateCost(params);
+
+      if (services && services.length > 0) {
+        setShippingServices(services);
+        
+        const cheapest = services.reduce((prev, curr) => 
+          prev.cost[0].value < curr.cost[0].value ? prev : curr
+        );
+        setSelectedShipping(cheapest);
+      } else {
+      }
+    } catch (error) {
+      console.error("❌ Error loading shipping:", error);
+      if (error instanceof Error) {
+        console.error("Error message:", error.message);
+      }
+      enqueueSnackbar("Gagal memuat biaya pengiriman", { variant: "error" });
+    } finally {
+      setIsLoadingShipping(false);
+    }
+  };
+
+  loadShippingCost();
+}, [address, groupedItems, cartItems, enqueueSnackbar]);
+
+  const subtotal = cartItems.reduce((sum, item) => {
+    return sum + Number(item.product.price) * item.quantity;
+  }, 0);
+
+  const shipping = selectedShipping?.cost[0]?.value || 0;
+
   let voucherDiscount = 0;
   if (appliedVoucher) {
     if (appliedVoucher.type === "PERCENTAGE") {
@@ -151,6 +219,7 @@ export default function CheckoutPage() {
     if (!paymentMethod) return false;
     if (!address) return false;
     if (orderItems.length === 0) return false;
+    if (!selectedShipping) return false;
     if (paymentMethod === "TRANSFER" && !paymentProof) return false;
     return true;
   };
@@ -163,6 +232,11 @@ export default function CheckoutPage() {
 
     if (!address) {
       enqueueSnackbar("Pilih alamat pengiriman", { variant: "warning" });
+      return;
+    }
+
+    if (!selectedShipping) {
+      enqueueSnackbar("Pilih metode pengiriman", { variant: "warning" });
       return;
     }
 
@@ -187,20 +261,20 @@ export default function CheckoutPage() {
       }
 
       const orderPayload: CreateOrderPayload = {
-      userAddressId: address.id,
-      storeId: storeId,
-      items: orderItems.map((item) => ({
-        productId: item.productId,
-        quantity: item.quantity,
-        price: item.price,
-      })),
-      subtotal: subtotal,
-      shippingCost: shipping,
-      discountAmount: voucherDiscount,
-      totalAmount: total,
-      voucherCodeUsed: appliedVoucher?.code,
-      paymentMethod: paymentMethod,
-    };
+        userAddressId: address.id,
+        storeId: storeId,
+        items: orderItems.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        subtotal: subtotal,
+        shippingCost: shipping,
+        discountAmount: voucherDiscount,
+        totalAmount: total,
+        voucherCodeUsed: appliedVoucher?.code,
+        paymentMethod: paymentMethod,
+      };
 
       const order = await orderService.createOrder(orderPayload);
 
@@ -211,7 +285,6 @@ export default function CheckoutPage() {
       }
 
       enqueueSnackbar("Pesanan berhasil dibuat!", { variant: "success" });
-
       router.push(`/orders/${order.id}`);
     } catch (error) {
       const errorMessage =
@@ -246,10 +319,19 @@ export default function CheckoutPage() {
               address={address?.address}
               onChangeAddress={() => router.push("/profile/address")}
             />
+
+            <ShippingMethodSelector
+              services={shippingServices}
+              selectedService={selectedShipping}
+              onSelect={setSelectedShipping}
+              isLoading={isLoadingShipping}
+            />
+
             <PaymentMethodSelector
               selectedMethod={paymentMethod}
               onSelect={setPaymentMethod}
             />
+
             {paymentMethod === "TRANSFER" && (
               <PaymentProofUpload
                 file={paymentProof}
@@ -257,7 +339,9 @@ export default function CheckoutPage() {
                 total={total}
               />
             )}
+
             <OrderItemsList items={orderItems} />
+
             <PromoCodeInput
               appliedVoucher={appliedVoucher}
               onApplyVoucher={handleApplyVoucher}
@@ -265,6 +349,7 @@ export default function CheckoutPage() {
               availableVouchers={availableVouchers}
             />
           </div>
+
           <div className="lg:col-span-1">
             <CheckoutSummary
               subtotal={subtotal}

@@ -3,7 +3,6 @@
 interface CartSummaryProps {
   subtotal: number;
   discount?: number;
-  shipping: number;
   onCheckout: () => void;
   isProcessing?: boolean;
 }
@@ -11,11 +10,10 @@ interface CartSummaryProps {
 export default function CartSummary({
   subtotal,
   discount = 0,
-  shipping,
   onCheckout,
   isProcessing = false,
 }: CartSummaryProps) {
-  const total = subtotal - discount + shipping;
+  const total = subtotal - discount;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -43,13 +41,6 @@ export default function CartSummary({
             </span>
           </div>
         )}
-
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Shipping</span>
-          <span className="font-medium">
-            {shipping === 0 ? "Free" : formatPrice(shipping)}
-          </span>
-        </div>
       </div>
 
       <div className="border-t border-gray-200 pt-4 mb-6">

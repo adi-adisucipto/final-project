@@ -43,7 +43,7 @@ export function mapOrder(order: any) {
 
     store: order.store && {
       id: order.store.id,
-      name: order.store.name,
+      name: order.store.name, 
     },
 
     items: order.orderItems.map((item: any) => ({
