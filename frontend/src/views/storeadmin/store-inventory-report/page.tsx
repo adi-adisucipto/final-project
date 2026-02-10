@@ -1,9 +1,7 @@
+import StockReportPage from "@/views/super-admin/stock-report/StockReportPage"
+
 function AdminStoreInventoryReportPage() {
-  return (
-    <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-8 text-slate-500">
-      ini store Inventory Report
-    </div>
-  )
+  return <StockReportPage />
 }
 
 export default AdminStoreInventoryReportPage
