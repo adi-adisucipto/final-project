@@ -1,3 +1,4 @@
+import { mapOrder } from "../helpers/order.mapper";
 import { prisma } from "../lib/prisma";
 import { createCustomError } from "../utils/customError";
 
@@ -413,7 +414,7 @@ export class OrderService {
       throw createCustomError(403, "Forbidden");
     }
 
-    return order;
+    return mapOrder(order);
   }
 
   async getUserOrders(userId: string) {
@@ -435,26 +436,13 @@ export class OrderService {
           },
         },
       },
+      store: true,
     },
     orderBy: {
       createdAt: 'desc',
     },
   });
 
-  return orders.map(order => ({
-    ...order,
-    items: order.orderItems.map(item => ({
-      id: item.id,
-      productId: item.productId,
-      price: item.price,
-      quantity: item.quantity,
-      discountAmount: item.discountAmount,
-      subtotal: item.subtotal,
-      product: {
-        name: item.product.name,
-        images: item.product.images,
-      },
-    })),
-  }));
+  return orders.map(mapOrder);
 }
 }

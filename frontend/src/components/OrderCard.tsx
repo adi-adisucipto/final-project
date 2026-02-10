@@ -1,6 +1,7 @@
 import { OrderDetail } from "@/types/checkout";
 import Image from "next/image";
 import { useOrderStatus } from "@/hooks/useOrderStatus";
+import { Store } from "lucide-react";
 
 interface OrderCardProps {
   order: OrderDetail;
@@ -35,7 +36,7 @@ export default function OrderCard({ order, onClick }: OrderCardProps) {
           <div className="flex flex-col items-center justify-center">
             <p className="text-sm opacity-90">Payment Method</p>
             <p className="text-lg font-semibold mt-1">
-              {order.paymentMethod === "TRANSFER"? "Cash on Delivery": "Transfer Manual"}
+              {order.paymentMethod === "TRANSFER"? "Transfer Manual": "Cash on Delivery"}
             </p>
           </div>
         </div>
@@ -44,15 +45,22 @@ export default function OrderCard({ order, onClick }: OrderCardProps) {
       <div className="p-6">
         <div className="flex justify-between items-start mb-4">
           <p className="text-xs text-gray-500">
-            Order ID : {order.id.slice(0, 8)}
+            Order ID : {order.orderNumber}
           </p>
           <p className="text-xs text-gray-500">{orderDate}</p>
         </div>
 
+        {order.store && (
+          <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100">
+            <Store className="w-4 h-4 text-gray-500" />
+            <span className="text-sm font-medium text-gray-700">{order.store.name}</span>
+          </div>
+        )}
+
         <div className="flex items-center gap-4 mb-4">
           {firstItem && (
             <>
-              <div className="relative w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200">
+              <div className="relative w-16 h-16 bg-gray-100 rounded-lg overflow-hidden shrink-0 border border-gray-200">
                 <Image
                   src={
                     firstItem.product?.images[0]?.imageUrl ||

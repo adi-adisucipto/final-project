@@ -157,6 +157,11 @@ export interface OrderDetail {
     };
     postal_code?: string | null;
   };
+
+  store?: {
+    id: string;
+    name: string;
+  };
   
   items: Array<{
     id: string;

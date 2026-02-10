@@ -1,6 +1,6 @@
 import { OrderDetail } from "@/types/checkout";
 import Image from "next/image";
-import { X } from "lucide-react";
+import { X, Download, Store } from "lucide-react";
 import { useOrderStatus } from "@/hooks/useOrderStatus";
 
 interface OrderDetailModalProps {
@@ -16,6 +16,12 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
     month: "2-digit",
     year: "numeric",
   });
+
+  const handleDownloadProof = () => {
+    if (order.paymentProof) {
+      window.open(order.paymentProof, '_blank');
+    }
+  };
 
   return (
     <div
@@ -45,7 +51,7 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
           <div className="flex flex-col items-center justify-center">
             <p className="text-sm opacity-90">Payment Method</p>
             <p className="text-lg font-semibold mt-1">
-              {order.paymentMethod === "TRANSFER"? "Cash on Delivery": "Transfer Manual"}
+              {order.paymentMethod === "TRANSFER"? "Transfer Manual": "Cash on Delivery"}
             </p>
           </div>
         </div>
@@ -53,9 +59,16 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
 
         <div className="p-6">
           <div className="flex justify-between mb-6">
-            <p className="text-sm text-gray-500">Order ID : {order.id.slice(0, 8)}</p>
+            <p className="text-sm text-gray-500">Order ID : {order.orderNumber}</p>
             <p className="text-sm text-gray-500">{orderDate}</p>
           </div>
+
+          {order.store && (
+          <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100">
+            <Store className="w-4 h-4 text-gray-500" />
+            <span className="text-sm font-medium text-gray-700">{order.store.name}</span>
+          </div>
+        )}
 
           {firstItem && (
             <div className="flex items-center gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
@@ -91,6 +104,34 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
               {text}
             </span>
           </div>
+
+          {order.paymentMethod === "TRANSFER" && order.paymentProof && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <h3 className="text-sm font-semibold text-blue-900 mb-3">Bukti Transfer</h3>
+              <div className="flex items-center gap-4">
+                <div className="relative w-32 h-32 bg-white rounded-lg overflow-hidden shrink-0 border-2 border-blue-300">
+                  <Image
+                    src={order.paymentProof}
+                    alt="Payment Proof"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-gray-700 mb-3">
+                    Bukti pembayaran telah diupload dan sedang dalam proses verifikasi.
+                  </p>
+                  <button
+                    onClick={handleDownloadProof}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition"
+                  >
+                    <Download className="w-4 h-4" />
+                    Lihat Bukti Transfer
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="border rounded-lg p-6">
             <h3 className="text-xl font-bold text-center mb-6">Track History</h3>
