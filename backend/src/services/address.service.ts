@@ -75,33 +75,45 @@ export async function getCitesServices(provinceId: number) {
 
 export async function getAddressService(userId: string) {
     try {
-        const addressUser = await prisma.userAddress.findMany({
-            where: {user_id: userId}
+        const addresses = await prisma.userAddress.findMany({
+            where: {user_id: userId, isActive: true},
+            orderBy: {
+                created_at: 'desc'
+            }
         });
 
-        return addressUser
+        return addresses
     } catch (error) {
+        console.log(error);
         throw error
     }
 }
 
 export async function getAddressByIdService(addressId: string) {
-    try {
-        const data = await prisma.userAddress.findUnique({
-            where: {id: addressId},
-            include: {
-                userCity: true,
-                provinceId: true
-            }
-        });
+    const data = await prisma.userAddress.findUnique({
+        where: {id: addressId},
+        include: {
+            userCity: true,
+            provinceId: true
+        }
+    });
 
-        return data
-    } catch (error) {
-        throw error
+    if (!data) {
+        throw createCustomError(404, "Address not found");
     }
+
+    return data
 }
 
-export async function userAddressService(firstName:string, lastName:string, provinceId:number, cityId:number, address:string, mainAddress:boolean, userId:string) {
+export async function createUserAddressService(
+    firstName:string,
+    lastName:string,
+    provinceId:number,
+    cityId:number,
+    address:string,
+    mainAddress:boolean,
+    userId:string
+) {
     try {
         const cityName = await prisma.city.findUnique({
             where: {id: cityId}
@@ -113,10 +125,12 @@ export async function userAddressService(firstName:string, lastName:string, prov
         });
         if(!provinceName) throw createCustomError(404, "Provinsi tidak ditemukan");
 
-        const isFirstAddress = await getAddressService(userId);
-        if(isFirstAddress.length === 0) mainAddress = true
+        const addressCount = await prisma.userAddress.count({
+            where: { user_id: userId }
+        });
+        if(addressCount === 0) mainAddress = true
 
-        const fullAddress = `${address}, Indonesia`;
+        const fullAddress = `${address}, ${cityName.city_name}, ${provinceName.province_name}, Indonesia`;
         let coordinates = await getCoordinates(fullAddress);
 
         if(!coordinates) throw createCustomError(404, "Koordinat tidak ditemukan")
@@ -165,24 +179,42 @@ export async function userAddressService(firstName:string, lastName:string, prov
 
 export async function deleteAddressService(addressId: string, userId: string) {
     try {
-        const mainAddress = await getAddressByIdService(addressId);
         await prisma.$transaction(async (tx:Prisma.TransactionClient) => {
-            await tx.userAddress.delete({
-                where: {id: addressId}
+            const currentAddress = await tx.userAddress.findFirst({
+                where: { 
+                    id: addressId,
+                    user_id: userId
+                }
             });
 
-            if(mainAddress?.is_main_address) {
-                const address = await getAddressService(userId);
-                if(address.length > 0) {
-                    const randomIndex = Math.floor(Math.random() * address.length);
-                    const newMainAddress = address[randomIndex];
+            if (!currentAddress) {
+                throw new Error("Address not found or unauthorized");
+            }
 
+            await tx.userAddress.update({
+                where: {id: addressId},
+                data: {
+                    isActive: false,
+                    is_main_address: false
+                }
+            });
+
+            if(currentAddress.is_main_address) {
+                const newMainCandidate = await tx.userAddress.findFirst({
+                    where: { 
+                        user_id: userId,
+                        isActive: true
+                    },
+                    orderBy: {
+                        created_at: 'desc'
+                    }
+                });
+
+                if (newMainCandidate) {
                     await tx.userAddress.update({
-                        where: {id: newMainAddress.id},
-                        data: {
-                            is_main_address: true
-                        }
-                    })
+                        where: { id: newMainCandidate.id },
+                        data: { is_main_address: true }
+                    });
                 }
             }
         })
@@ -195,12 +227,17 @@ export async function deleteAddressService(addressId: string, userId: string) {
     }
 }
 
-export async function updateAddressService(addressId: string, firstName:string, lastName:string, provinceId:number, cityId:number, address:string, mainAddress:boolean) {
+export async function updateAddressService(addressId: string, firstName:string, lastName:string, provinceId:number, cityId:number, address:string, mainAddress:boolean, userId:string) {
     try {
-        const userAddress = await prisma.userAddress.findUnique({
-            where: {id: addressId},
+        const existingAddress = await prisma.userAddress.findFirst({
+            where: {
+                id: addressId,
+                user_id: userId,
+                isActive: true
+            }
         });
-        if(!userAddress) throw createCustomError(404, "Address not found!");
+
+        if (!existingAddress) throw createCustomError(404, "Address not found or unauthorized!");
 
         const cityName = await prisma.city.findUnique({
             where: {id: cityId}
@@ -217,6 +254,15 @@ export async function updateAddressService(addressId: string, firstName:string, 
         if(!coordinates) throw createCustomError(404, "Coordinates not found");
 
         await prisma.$transaction(async (tx:Prisma.TransactionClient) => {
+            if (mainAddress) {
+                await tx.userAddress.updateMany({
+                    where: { 
+                        user_id: userId,
+                    },
+                    data: { is_main_address: false }
+                });
+            };
+
             await tx.userAddress.update({
                 where: {id: addressId},
                 data: {

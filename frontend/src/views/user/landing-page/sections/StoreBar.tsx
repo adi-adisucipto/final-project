@@ -1,10 +1,7 @@
 "use client"
 
 import { MapPin } from 'lucide-react'
-import useGeolocation from '@/hooks/useGeolocation'
-import { enqueueSnackbar } from 'notistack';
-import { useEffect, useState } from 'react';
-import { nearStore } from '@/services/nearStores';
+import { useState } from 'react';
 import ModalStore from '../components/ModalStore';
 
 export interface StoreProps {
@@ -15,36 +12,13 @@ export interface StoreProps {
     distance: number
 }
 
-function StoreBar() {
-    const { loaded, coordinates, error: geoError } = useGeolocation();
-    const [stores, setStores] = useState<StoreProps[]>([]);
-    const [store, setStore] = useState<StoreProps | null>(null);
-    const [openModal, setOpenModal] = useState(false);
+export interface StoreBarProps {
+    currentStore: StoreProps | null;
+    onOpenModal: () => void;
+}
 
-    useEffect(() => {
-        if(loaded && coordinates && coordinates.lat && coordinates.lng) {
-            const storeNear = async () => {
-                try {
-                    const fetchStores = await nearStore(Number(coordinates.lat), Number(coordinates.lng))
-
-                    setStores(fetchStores);
-                    if (fetchStores && fetchStores.length > 0) {
-                        setStore(fetchStores[0]);
-                    }
-                } catch (error:any) {
-                    enqueueSnackbar(error.message || "Gagal mengambil data toko", { variant: "error" });
-                }
-            };
-
-            storeNear();
-        }
-    }, [loaded, coordinates]);
-
-    useEffect(() => {
-        if (geoError) {
-            enqueueSnackbar(geoError.message, { variant: "error" });
-        }
-    }, [geoError]);
+function StoreBar({ currentStore, onOpenModal } : StoreBarProps) {
+    
   return (
     <div className='px-4 xl:px-0'>
         <div className='w-full p-4 rounded-2xl bg-[#122017] flex justify-between items-center xl:mt-8 mt-4'>
@@ -53,24 +27,14 @@ function StoreBar() {
                     <MapPin/>
                 </div>
                 <p className='text-white/70 flex gap-1'>
-                    <span className='xl:flex hidden'>Shopping at:</span><span className='text-white font-bold'>{store ? store.name : 'Loading...'}</span>
+                    <span className='xl:flex hidden'>Shopping at:</span><span className='text-white font-bold'>{currentStore ? currentStore.name : 'Loading...'}</span>
                 </p>
             </div>
 
-            <button className='cursor-pointer text-[#22C55E] hover:underline font-bold' onClick={() => setOpenModal(!openModal)}>
+            <button className='cursor-pointer text-[#22C55E] hover:underline font-bold' onClick={onOpenModal}>
                 Change Store
             </button>
         </div>
-
-        {openModal && (
-            <div>
-                <ModalStore
-                    onClose={() => setOpenModal(false)}
-                    stores={stores}
-                    onSelect={(store) => setStore(store)}
-                />
-            </div>
-        )}
     </div>
   )
 }

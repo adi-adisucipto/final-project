@@ -25,8 +25,8 @@ function AddressPage() {
 
   const addressUser = async () => {
     try {
-      const userId = session?.user?.id || "";
-      const { data } = await getAddress(userId);
+      if (!session?.accessToken) return;
+      const { data } = await getAddress(session?.accessToken);
 
       setAddress(data);
     } catch (error) {
@@ -42,15 +42,16 @@ function AddressPage() {
     try {
       const { message } = await deleteAddress(addressId, session?.accessToken!);
 
-      enqueueSnackbar(message, {variant: "success"})
+      enqueueSnackbar(message, {variant: "success"});
     } catch (error) {
       console.log(error)
     }
   }
 
-  const handelAddress = async (addressId:string) => {
+  const handleAddress = async (addressId:string) => {
     try {
-      const {data} = await getAddressById(addressId, session?.accessToken!);
+      if (!session?.accessToken) return;
+      const {data} = await getAddressById(addressId, session?.accessToken);
       setInitialData(data);
       setIsModalOpen(true);
     } catch (error) {
@@ -77,7 +78,7 @@ function AddressPage() {
                 <div className='flex gap-6'>
                   <div>
                     <button 
-                      onClick={() => handelAddress(item.id)}
+                      onClick={() => handleAddress(item.id)}
                       className='text-green-500 hover:underline font-medium cursor-pointer'
                     >
                       Edit

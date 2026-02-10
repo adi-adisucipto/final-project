@@ -22,9 +22,13 @@ export async function citiesService(provinceId: number) {
     }
 }
 
-export async function getAddress(userId: string) {
+export async function getAddress(accessToken: string) {
     try {
-        const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/address/address`, {userId});
+        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/address/address`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        });
 
         return data
     } catch (error) {
@@ -34,7 +38,7 @@ export async function getAddress(userId: string) {
 
 export async function getAddressById(addressId: string, accessToken: string) {
     try {
-        const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/address/address-id`, {addressId}, {
+        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/address/${addressId}`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             }
@@ -42,7 +46,8 @@ export async function getAddressById(addressId: string, accessToken: string) {
 
         return data
     } catch (error) {
-        
+        console.error("Gagal mengambil detail alamat:", error);
+        throw error;
     }
 }
 
@@ -69,13 +74,13 @@ export async function userAddress(firstName:string, lastName:string, provinceId:
 
 export async function deleteAddress(addressId: string, accessToken: string) {
     try {
-        const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/address/delete-address`, {
-            addressId
-        }, {
+        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/address/delete/${addressId}`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             }
         });
+
+        console.log(data)
 
         return data
     } catch (error) {
@@ -85,8 +90,8 @@ export async function deleteAddress(addressId: string, accessToken: string) {
 
 export async function updateAddres(addressId: string, firstName:string, lastName:string, provinceId:number, cityId:number, address:string, mainAddress:boolean, accessToken: string) {
     try {
-        const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/address/update-address`, {
-            addressId, firstName, lastName, provinceId, cityId, address, mainAddress
+        const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/address/update/${addressId}`, {
+            firstName, lastName, provinceId, cityId, address, mainAddress
         }, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
