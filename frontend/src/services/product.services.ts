@@ -13,6 +13,7 @@ export type CatalogQueryParams = {
   sort?: "newest" | "price_asc" | "price_desc";
   lat?: number;
   lng?: number;
+  storeId?: string;
 };
 
 type ApiResponse<T> = {

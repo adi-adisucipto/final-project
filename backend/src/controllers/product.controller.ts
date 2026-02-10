@@ -67,6 +67,13 @@ export async function listProductsController(
       throw createCustomError(400, "lng");
     }
 
+    const storeIdRaw = parseString(req.query.storeId);
+    let storeId: string | undefined;
+    if (storeIdRaw) {
+      if (!isUuid(storeIdRaw)) throw createCustomError(400, "storeId");
+      storeId = storeIdRaw;
+    }
+
     const params = {
       page,
       limit,
@@ -76,6 +83,7 @@ export async function listProductsController(
       maxPrice,
       lat,
       lng,
+      storeId,
       sort: parseSort(req.query.sort),
     };
     const data = await getProductCatalog(params);

@@ -16,6 +16,7 @@ type CatalogFilters = {
   minPrice: string;
   maxPrice: string;
   coords?: { lat: number; lng: number };
+  storeId?: string;
   isReady: boolean;
 };
 
@@ -65,6 +66,7 @@ export function useProductCatalog(filters: CatalogFilters) {
       maxPrice?: number;
       lat?: number;
       lng?: number;
+      storeId?: string;
     } = {
       page: filters.page,
       limit: 9,
@@ -74,7 +76,12 @@ export function useProductCatalog(filters: CatalogFilters) {
     if (filters.categoryId) params.categoryId = filters.categoryId;
     if (minValue !== undefined) params.minPrice = minValue;
     if (maxValue !== undefined) params.maxPrice = maxValue;
-    if (filters.coords?.lat !== undefined && filters.coords?.lng !== undefined) {
+    if (filters.storeId) {
+      params.storeId = filters.storeId;
+    } else if (
+      filters.coords?.lat !== undefined &&
+      filters.coords?.lng !== undefined
+    ) {
       params.lat = filters.coords.lat;
       params.lng = filters.coords.lng;
     }
@@ -104,6 +111,7 @@ export function useProductCatalog(filters: CatalogFilters) {
     filters.page,
     filters.search,
     filters.sort,
+    filters.storeId,
     priceError,
   ]);
 

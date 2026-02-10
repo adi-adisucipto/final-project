@@ -19,6 +19,7 @@ type CatalogParams = {
   sort: "newest" | "price_asc" | "price_desc";
   lat?: number;
   lng?: number;
+  storeId?: string;
 };
 
 type DetailParams = {
@@ -130,7 +131,9 @@ const getCatalogResults = (storeId: string, params: CatalogParams) => {
 };
 
 export async function getProductCatalog(params: CatalogParams) {
-  const store = await getStoreOrFail(getCoords(params));
+  const store = params.storeId
+    ? await getStoreByIdOrFail(params.storeId)
+    : await getStoreOrFail(getCoords(params));
   const [items, total] = await getCatalogResults(store.id, params);
 
   return {

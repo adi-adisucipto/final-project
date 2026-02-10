@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { enqueueSnackbar } from "notistack";
 import useGeolocation from "@/hooks/useGeolocation";
@@ -14,6 +14,7 @@ import ProductToolbar from "./components/ProductToolbar";
 
 function ProductPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { status } = useSession();
   const { loaded, coordinates, error: locationError } = useGeolocation();
   const [page, setPage] = useState(1);
@@ -29,8 +30,24 @@ function ProductPage() {
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
+  const storeIdFromQuery = searchParams.get("storeId")?.trim() || undefined;
+  const [storedStoreId, setStoredStoreId] = useState<string | undefined>();
+
+  useEffect(() => {
+    if (storeIdFromQuery) return;
+    const savedStoreId = window.localStorage.getItem("selectedStoreId");
+    if (savedStoreId) setStoredStoreId(savedStoreId);
+  }, [storeIdFromQuery]);
+
+  useEffect(() => {
+    if (!storeIdFromQuery) return;
+    window.localStorage.setItem("selectedStoreId", storeIdFromQuery);
+  }, [storeIdFromQuery]);
+
+  const activeStoreId = storeIdFromQuery || storedStoreId;
+
   let coords: { lat: number; lng: number } | undefined;
-  if (loaded && !locationError) {
+  if (!activeStoreId && loaded && !locationError) {
     const lat = Number(coordinates.lat);
     const lng = Number(coordinates.lng);
     if (Number.isFinite(lat) && Number.isFinite(lng)) {
@@ -46,7 +63,8 @@ function ProductPage() {
     minPrice,
     maxPrice,
     coords,
-    isReady: loaded,
+    storeId: activeStoreId,
+    isReady: Boolean(activeStoreId) || loaded,
   });
 
   useEffect(() => {
@@ -133,7 +151,7 @@ function ProductPage() {
           onMaxPriceChange={handleMaxPriceChange}
         />
         <div>
-          {locationError ? (
+          {!activeStoreId && locationError ? (
             <p className="mb-3 text-sm text-black/50">
               Location blocked. Showing main store products.
             </p>
