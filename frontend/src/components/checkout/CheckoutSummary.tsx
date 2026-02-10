@@ -3,7 +3,7 @@
 interface CheckoutSummaryProps {
   subtotal: number;
   discount: number;
-  shipping: number;
+  shipping: number | null;
   total: number;
   onCheckout: () => void;
   isProcessing: boolean;
@@ -53,7 +53,7 @@ export default function CheckoutSummary({
             {shipping === 0 ? (
               <span className="text-emerald-600">Free</span>
             ) : (
-              formatPrice(shipping)
+              formatPrice(shipping!)
             )}
           </span>
         </div>
