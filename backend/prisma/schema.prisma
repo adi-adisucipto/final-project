@@ -130,6 +130,7 @@ model UserAddress {
   is_main_address Boolean
   created_at      DateTime @default(now())
   updated_at      DateTime
+  isActive        Boolean @default(true)
 
   userId     User     @relation(fields: [user_id], references: [id])
   provinceId Province @relation(fields: [province], references: [id])

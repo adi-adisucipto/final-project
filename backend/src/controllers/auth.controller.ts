@@ -3,12 +3,12 @@ import { createRegisTokenService, createUserService, googleLoginService, loginSe
 import { verify } from "jsonwebtoken";
 import { SECRET_KEY_REGIS } from "../configs/env.config";
 import { createCustomError } from "../utils/customError";
-import { createUserSchema, registerSchema } from "../validations/auth.validation";
+import { createUserSchema, loginSchema, registerSchema } from "../validations/auth.validation";
 
 export async function createRegisTokenController(req: Request, res: Response, next: NextFunction) {
     try {
         const { email } = registerSchema.parse(req.body);
-        
+
         await createRegisTokenService(email);
 
         res.status(200).json({
@@ -21,16 +21,16 @@ export async function createRegisTokenController(req: Request, res: Response, ne
 
 export async function createUserController(req: Request, res: Response, next: NextFunction) {
     try {
-        const {password, firstName, lastName, refCode} = createUserSchema.parse(req.body);
+        const { password, firstName, lastName, refCode } = createUserSchema.parse(req.body);
 
         const authHeader = req.headers.authorization;
-        if(!authHeader || !authHeader.startsWith("Bearer ")) {
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
             throw createCustomError(401, "Unauthorize");
         }
         const token = authHeader.split(" ")[1];
         const decoded = verify(token, SECRET_KEY_REGIS) as { email: string }
-        if (!decoded || !decoded.email) { 
-            throw createCustomError(401, "Invalid Token Payload"); 
+        if (!decoded || !decoded.email) {
+            throw createCustomError(401, "Invalid Token Payload");
         }
         const email = decoded.email;
 
@@ -44,9 +44,9 @@ export async function createUserController(req: Request, res: Response, next: Ne
     }
 }
 
-export async function loginController(req:Request, res:Response, next:NextFunction) {
+export async function loginController(req: Request, res: Response, next: NextFunction) {
     try {
-        const { email, password } = req.body;
+        const { email, password } = loginSchema.parse(req.body);
         const tokens = await loginService(email, password);
         const { accessToken, refreshToken } = tokens
 
@@ -73,7 +73,7 @@ export async function refreshTokenController(req: Request, res: Response, next: 
     }
 }
 
-export async function googleLoginController(req:Request, res:Response, next:NextFunction) {
+export async function googleLoginController(req: Request, res: Response, next: NextFunction) {
     try {
         const payload = req.googleUser;
         const email = payload?.email!;
