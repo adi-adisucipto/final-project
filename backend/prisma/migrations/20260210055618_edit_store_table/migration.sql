@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "stores" ALTER COLUMN "is_active" SET DEFAULT false;

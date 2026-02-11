@@ -1,8 +1,6 @@
 "use client"
 
 import { MapPin } from 'lucide-react'
-import { useState } from 'react';
-import ModalStore from '../components/ModalStore';
 
 export interface StoreProps {
     id: string,
