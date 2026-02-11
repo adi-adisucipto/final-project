@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { productsByStore } from "@/services/nearStores"
 import Link from "next/link"
 import { useEffect, useState } from "react";
-import ModalStore from "../components/ModalStore";
 
 interface ProductsProps {
     onOpenModal: () => void
@@ -15,7 +14,8 @@ interface ProductsProps {
 function Products({ onOpenModal, storeId } : ProductsProps) {
     const [product, setProduct] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
-    const [openModal, setOpenModal] = useState(false);
+
+    console.log(product)
 
     useEffect(() => {
         if (storeId) {
@@ -23,9 +23,10 @@ function Products({ onOpenModal, storeId } : ProductsProps) {
                 setLoading(true);
                 try {
                     const data = await productsByStore(storeId);
-                    setProduct(data.product.products); 
+                    const limitedProducts = data.product.products.slice(0, 3);
+                    setProduct(limitedProducts);
 
-                    console.log(data.product.products)
+                    console.log(product)
                 } catch (error) {
                     console.error("Failed to fetch products", error);
                 } finally {

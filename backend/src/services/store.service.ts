@@ -77,16 +77,17 @@ export async function getStoreService() {
 export async function deleteStoreService(storeId: string) {
     try {
         await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+            await prisma.storeAdmin.deleteMany({
+                where: {storeId: storeId},
+            })
+            
             await tx.store.update({
                 where: {id: storeId},
                 data: {isActive: false}
             });
-
-            await prisma.storeAdmin.delete({
-                where: {storeId: storeId},
-            })
         })
     } catch (error) {
+        console.log(error)
         throw error;
     }
 }

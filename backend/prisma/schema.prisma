@@ -270,7 +270,7 @@ enum StockAction {
 model Store {
   id       String  @id @default(uuid())
   name     String  @unique
-  isActive Boolean @default(true) @map("is_active")
+  isActive Boolean @default(false) @map("is_active")
 
   address    String @map("address") @db.Text
   latitude   Float
