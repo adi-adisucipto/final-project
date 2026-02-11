@@ -2,8 +2,11 @@
 
 import CardProducts from "@/components/product/CardProduct"
 import { Button } from "@/components/ui/button";
+import { addToCart } from "@/services/cart.services";
 import { productsByStore } from "@/services/nearStores"
+import { ProductItem } from "@/views/super-admin/products/types";
 import Link from "next/link"
+import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 
 interface ProductsProps {
@@ -12,8 +15,26 @@ interface ProductsProps {
 }
 
 function Products({ onOpenModal, storeId } : ProductsProps) {
-    const [product, setProduct] = useState<any[]>([]);
+    const [product, setProduct] = useState<ProductItem[]>([]);
     const [loading, setLoading] = useState(false);
+    const [isLoading, setIsloading] = useState(false);
+
+    const handleAddToCart = async (productId: string) => {
+        setIsloading(true);
+        try {
+            await addToCart({
+                productId: productId,
+                storeId: storeId!,
+                quantity: 1,
+            });
+
+            enqueueSnackbar("Added to cart", { variant: "success" });
+            setIsloading(false);
+        } catch (error) {
+            enqueueSnackbar("Failed to add to cart", { variant: "error" });
+            setIsloading(false);
+        }
+    }
 
     useEffect(() => {
         if (storeId) {
@@ -59,6 +80,8 @@ function Products({ onOpenModal, storeId } : ProductsProps) {
                 <div key={index}>
                     <CardProducts
                         product={productItem}
+                        onAddToCart={(id) => handleAddToCart(id)}
+                        loading={isLoading}
                     />
                 </div>
             ))}
