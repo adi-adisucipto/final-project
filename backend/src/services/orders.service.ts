@@ -194,6 +194,92 @@ export class OrdersService {
         return updatedOrder;
     }
 
+    async updateOrderStatus(id: string, storeId: string, newStatus: OrderStatus) {
+        const allowedStatuses: OrderStatus[] = [
+            OrderStatus.PRESCRIBED,
+            OrderStatus.SHIPPED,
+            OrderStatus.DELIVERED
+        ];
+
+        if (!allowedStatuses.includes(newStatus)) {
+            throw createCustomError(
+                400,
+                "Invalid status. Allowed: PRESCRIBED, SHIPPED, DELIVERED"
+            );
+        }
+        const order = await prisma.order.findFirst({
+            where: {
+                id: id,
+                storeId
+            }
+        });
+
+        if (!order) {
+            throw createCustomError(404, "Order not found");
+        }
+        const allowedTransitions: Record<OrderStatus, OrderStatus[]> = {
+            WAITING_PAYMENT: [],
+            WAITING_CONFIRMATION: [],
+            CONFIRMED: [OrderStatus.PRESCRIBED],
+            PRESCRIBED: [OrderStatus.SHIPPED],
+            SHIPPED: [OrderStatus.DELIVERED],
+            DELIVERED: [],
+            CANCELLED: []
+        };
+
+        const currentStatus = order.status;
+        const allowedNextStatuses = allowedTransitions[currentStatus] || [];
+
+        if (!allowedNextStatuses.includes(newStatus)) {
+            throw createCustomError(
+                400,
+                `Cannot change status from ${currentStatus} to ${newStatus}`
+            );
+        }
+
+        const updateData: Prisma.OrderUpdateInput = {
+            status: newStatus,
+            updatedAt: new Date()
+        };
+
+        if (newStatus === OrderStatus.SHIPPED) {
+            updateData.shippedAt = new Date();
+        }
+        const updatedOrder = await prisma.order.update({
+            where: { id: id },
+            data: updateData,
+            include: {
+                user: {
+                    select: {
+                        first_name: true,
+                        last_name: true,
+                        email: true
+                    }
+                },
+                userAddress: {
+                    select: {
+                        address: true,
+                        city: true,
+                        province: true,
+                        postal_code: true
+                    }
+                },
+                orderItems: {
+                    include: {
+                        product: {
+                            select: {
+                                name: true,
+                                price: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        return updatedOrder;
+    }
+
     async getOrderStats(storeId: string) {
         const [
             totalOrders,

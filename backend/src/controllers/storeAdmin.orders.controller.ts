@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { OrdersService } from "../services/orders.service";
+import { OrderStatus } from "../generated/prisma/client";
 
 const ordersService = new OrdersService();
 
@@ -88,6 +89,60 @@ export class StoreAdminOrdersController {
             });
         } catch (error) {
             next(error);
+        }
+    }
+
+    async updateOrderStatus(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { storeAdmin } = req;
+        const { id } = req.params;
+        const { status } = req.body;
+
+        if (!storeAdmin?.storeId) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized"
+            });
+        }
+
+        if (!status) {
+            return res.status(400).json({
+                success: false,
+                message: "Status is required"
+            });
+        }
+
+        if (!Object.values(OrderStatus).includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid order status"
+            });
+        }
+
+        const updatedOrder = await ordersService.updateOrderStatus(
+            id,
+            storeAdmin.storeId,
+            status
+        );
+
+        const statusLabels: Record<OrderStatus, string> = {
+            WAITING_PAYMENT: "Menunggu Pembayaran",
+            WAITING_CONFIRMATION: "Menunggu Konfirmasi",
+            CONFIRMED: "Dikonfirmasi",
+            CANCELLED: "Dibatalkan",
+            PRESCRIBED: "Dikemas",
+            SHIPPED: "Dikirim",
+            DELIVERED: "Terkirim"
+        };
+
+        return res.status(200).json({
+            success: true,
+            message: `Status pesanan berhasil diubah`,
+            data: updatedOrder
+        });
+
+    } catch (error) {
+        next(error);
         }
     }
 
