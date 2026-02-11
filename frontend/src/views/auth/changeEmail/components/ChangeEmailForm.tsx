@@ -9,7 +9,7 @@ import { useState } from "react";
 import { changeEmail } from "@/services/changeEmail.service";
 import { enqueueSnackbar } from "notistack";
 import { TokenPayload } from "@/types/auth";
-import { validationSchema } from "../validation/validationSchema";
+// import { validationSchema } from "../validation/validationSchema";
 
 function ChangeEmailForm() {
     const searchParam = useSearchParams();
@@ -36,7 +36,7 @@ function ChangeEmailForm() {
   return (
     <Formik
         initialValues={initialValues}
-        validationSchema={validationSchema}
+        // validationSchema={validationSchema}
         onSubmit={handleSubmit}
         enableReinitializ
     >

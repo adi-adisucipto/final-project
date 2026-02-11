@@ -70,16 +70,17 @@ async function getStoreService() {
 async function deleteStoreService(storeId) {
     try {
         await prisma_1.prisma.$transaction(async (tx) => {
+            await prisma_1.prisma.storeAdmin.deleteMany({
+                where: { storeId: storeId },
+            });
             await tx.store.update({
                 where: { id: storeId },
                 data: { isActive: false }
             });
-            await prisma_1.prisma.storeAdmin.delete({
-                where: { storeId: storeId },
-            });
         });
     }
     catch (error) {
+        console.log(error);
         throw error;
     }
 }

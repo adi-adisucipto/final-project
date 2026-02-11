@@ -14,7 +14,7 @@ async function createRegisTokenController(req, res, next) {
     try {
         const { email } = auth_validation_1.registerSchema.parse(req.body);
         await (0, auth_service_1.createRegisTokenService)(email);
-        res.status(201).json({
+        res.status(200).json({
             message: "Email Registration has been sent. Please check your inbox!"
         });
     }
@@ -24,7 +24,7 @@ async function createRegisTokenController(req, res, next) {
 }
 async function createUserController(req, res, next) {
     try {
-        const { password, firstName, lastName, refCode } = req.body;
+        const { password, firstName, lastName, refCode } = auth_validation_1.createUserSchema.parse(req.body);
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
             throw (0, customError_1.createCustomError)(401, "Unauthorize");
@@ -36,7 +36,7 @@ async function createUserController(req, res, next) {
         }
         const email = decoded.email;
         await (0, auth_service_1.createUserService)(email, password, firstName, lastName, refCode, token);
-        res.status(200).json({
+        res.status(201).json({
             message: "User has created successfully! Please Login!"
         });
     }
@@ -46,7 +46,7 @@ async function createUserController(req, res, next) {
 }
 async function loginController(req, res, next) {
     try {
-        const { email, password } = req.body;
+        const { email, password } = auth_validation_1.loginSchema.parse(req.body);
         const tokens = await (0, auth_service_1.loginService)(email, password);
         const { accessToken, refreshToken } = tokens;
         res.status(200).json({

@@ -145,7 +145,7 @@ exports.VoucherScalarFieldEnum = {
 exports.User_VoucherScalarFieldEnum = {
     id: 'id',
     user_id: 'user_id',
-    voucher_id: 'voucher_id',
+    voucher_code: 'voucher_code',
     is_used: 'is_used',
     used_at: 'used_at',
     obtained_at: 'obtained_at',
@@ -170,7 +170,8 @@ exports.UserAddressScalarFieldEnum = {
     longitude: 'longitude',
     is_main_address: 'is_main_address',
     created_at: 'created_at',
-    updated_at: 'updated_at'
+    updated_at: 'updated_at',
+    isActive: 'isActive'
 };
 exports.ProvinceScalarFieldEnum = {
     id: 'id',

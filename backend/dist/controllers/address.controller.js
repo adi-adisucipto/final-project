@@ -5,12 +5,13 @@ exports.syncRajaOngkirCitiesController = syncRajaOngkirCitiesController;
 exports.getProvincesController = getProvincesController;
 exports.getCitiesController = getCitiesController;
 exports.getAddressController = getAddressController;
-exports.userAddressController = userAddressController;
+exports.createUserAddressController = createUserAddressController;
 exports.deleteAddressController = deleteAddressController;
 exports.getAddressByIdController = getAddressByIdController;
 exports.updateAddressController = updateAddressController;
-const address_service_1 = require("../services/address.service");
 const customError_1 = require("../utils/customError");
+const address_service_1 = require("../services/address.service");
+const address_validation_1 = require("../validations/address.validation");
 async function syncRajaOngkirProvincesController(req, res, next) {
     try {
         const result = (0, address_service_1.syncRajaOngkirProvincesService)();
@@ -58,7 +59,9 @@ async function getCitiesController(req, res, next) {
 }
 async function getAddressController(req, res, next) {
     try {
-        const { userId } = req.body;
+        const userId = req.user?.id;
+        if (!userId)
+            throw (0, customError_1.createCustomError)(401, "Unauthorized");
         const data = await (0, address_service_1.getAddressService)(userId);
         res.status(200).json({
             data
@@ -68,14 +71,14 @@ async function getAddressController(req, res, next) {
         next(error);
     }
 }
-async function userAddressController(req, res, next) {
+async function createUserAddressController(req, res, next) {
     try {
-        const { firstName, lastName, provinceId, cityId, address, mainAddress } = req.body;
+        const { firstName, lastName, provinceId, cityId, address, mainAddress } = address_validation_1.createUpdateAddressSchema.parse(req.body);
         const userId = req.user?.id;
         if (!userId)
-            throw (0, customError_1.createCustomError)(404, "user not found");
-        const data = await (0, address_service_1.userAddressService)(firstName, lastName, provinceId, cityId, address, mainAddress, userId);
-        res.status(200).json({
+            throw (0, customError_1.createCustomError)(401, "Unauthorized");
+        const data = await (0, address_service_1.createUserAddressService)(firstName, lastName, provinceId, cityId, address, mainAddress, userId);
+        res.status(201).json({
             data
         });
     }
@@ -85,20 +88,26 @@ async function userAddressController(req, res, next) {
 }
 async function deleteAddressController(req, res, next) {
     try {
-        const { addressId } = req.body;
+        const { addressId } = req.params;
+        if (!addressId)
+            throw new Error("Address ID is required");
         const userId = req.user?.id;
+        if (!userId)
+            throw new Error("Unauthorized");
         const { message } = await (0, address_service_1.deleteAddressService)(addressId, userId);
         res.status(200).json({
             message: message
         });
     }
     catch (error) {
+        console.log(error);
+        next(error);
     }
 }
 async function getAddressByIdController(req, res, next) {
     try {
-        const { addressId } = req.body;
-        const data = await (0, address_service_1.getAddressByIdService)(addressId);
+        const { id } = req.params;
+        const data = await (0, address_service_1.getAddressByIdService)(id);
         res.json({
             data
         });
@@ -109,8 +118,12 @@ async function getAddressByIdController(req, res, next) {
 }
 async function updateAddressController(req, res, next) {
     try {
-        const { addressId, firstName, lastName, provinceId, cityId, address, mainAddress } = req.body;
-        const data = await (0, address_service_1.updateAddressService)(addressId, firstName, lastName, provinceId, cityId, address, mainAddress);
+        const { addressId } = req.params;
+        const { firstName, lastName, provinceId, cityId, address, mainAddress } = address_validation_1.createUpdateAddressSchema.parse(req.body);
+        const userId = req.user?.id;
+        if (!userId)
+            throw (0, customError_1.createCustomError)(401, "Unauthorized");
+        const data = await (0, address_service_1.updateAddressService)(addressId, firstName, lastName, provinceId, cityId, address, mainAddress, userId);
         res.status(200).json({
             data
         });

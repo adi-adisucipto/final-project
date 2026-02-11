@@ -74,6 +74,16 @@ async function checkRefCode(refCode) {
 ;
 async function createUserService(email, password, firstName, lastName, refCode, token) {
     try {
+        let isTaken = true;
+        let referralCode = "";
+        while (isTaken) {
+            referralCode = (0, referralCode_1.referralCodeGenerator)();
+            const existingUser = await prisma_1.prisma.user.findUnique({
+                where: { referral_code: referralCode }
+            });
+            if (!existingUser)
+                isTaken = false;
+        }
         const validToken = await prisma_1.prisma.token.findFirst({
             where: {
                 token: token,
@@ -84,9 +94,9 @@ async function createUserService(email, password, firstName, lastName, refCode, 
             throw (0, customError_1.createCustomError)(400, "Invalid or expired token");
         }
         const hashedPassword = await (0, bcrypt_1.hash)(password, 10);
-        const referralCode = await (0, referralCode_1.referralCodeGenerator)();
         const user = await checkEmail(email);
         await prisma_1.prisma.$transaction(async (tx) => {
+            let userIdForReward = null;
             if (!user) {
                 const newUser = await tx.user.create({
                     data: {
@@ -99,24 +109,13 @@ async function createUserService(email, password, firstName, lastName, refCode, 
                         updated_at: new Date()
                     }
                 });
-                if (refCode && refCode.trim() !== "") {
-                    const refCodeExist = await checkRefCode(refCode);
-                    if (!refCodeExist)
-                        throw (0, customError_1.createCustomError)(404, "Referral code not found");
-                    const exp = new Date();
-                    exp.setMonth(exp.getMonth() + 1);
-                    await tx.user_Voucher.create({
-                        data: {
-                            user_id: newUser.id,
-                            voucher_id: 'REFERRAL-REWARD',
-                            obtained_at: new Date(),
-                            expired_at: exp
-                        }
-                    });
-                }
+                userIdForReward = newUser.id;
             }
             else {
-                await tx.user.update({
+                if (user.is_verified) {
+                    throw (0, customError_1.createCustomError)(409, "Email is already registered and verified");
+                }
+                const updateUser = await tx.user.update({
                     where: { email: email },
                     data: {
                         is_verified: true,
@@ -127,63 +126,71 @@ async function createUserService(email, password, firstName, lastName, refCode, 
                         updated_at: new Date()
                     }
                 });
+                userIdForReward = updateUser.id;
             }
-            await tx.token.delete({
-                where: {
-                    token: token
-                }
-            });
+            if (refCode && refCode.trim() !== "") {
+                const refCodeExist = await checkRefCode(refCode);
+                if (!refCodeExist)
+                    throw (0, customError_1.createCustomError)(404, "Referral code not found");
+                const exp = new Date();
+                exp.setMonth(exp.getMonth() + 1);
+                await tx.user_Voucher.create({
+                    data: {
+                        user_id: userIdForReward,
+                        voucher_code: 'REFERRAL-REWARD',
+                        obtained_at: new Date(),
+                        expired_at: exp
+                    }
+                });
+            }
+            await tx.token.delete({ where: { token: token } });
         });
     }
     catch (error) {
         throw error;
     }
 }
-async function createTokens(email) {
-    try {
-        const user = await checkEmail(email);
-        if (!user)
-            throw new Error("User not found!");
-        const payload = {
-            id: user.id,
-            email: user.email,
-            is_verified: user.is_verified,
-            role: user.role,
-            referral_code: user.referral_code,
-            first_name: user.first_name,
-            last_name: user.last_name,
-            avatar: user.avatar,
-            isStoreAdmin: !!user.storeAdmin,
-            storeAdminId: user.storeAdmin?.id || null,
-            storeId: user.storeAdmin?.storeId || null,
-            storeName: user.storeAdmin?.store?.name || null
-        };
-        const accessToken = (0, jsonwebtoken_1.sign)(payload, env_config_1.SECRET_KEY_ACCESS, { expiresIn: "15m" });
-        const refreshToken = (0, jsonwebtoken_1.sign)(payload, env_config_1.SECRET_KEY_REFRESH, { expiresIn: "30d" });
-        return {
-            accessToken,
-            refreshToken
-        };
-    }
-    catch (error) {
-        throw error;
-    }
+async function createTokens(user) {
+    const payload = {
+        id: user.id,
+        email: user.email,
+        is_verified: user.is_verified,
+        role: user.role,
+        referral_code: user.referral_code,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        avatar: user.avatar,
+        isStoreAdmin: !!user.storeAdmin,
+        storeAdminId: user.storeAdmin?.id || null,
+        storeId: user.storeAdmin?.storeId || null,
+        storeName: user.storeAdmin?.store?.name || null
+    };
+    const accessToken = (0, jsonwebtoken_1.sign)(payload, env_config_1.SECRET_KEY_ACCESS, { expiresIn: "15m" });
+    const refreshToken = (0, jsonwebtoken_1.sign)(payload, env_config_1.SECRET_KEY_REFRESH, { expiresIn: "30d" });
+    return {
+        accessToken,
+        refreshToken
+    };
 }
 async function loginService(email, password) {
     try {
         const user = await checkEmail(email);
         if (!user)
             throw (0, customError_1.createCustomError)(404, "Email or password invalid");
-        const hashPass = user.password;
-        if (!hashPass)
-            throw (0, customError_1.createCustomError)(404, "Password not found");
-        const passValid = (0, bcrypt_1.compareSync)(password, hashPass);
+        if (!user.password)
+            throw (0, customError_1.createCustomError)(400, "Please login using social provider");
+        if (!user.is_verified)
+            throw (0, customError_1.createCustomError)(403, "Please verify your email first");
+        const passValid = await (0, bcrypt_1.compare)(password, user.password);
         if (!passValid)
             throw (0, customError_1.createCustomError)(404, "Email or password invalid");
-        const tokens = await createTokens(email);
+        const tokens = await createTokens(user);
         const { accessToken, refreshToken } = tokens;
         const exp = new Date();
-        exp.setDate(exp.getDate() + 30);
+        exp.setDate(exp.getDate() + 1);
+        await prisma_1.prisma.refreshToken.deleteMany({
+            where: { user_id: user.id, expires_at: { lt: new Date() } }
+        });
         await prisma_1.prisma.refreshToken.create({
             data: {
                 user_id: user.id,
@@ -202,18 +209,20 @@ async function loginService(email, password) {
 }
 async function refreshTokensService(token) {
     try {
-        const findUserId = await prisma_1.prisma.refreshToken.findUnique({
+        const findUser = await prisma_1.prisma.refreshToken.findUnique({
             where: { token: token },
-            select: { user_id: true }
+            include: { user: true }
         });
-        if (!findUserId)
+        if (!findUser)
             throw (0, customError_1.createCustomError)(404, "InvalidToken");
-        const findEmail = await prisma_1.prisma.user.findUnique({
-            where: { id: findUserId.user_id }
-        });
-        if (!findEmail)
-            throw new Error("User not found!");
-        const tokens = await createTokens(findEmail?.email);
+        if (new Date() > findUser.expires_at) {
+            await prisma_1.prisma.refreshToken.delete({ where: { id: findUser.id } });
+            throw (0, customError_1.createCustomError)(401, "Refresh token expired. Please login again.");
+        }
+        const user = await checkEmail(findUser.user.email);
+        if (!user)
+            throw (0, customError_1.createCustomError)(404, "User not found");
+        const tokens = await createTokens(user);
         const exp = new Date();
         exp.setDate(exp.getDate() + 30);
         await prisma_1.prisma.refreshToken.update({
@@ -235,8 +244,16 @@ async function googleLoginService(email) {
     try {
         let user = await checkEmail(email);
         if (!user) {
-            const referralCode = await (0, referralCode_1.referralCodeGenerator)();
-            ;
+            let referralCode = "";
+            let isTaken = true;
+            while (isTaken) {
+                referralCode = (0, referralCode_1.referralCodeGenerator)();
+                const existingUser = await prisma_1.prisma.user.findUnique({
+                    where: { referral_code: referralCode }
+                });
+                if (!existingUser)
+                    isTaken = false;
+            }
             await createRegisTokenService(email);
             await prisma_1.prisma.user.create({
                 data: {
@@ -245,11 +262,10 @@ async function googleLoginService(email) {
                     updated_at: new Date()
                 }
             });
-            user = await checkEmail(email);
         }
         if (!user)
             throw (0, customError_1.createCustomError)(404, "User not found!");
-        const tokens = await createTokens(email);
+        const tokens = await createTokens(user);
         const { accessToken, refreshToken } = tokens;
         const exp = new Date();
         exp.setDate(exp.getDate() + 30);

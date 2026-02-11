@@ -24,6 +24,7 @@ class CartService {
                     select: {
                         id: true,
                         name: true,
+                        cityId: true,
                     },
                 },
             },
@@ -88,6 +89,7 @@ class CartService {
                         select: {
                             id: true,
                             name: true,
+                            cityId: true,
                         },
                     },
                 },
@@ -111,6 +113,7 @@ class CartService {
                     select: {
                         id: true,
                         name: true,
+                        cityId: true,
                     },
                 },
             },
@@ -160,6 +163,7 @@ class CartService {
                     select: {
                         id: true,
                         name: true,
+                        cityId: true,
                     },
                 },
             },

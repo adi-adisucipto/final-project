@@ -42,6 +42,25 @@ class OrderController {
             next(error);
         }
     }
+    async previewDiscounts(req, res, next) {
+        try {
+            const { storeId, items } = req.body;
+            if (!storeId || !items || !Array.isArray(items) || items.length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Missing required fields",
+                });
+            }
+            const data = await orderService.previewDiscounts(storeId, items);
+            res.status(200).json({
+                success: true,
+                data,
+            });
+        }
+        catch (error) {
+            next(error);
+        }
+    }
     async uploadPaymentProofFile(req, res, next) {
         try {
             if (!req.file) {

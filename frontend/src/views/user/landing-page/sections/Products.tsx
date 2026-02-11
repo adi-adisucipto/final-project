@@ -15,8 +15,6 @@ function Products({ onOpenModal, storeId } : ProductsProps) {
     const [product, setProduct] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
 
-    console.log(product)
-
     useEffect(() => {
         if (storeId) {
             const fetchProducts = async () => {

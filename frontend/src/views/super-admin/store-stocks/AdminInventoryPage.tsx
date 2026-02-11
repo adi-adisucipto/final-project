@@ -48,7 +48,7 @@ function AdminInventoryPage() {
 
   const filters = { search, storeId, page }
   const { stocks, history, stats, pagination, stores, products, isLoading } =
-    useAdminInventory(filters, accessToken, refreshKey)
+    useAdminInventory(filters, accessToken!, refreshKey)
 
   const refreshInventory = () => setRefreshKey((prev) => prev + 1)
 

@@ -46,7 +46,7 @@ function SalesReportPage() {
       storeId: selectedStoreId,
       month,
     },
-    accessToken,
+    accessToken!,
     refreshKey
   )
 
