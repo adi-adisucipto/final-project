@@ -192,6 +192,7 @@ export async function loginService(email: string, password: string) {
         const user = await checkEmail(email) as UserProps;
         if (!user) throw createCustomError(404, "Email or password invalid");
         if (!user.password) throw createCustomError(400, "Please login using social provider");
+        if (!user.is_active) throw createCustomError(403, "Account disabled");
         if (!user.is_verified) throw createCustomError(403, "Please verify your email first");
 
         const passValid = await compare(password, user.password);
@@ -231,6 +232,9 @@ export async function refreshTokensService(token: string) {
             include: {user: true}
         });
         if (!findUser) throw createCustomError(404, "InvalidToken");
+        if (!findUser.user.is_active) {
+            throw createCustomError(403, "Account disabled");
+        }
 
         if (new Date() > findUser.expires_at) {
             await prisma.refreshToken.delete({ where: { id: findUser.id } });

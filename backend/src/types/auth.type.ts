@@ -4,6 +4,7 @@ export interface UserProps {
     id: string,
     email: string | null,
     is_verified: boolean,
+    is_active: boolean,
     role: Role,
     referral_code: string,
     first_name: string,

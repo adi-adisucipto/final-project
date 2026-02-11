@@ -57,7 +57,7 @@ function LandingPage() {
   return (
     <div>
       <Hero/>
-      <Categories/>
+      <Categories storeId={store?.id} />
       <StoreBar 
         currentStore={store} 
         onOpenModal={() => setOpenModal(true)}

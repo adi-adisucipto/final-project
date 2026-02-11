@@ -21,7 +21,10 @@ function ProductPage() {
   const [sort, setSort] = useState<"newest" | "price_asc" | "price_desc">(
     "newest"
   );
-  const [categoryId, setCategoryId] = useState<string | undefined>();
+  const categoryIdFromQuery = searchParams.get("categoryId")?.trim() || undefined;
+  const [categoryId, setCategoryId] = useState<string | undefined>(
+    categoryIdFromQuery
+  );
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [searchError, setSearchError] = useState<string | undefined>();
@@ -77,6 +80,12 @@ function ProductPage() {
       clearTimeout(timer);
     };
   }, [minPriceInput, maxPriceInput]);
+
+  useEffect(() => {
+    if (!categoryIdFromQuery) return;
+    setCategoryId(categoryIdFromQuery);
+    setPage(1);
+  }, [categoryIdFromQuery]);
 
   const handleSearchSubmit = () => {
     const trimmed = searchInput.trim();
