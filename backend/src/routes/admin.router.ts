@@ -30,6 +30,8 @@ import {
   updateAdminProductController,
 } from "../controllers/admin.product.controller";
 import { uploadAdminProductImagesController } from "../controllers/admin.product.images.controller";
+import { getSalesReportController } from "../controllers/admin.sales-report.controller";
+import { getStockReportController } from "../controllers/admin.stock-report.controller";
 import { adminMiddleware } from "../middlewares/admin.middleware";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import uploader from "../utils/uploader";
@@ -63,5 +65,7 @@ adminRouter.post(
   uploadAdminProductImagesController
 );
 adminRouter.delete("/products/:productId", deleteAdminProductController);
+adminRouter.get("/reports/sales", getSalesReportController);
+adminRouter.get("/reports/stock", getStockReportController);
 
 export default adminRouter;
