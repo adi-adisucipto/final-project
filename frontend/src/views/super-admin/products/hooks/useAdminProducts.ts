@@ -13,6 +13,7 @@ type AdminFilters = {
   categoryId: string
   sort: SortOption
   page: number
+  storeId?: string
 }
 
 const defaultPagination: PaginationMeta = {
@@ -29,6 +30,7 @@ const buildQuery = (filters: AdminFilters) => {
     sort: SortOption
     search?: string
     categoryId?: string
+    storeId?: string
   } = {
     page: filters.page,
     limit: 10,
@@ -36,6 +38,7 @@ const buildQuery = (filters: AdminFilters) => {
   }
   if (filters.search) params.search = filters.search
   if (filters.categoryId) params.categoryId = filters.categoryId
+  if (filters.storeId) params.storeId = filters.storeId
   return params
 }
 

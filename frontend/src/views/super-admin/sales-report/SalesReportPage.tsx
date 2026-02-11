@@ -25,10 +25,12 @@ function SalesReportPage() {
         role?: string
         storeAdminId?: string | null
         storeId?: string | null
+        storeName?: string | null
       }
     | undefined
 
-  const lockedStoreId = user?.storeAdminId || user?.storeId || ""
+  const lockedStoreId = user?.storeId || user?.storeAdminId || ""
+  const lockedStoreName = user?.storeName || "Your Store"
   const isStoreAdmin = user?.role === "admin" && Boolean(lockedStoreId)
 
   const [stores, setStores] = useState<StoreOption[]>([])
@@ -36,6 +38,12 @@ function SalesReportPage() {
   const [month, setMonth] = useState(getCurrentMonthValue())
   const [refreshKey, setRefreshKey] = useState(0)
   const [activeTab, setActiveTab] = useState<ActiveTab>("monthly")
+
+  useEffect(() => {
+    if (isStoreAdmin && lockedStoreId) {
+      setStoreId(lockedStoreId)
+    }
+  }, [isStoreAdmin, lockedStoreId])
 
   let selectedStoreId: string | undefined = storeId
   if (isStoreAdmin) selectedStoreId = lockedStoreId
@@ -98,7 +106,11 @@ function SalesReportPage() {
         </div>
         <div className="mt-6">
           <SalesReportFilters
-            stores={stores}
+            stores={
+              isStoreAdmin && lockedStoreId
+                ? [{ id: lockedStoreId, name: lockedStoreName }]
+                : stores
+            }
             storeId={isStoreAdmin ? lockedStoreId : storeId}
             month={month}
             storeLocked={isStoreAdmin}

@@ -44,6 +44,12 @@ export async function listAdminProductsController(
 
     const search = parseString(req.query.search) || undefined;
     const categoryId = parseString(req.query.categoryId) || undefined;
+    const storeIdRaw = parseString(req.query.storeId);
+    let storeId: string | undefined;
+    if (storeIdRaw) {
+      if (!isUuid(storeIdRaw)) throw createCustomError(400, "storeId");
+      storeId = storeIdRaw;
+    }
 
     const minPrice = parseNumber(req.query.minPrice);
     if (minPrice !== undefined && minPrice < 0) {
@@ -68,6 +74,7 @@ export async function listAdminProductsController(
       minPrice,
       maxPrice,
       sort,
+      storeId,
     };
     const data = await listAdminProducts(params);
     res.status(200).json({ data });

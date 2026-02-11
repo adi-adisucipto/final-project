@@ -29,7 +29,7 @@ function AdminInventoryPage() {
       }
     | undefined
 
-  const lockedStoreId = user?.storeAdminId || user?.storeId || ""
+  const lockedStoreId = user?.storeId || user?.storeAdminId || ""
   const isStoreAdmin = user?.role === "admin" && Boolean(lockedStoreId)
 
   const [search, setSearch] = useState("")

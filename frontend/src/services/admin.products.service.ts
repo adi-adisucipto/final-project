@@ -36,6 +36,7 @@ export type AdminProductQuery = {
   search?: string;
   categoryId?: string;
   sort?: "newest" | "price_asc" | "price_desc";
+  storeId?: string;
 };
 
 const getAuthHeaders = (accessToken: string) => ({

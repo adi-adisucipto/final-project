@@ -10,6 +10,7 @@ export type AdminListParams = {
   minPrice?: number;
   maxPrice?: number;
   sort: "newest" | "price_asc" | "price_desc";
+  storeId?: string;
 };
 
 const adminInclude = {
@@ -60,6 +61,9 @@ const buildProductWhere = (params: AdminListParams): Prisma.ProductWhereInput =>
   if (params.categoryId) where.categoryId = params.categoryId;
   if (price) where.price = price;
   if (searchFilter) where.OR = searchFilter;
+  if (params.storeId) {
+    where.stocks = { some: { storeId: params.storeId } };
+  }
   return where;
 };
 
