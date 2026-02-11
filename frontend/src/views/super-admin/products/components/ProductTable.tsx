@@ -7,9 +7,11 @@ type ProductTableProps = {
   products: ProductItem[]
   onEdit: (product: ProductItem) => void
   onDelete: (id: string) => void
+  readOnly?: boolean
 }
 
-function ProductTable({ products, onEdit, onDelete }: ProductTableProps) {
+function ProductTable({ products, onEdit, onDelete, readOnly }: ProductTableProps) {
+  const colSpan = readOnly ? 4 : 5
   return (
     <section className="rounded-2xl border bg-white shadow-sm">
       <div className="overflow-x-auto">
@@ -20,13 +22,13 @@ function ProductTable({ products, onEdit, onDelete }: ProductTableProps) {
               <th className="px-6 py-4">Category</th>
               <th className="px-6 py-4">Price</th>
               <th className="px-6 py-4">Description</th>
-              <th className="px-6 py-4 text-right">Actions</th>
+              {!readOnly && <th className="px-6 py-4 text-right">Actions</th>}
             </tr>
           </thead>
           <tbody>
             {products.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                <td colSpan={colSpan} className="px-6 py-12 text-center text-slate-500">
                   No products found.
                 </td>
               </tr>
@@ -64,26 +66,28 @@ function ProductTable({ products, onEdit, onDelete }: ProductTableProps) {
                   <td className="px-6 py-4 text-slate-500">
                     <span className="line-clamp-2">{product.description}</span>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex justify-end gap-2">
-                      <button
-                        type="button"
-                        onClick={() => onEdit(product)}
-                        className="rounded-lg border border-emerald-200 p-2 text-emerald-600 transition hover:bg-emerald-50"
-                        aria-label="Edit product"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => onDelete(product.id)}
-                        className="rounded-lg border border-rose-200 p-2 text-rose-500 transition hover:bg-rose-50"
-                        aria-label="Delete product"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </td>
+                  {!readOnly && (
+                    <td className="px-6 py-4">
+                      <div className="flex justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => onEdit(product)}
+                          className="rounded-lg border border-emerald-200 p-2 text-emerald-600 transition hover:bg-emerald-50"
+                          aria-label="Edit product"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onDelete(product.id)}
+                          className="rounded-lg border border-rose-200 p-2 text-rose-500 transition hover:bg-rose-50"
+                          aria-label="Delete product"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  )}
                   </tr>
                 )
               })

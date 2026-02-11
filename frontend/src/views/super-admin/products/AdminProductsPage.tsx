@@ -79,7 +79,6 @@ function AdminProductsPage() {
         price: payload.price,
         categoryId: payload.categoryId,
         isActive: true,
-        previousStoreId: payload.previousStoreId
       }
       let productId = payload.id
       if (payload.id) {
