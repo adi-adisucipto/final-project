@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { enqueueSnackbar } from "notistack";
 import useGeolocation from "@/hooks/useGeolocation";
-import { cartService } from "@/services/cart.services";
+import { addToCart } from "@/services/cart.services";
 import { useProductDetail } from "./hooks/useProductDetail";
 import { useRecommendedProducts } from "./hooks/useRecommendedProducts";
 import ProductGallery from "./components/ProductGallery";
@@ -68,13 +68,13 @@ function ProductDetailPage({ productId }: ProductDetailPageProps) {
     setQuantity(clampQuantity(parsed, stock));
   };
 
-  const addToCart = async (targetId: string, qty: number) => {
+  const addToCarts = async (targetId: string, qty: number) => {
     if (status !== "authenticated") {
       router.push("/login");
       return;
     }
     if (!detail?.store.id) return;
-    await cartService.addToCart({
+    await addToCart({
       productId: targetId,
       storeId: detail.store.id,
       quantity: qty,
@@ -84,7 +84,7 @@ function ProductDetailPage({ productId }: ProductDetailPageProps) {
   const handleAddToCart = async () => {
     setIsSubmitting(true);
     try {
-      await addToCart(productId, quantity);
+      await addToCarts(productId, quantity);
       enqueueSnackbar("Added to cart", { variant: "success" });
     } catch (error) {
       enqueueSnackbar("Failed to add to cart", { variant: "error" });
@@ -95,7 +95,7 @@ function ProductDetailPage({ productId }: ProductDetailPageProps) {
 
   const handleQuickAdd = async (targetId: string) => {
     try {
-      await addToCart(targetId, 1);
+      await addToCarts(targetId, 1);
       enqueueSnackbar("Added to cart", { variant: "success" });
     } catch (error) {
       enqueueSnackbar("Failed to add to cart", { variant: "error" });

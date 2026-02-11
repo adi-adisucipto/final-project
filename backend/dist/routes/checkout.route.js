@@ -11,6 +11,7 @@ const checkoutRouter = (0, express_1.Router)();
 const orderController = new checkout_controller_1.OrderController();
 checkoutRouter.use(auth_middleware_1.authMiddleware);
 checkoutRouter.post("/", orderController.createOrder);
+checkoutRouter.post("/preview", orderController.previewDiscounts);
 checkoutRouter.get("/", orderController.getUserOrders);
 checkoutRouter.get("/:id", orderController.getOrderById);
 checkoutRouter.post("/:id/payment", (0, uploader_1.default)().single("file"), orderController.uploadPaymentProof);

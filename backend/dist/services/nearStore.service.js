@@ -1,11 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.nearStoreService = nearStoreService;
+exports.mainStoreService = mainStoreService;
+exports.productByStoreService = productByStoreService;
 const distance_1 = require("../helpers/distance");
 const prisma_1 = require("../lib/prisma");
+const customError_1 = require("../utils/customError");
 async function nearStoreService(userLat, userLng) {
     try {
         const store = await prisma_1.prisma.store.findMany({
+            where: {
+                isActive: true
+            },
             select: {
                 id: true,
                 name: true,
@@ -24,4 +30,21 @@ async function nearStoreService(userLat, userLng) {
     catch (error) {
         throw error;
     }
+}
+async function mainStoreService(storeId) {
+    if (!storeId)
+        throw (0, customError_1.createCustomError)(404, "Store not found");
+    const store = await prisma_1.prisma.store.findUnique({
+        where: { id: storeId }
+    });
+    return store;
+}
+async function productByStoreService(storeId) {
+    if (!storeId)
+        throw (0, customError_1.createCustomError)(404, "Store not found");
+    const products = await prisma_1.prisma.store.findUnique({
+        where: { id: storeId },
+        include: { products: true }
+    });
+    return products;
 }

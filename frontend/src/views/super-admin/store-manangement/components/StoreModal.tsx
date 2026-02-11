@@ -48,7 +48,7 @@ function StoreModal({
     const initialValues: FormProps = {
         name: initialData ? initialData.name : "",
         address: initialData ? initialData.address : "",
-        isActive: initialData ? initialData.isActive : true,
+        isActive: initialData ? initialData.isActive : false,
         provinceId: initialData ? initialData.provinceId : 0,
         cityId: initialData ? initialData.cityId : 0,
         latitude: initialData ? initialData.latitude : 0,
@@ -252,7 +252,7 @@ function StoreModal({
                                     </label>
                                     <Field
                                         as="select" 
-                                        name="isAvtice"
+                                        name="isActive"
                                         className="h-10 w-full appearance-none rounded-xl bg-[#F7FBFF] border border-[#D4D7E3] px-4 text-sm focus:ring-4 focus:ring-green-100 focus:border-green-400 focus:outline-none transition-all"
                                     >
                                         <option value="" disabled>-- Pilih Status --</option>

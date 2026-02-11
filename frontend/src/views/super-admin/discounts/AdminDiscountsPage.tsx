@@ -41,7 +41,7 @@ function AdminDiscountsPage() {
 
   const { discounts, pagination, isLoading } = useAdminDiscounts(
     { search, page },
-    accessToken,
+    accessToken!,
     refreshKey
   )
 

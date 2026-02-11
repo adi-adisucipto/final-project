@@ -41,7 +41,7 @@ function StockReportPage() {
       storeId: selectedStoreId,
       month,
     },
-    accessToken,
+    accessToken!,
     refreshKey
   )
 

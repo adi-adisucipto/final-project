@@ -7,7 +7,9 @@ const customError_1 = require("../utils/customError");
 class OrdersService {
     async getOrders({ storeId, status, page = 1, limit = 10, search }) {
         const skip = (page - 1) * limit;
-        const where = { storeId };
+        const where = {
+            storeId
+        };
         if (status && status !== "all") {
             where.status = status;
         }

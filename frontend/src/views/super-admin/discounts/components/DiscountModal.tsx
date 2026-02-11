@@ -26,7 +26,7 @@ type DiscountModalProps = {
   onSave: (payload: DiscountFormPayload) => void
   discount: DiscountItem | null
   stores: StoreOption[]
-  accessToken?: string
+  accessToken?: string | null
   storeLocked: boolean
   defaultStoreId?: string
 }

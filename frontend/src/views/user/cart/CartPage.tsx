@@ -7,11 +7,9 @@ import { ShoppingBag } from "lucide-react";
 import ShippingAddress from "@/components/cart/ShippingAddress";
 import StoreSection from "@/components/cart/StoreSection";
 import CartSummary from "@/components/cart/CartSummary";
-import AddOnProduct from "@/components/cart/AddOnProduct";
 import CartSkeleton from "./CartSkeleton";
 import { useCart } from "@/hooks/useCart";
 import { useShippingAddress } from "@/hooks/useShippingAddress";
-import { ADD_ON_PRODUCTS } from "./komponent/addOnProducts";
 import { calculateCartTotals } from "@/lib/cart.utils";
 import { updateCartItem, removeCartItem, addToCart } from "@/services/cart.services";
 
@@ -41,23 +39,38 @@ export default function CartPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <button onClick={fetchCart}>Retry</button>
+      <div className="min-h-screen flex flex-col items-center justify-center text-center px-4">
+        <p className="text-lg font-semibold text-gray-800 mb-2">
+        Gagal memuat keranjang
+        </p>
+      <p className="text-sm text-gray-500 mb-6">
+        Periksa koneksi internet kamu lalu coba lagi.
+      </p>
+      <button
+        onClick={fetchCart}
+        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+      >
+      Coba Lagi
+      </button>
       </div>
     );
   }
 
   if (!cartItems.length) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-center">
+      <div className="min-h-screen flex flex-col items-center justify-center text-center">
         <ShoppingBag className="w-24 h-24 text-gray-300 mx-auto mb-4" />
-        <button onClick={() => router.push("/products")}>Mulai Belanja</button>
+        <button onClick={() => router.push("/products")}
+          className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 active:scale-95 transition-all duration-200"
+        >
+          Mulai Belanja
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-8">
+    <div className="max-w-7xl mx-auto px-4 md:px-6 grid lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
       <div className="lg:col-span-2">
         <ShippingAddress
           firstName={address?.firstName}
@@ -82,22 +95,6 @@ export default function CartPage() {
             }}
           />
     ))}
-        <div className="grid grid-cols-4 gap-4 mt-8">
-          {ADD_ON_PRODUCTS.map((p) => (
-            <AddOnProduct
-              key={p.id}
-              {...p}
-              onAddToCart={async (id) => {
-                await addToCart({
-                  productId: id,
-                  storeId: groupedItems[0]?.store.id,
-                  quantity: 1,
-                });
-                await fetchCart();
-              }}
-            />
-          ))}
-        </div>
       </div>
       <CartSummary
         subtotal={subtotal}

@@ -21,6 +21,7 @@ export type ProductFormPayload = {
   price: number
   categoryId: string
   files: File[]
+  previousStoreId?: string
 }
 
 export type SortOption = "newest" | "price_asc" | "price_desc"

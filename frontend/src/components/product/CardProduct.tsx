@@ -1,24 +1,29 @@
 import { Plus, ShoppingCart } from 'lucide-react'
 import Image from 'next/image'
+import { Ring } from 'react-css-spinners';
 
-interface ProductItem {
+export interface ProductItem {
+    id: string,
     name: string,
-    category: string,
-    price: string,
-    discont: string,
-    stock: string,
+    category?: string,
+    price?: number,
+    discont?: string,
+    quantity?: number,
+    image?: string
 }
 
 interface ProductProps {
     product: ProductItem;
+    onAddToCart: (id: string) => void;
+    loading: boolean;
 }
 
-function CardProducts({product}: ProductProps) {
+function CardProducts({product, onAddToCart, loading}: ProductProps) {
   return (
     <div className="shadow-xl rounded-xl border border-black/10 w-full h-full">
         <div className='relative w-full xl:h-100 md:h-90 h-55 overflow-hidden rounded-t-xl bg-gray-50'>
             <Image 
-                src="/Indomilk.jpg" 
+                src={product.image ?? "/Indomilk.jpg"}
                 alt='product' 
                 fill
                 sizes="(max-width: 768px) 100vw, 300px"
@@ -44,11 +49,15 @@ function CardProducts({product}: ProductProps) {
             <div className='text-xs font-bold flex justify-between items-center'>
                 <div>
                     <p className='text-slate-400'>Sisa stock</p>
-                    <p>{product.stock} pcs</p>
+                    <p>{product.quantity} pcs</p>
                 </div>
 
-                <button className='bg-green-500 p-3 rounded-md text-white hover:bg-green-400 cursor-pointer group'>
-                    <Plus className="group-hover:rotate-90 transition-transform duration-300"/>
+                <button className='bg-green-500 p-3 rounded-md text-white hover:bg-green-400 cursor-pointer group' onClick={() => onAddToCart(product.id)} disabled={loading}>
+                    {loading ? (
+                        <Ring size={20} thickness={3}/>
+                    ) : (
+                        <Plus className="group-hover:rotate-90 transition-transform duration-300"/>
+                    )}
                 </button>
             </div>
         </div>
