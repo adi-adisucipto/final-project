@@ -1,10 +1,9 @@
 "use client"
 
-import CardProducts from "@/components/product/CardProduct"
+import CardProducts, { ProductItem } from "@/components/product/CardProduct"
 import { Button } from "@/components/ui/button";
 import { addToCart } from "@/services/cart.services";
-import { productsByStore } from "@/services/nearStores"
-import { ProductItem } from "@/views/super-admin/products/types";
+import { getProductCatalog } from "@/services/product.services";
 import Link from "next/link"
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
@@ -41,11 +40,25 @@ function Products({ onOpenModal, storeId } : ProductsProps) {
             const fetchProducts = async () => {
                 setLoading(true);
                 try {
-                    const data = await productsByStore(storeId);
-                    const limitedProducts = data.product.products.slice(0, 3);
-                    setProduct(limitedProducts);
-
-                    console.log(product)
+                    const data = await getProductCatalog({
+                        page: 1,
+                        limit: 6,
+                        sort: "newest",
+                        storeId
+                    });
+                    const mapped: ProductItem[] = data.products.map((item) => ({
+                        id: item.id,
+                        name: item.name,
+                        category: item.category?.name || "Uncategorized",
+                        price: Number(item.price).toLocaleString("id-ID", {
+                            style: "currency",
+                            currency: "IDR"
+                        }),
+                        discont: "",
+                        quantity: item.stock,
+                        image: item.imageUrl || "/Indomilk.jpg"
+                    }));
+                    setProduct(mapped);
                 } catch (error) {
                     console.error("Failed to fetch products", error);
                 } finally {
@@ -72,7 +85,12 @@ function Products({ onOpenModal, storeId } : ProductsProps) {
     <div className="xl:my-8 my-4 px-4 xl:px-0">
         <div className="flex justify-between items-center xl:mb-4 mb-2">
             <h1 className="xl:text-[24px] text-[20px] font-bold">Best Deals Near You</h1>
-            <Link href={"/products"} className="font-bold xl:text-lg text-green-500 hover:text-green-400">View All</Link>
+            <Link
+                href={storeId ? `/products?storeId=${storeId}` : "/products"}
+                className="font-bold xl:text-lg text-green-500 hover:text-green-400"
+            >
+                View All
+            </Link>
         </div>
 
         <div className="grid xl:grid-cols-3 gap-4 md:grid-cols-3 grid-cols-2 h-full">

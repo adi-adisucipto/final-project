@@ -26,6 +26,7 @@ model User {
   id            String  @id @default(uuid())
   email         String  @unique
   is_verified   Boolean @default(false)
+  is_active     Boolean @default(true)
   role          Role    @default(user)
   referral_code String  @unique
 

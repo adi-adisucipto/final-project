@@ -48,10 +48,16 @@ function LandingPage() {
             storeMain();
         }
     }, [geoError]);
+
+  useEffect(() => {
+    if (!store?.id) return;
+    window.localStorage.setItem("selectedStoreId", store.id);
+  }, [store]);
+
   return (
     <div>
       <Hero/>
-      <Categories/>
+      <Categories storeId={store?.id} />
       <StoreBar 
         currentStore={store} 
         onOpenModal={() => setOpenModal(true)}
