@@ -19,7 +19,7 @@ export default function CheckoutHeader({ currentStep = 2 }: CheckoutHeaderProps)
   return (
     <div className="bg-white border-b sticky top-0 z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-4 mb-4 sm:mb-6">
           <button
             onClick={() => router.back()}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -34,7 +34,7 @@ export default function CheckoutHeader({ currentStep = 2 }: CheckoutHeaderProps)
             <div key={item.step} className="flex items-center flex-1">
               <div className="flex flex-col items-center">
                 <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
+                  className={`w-8 h-8 sm:w-10 sm:h-10 text-sm sm:text-base rounded-full flex items-center justify-center font-semibold transition-colors ${
                     item.step < currentStep
                       ? "bg-emerald-500 text-white"
                       : item.step === currentStep

@@ -29,7 +29,7 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative"
+        className="bg-white max-w-2xl w-full max-h-[90vh] overflow-y-auto relative sm:rounded-2xl rounded-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -40,14 +40,14 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
         </button>
 
         <div className="bg-orange-400 rounded-t-xl px-6 py-5">
-        <div className="grid grid-cols-2 text-white">
+        <div className="grid grid-cols-1 sm:grid-cols-2 text-white">
           <div className="flex flex-col items-center justify-center">
             <p className="text-sm opacity-90">Total Payment</p>
             <p className="text-2xl font-bold mt-1">
               Rp{order.totalAmount.toLocaleString("id-ID")}
             </p>
           </div>
-        <div className="absolute inset-y-4 left-1/2 w-px bg-white/30" />
+        <div className="hidden sm:block absolute inset-y-4 left-1/2 w-px bg-white/30" />
           <div className="flex flex-col items-center justify-center">
             <p className="text-sm opacity-90">Payment Method</p>
             <p className="text-lg font-semibold mt-1">
@@ -108,7 +108,7 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
           {order.paymentMethod === "TRANSFER" && order.paymentProof && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
               <h3 className="text-sm font-semibold text-blue-900 mb-3">Bukti Transfer</h3>
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center">
                 <div className="relative w-32 h-32 bg-white rounded-lg overflow-hidden shrink-0 border-2 border-blue-300">
                   <Image
                     src={order.paymentProof}
@@ -136,8 +136,8 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
           <div className="border rounded-lg p-6">
             <h3 className="text-xl font-bold text-center mb-6">Track History</h3>
 
-            <div className="relative">
-              <div className="flex justify-between">
+            <div className="relative overflow-x-auto">
+              <div className="flex justify-between overflow-x-auto pb-2">
                 {trackSteps.map((step) => (
                   <div key={step.key} className="flex flex-col items-center flex-1">
                     <div

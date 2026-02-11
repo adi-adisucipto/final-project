@@ -285,7 +285,7 @@ useEffect(() => {
       }
 
       enqueueSnackbar("Pesanan berhasil dibuat!", { variant: "success" });
-      router.push(`/orders/${order.id}`);
+      router.push(`/orders/success?orderId=${order.id}&orderNumber=${order.orderNumber}`);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Gagal membuat pesanan";
@@ -311,7 +311,7 @@ useEffect(() => {
       <CheckoutHeader currentStep={2} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           <div className="lg:col-span-2 space-y-6">
             <ShippingAddress
               firstName={address?.firstName}
