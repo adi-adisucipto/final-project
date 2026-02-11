@@ -10,10 +10,11 @@ interface OrderRowProps {
   isRejecting: boolean;
   onApprove: (orderId: string) => void;
   onReject: (orderId: string) => void;
+  onUpdateStatus?: (orderId: string, newStatus: import("@/types/order").OrderStatus) => void;
 }
 
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("en-US", {
+  return new Date(dateString).toLocaleDateString("id-ID", {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -35,33 +36,37 @@ export default function OrderRow({
   isRejecting,
   onApprove,
   onReject,
+  onUpdateStatus,
 }: OrderRowProps) {
   const customerName =
-    `${order.user.first_name || ""} ${order.user.last_name || ""}`.trim() ||
-    order.user.email;
+    `${order.user?.first_name || ""} ${order.user?.last_name || ""}`.trim() ||
+    order.user?.email ||
+    "N/A";
 
   return (
     <tr
       className={cn(
-        "border-t border-slate-200",
-        index % 2 === 1 && "bg-slate-50"
+        "border-t border-slate-200 hover:bg-slate-50 transition-colors",
+        index % 2 === 1 && "bg-slate-50/50"
       )}
     >
       <td className="px-6 py-4">
         <div>
           <p className="font-semibold text-slate-800">{order.orderNumber}</p>
-          <p className="text-xs text-slate-400">
-            {order.orderItems.length} item
-            {order.orderItems.length > 1 ? "s" : ""}
+          <p className="text-xs text-slate-400 mt-0.5">
+            {order.orderItems?.length || 0} item
+            {(order.orderItems?.length || 0) > 1 ? "s" : ""}
           </p>
         </div>
       </td>
       <td className="px-6 py-4">
         <div>
           <p className="font-medium text-slate-700">{customerName}</p>
-          <p className="text-xs text-slate-400 max-w-[200px] truncate">
-            {order.userAddress.address}
-          </p>
+          {order.userAddress?.address && (
+            <p className="text-xs text-slate-400 max-w-[200px] truncate mt-0.5">
+              {order.userAddress.address}
+            </p>
+          )}
         </div>
       </td>
       <td className="px-6 py-4 font-semibold text-slate-800">
@@ -81,6 +86,8 @@ export default function OrderRow({
           isRejecting={isRejecting}
           onApprove={onApprove}
           onReject={onReject}
+          onUpdateStatus={onUpdateStatus}
+          isMobile={false}
         />
       </td>
     </tr>
