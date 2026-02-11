@@ -15,7 +15,6 @@ type ActiveTab = "summary" | "history"
 function StockReportPage() {
   const { data: session } = useSession()
   const accessToken = session?.accessToken
-  if(!accessToken) throw new Error("Unauthorized")
   const user = session?.user as
     | {
         role?: string
@@ -42,7 +41,7 @@ function StockReportPage() {
       storeId: selectedStoreId,
       month,
     },
-    accessToken,
+    accessToken!,
     refreshKey
   )
 
