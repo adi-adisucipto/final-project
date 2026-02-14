@@ -1,4 +1,5 @@
 import { OrderStatus } from "@/types/order";
+import { Eye } from "lucide-react";
 
 interface OrderActionsMenuProps {
   orderId: string;
@@ -8,6 +9,7 @@ interface OrderActionsMenuProps {
   onApprove: (orderId: string) => void;
   onReject: (orderId: string) => void;
   onUpdateStatus?: (orderId: string, newStatus: OrderStatus) => void;
+  onViewDetail?: (orderId: string) => void;
   isMobile?: boolean;
 }
 
@@ -19,6 +21,7 @@ export default function OrderActionsMenu({
   onApprove,
   onReject,
   onUpdateStatus,
+  onViewDetail,
   isMobile = false,
 }: OrderActionsMenuProps) {
   const isProcessing = isApproving || isRejecting;
@@ -42,45 +45,77 @@ export default function OrderActionsMenu({
     </svg>
   );
 
+  const ViewDetailButton = () => {
+    if (!onViewDetail) return null;
+
+    if (isMobile) {
+      return (
+        <button
+          onClick={() => onViewDetail(orderId)}
+          className="w-full rounded-lg bg-blue-500 py-2.5 text-sm font-medium text-white hover:bg-blue-600 active:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+        >
+          <Eye className="w-4 h-4" />
+          Lihat Detail
+        </button>
+      );
+    }
+
+    return (
+      <button
+        onClick={() => onViewDetail(orderId)}
+        className="rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 active:bg-blue-700 transition-colors flex items-center gap-2"
+      >
+        <Eye className="w-4 h-4" />
+        Detail
+      </button>
+    );
+  };
+
   if (orderStatus === "WAITING_CONFIRMATION") {
     if (isMobile) {
       return (
         <div className="flex flex-col gap-2">
-          <button
-            onClick={() => onApprove(orderId)}
-            disabled={isProcessing}
-            className="w-full rounded-lg bg-emerald-500 py-2.5 text-sm font-medium text-white hover:bg-emerald-600 active:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-          >
-            {isApproving ? (
-              <>
-                <LoadingSpinner />
-                <span>Memproses...</span>
-              </>
-            ) : (
-              "Konfirmasi Pesanan"
-            )}
-          </button>
+          <ViewDetailButton />
+          
+          <div className="flex gap-2">
+            <button
+              onClick={() => onApprove(orderId)}
+              disabled={isProcessing}
+              className="flex-1 rounded-lg bg-emerald-500 py-2.5 text-sm font-medium text-white hover:bg-emerald-600 active:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+            >
+              {isApproving ? (
+                <>
+                  <LoadingSpinner />
+                  <span>Memproses...</span>
+                </>
+              ) : (
+                "Konfirmasi"
+              )}
+            </button>
 
-          <button
-            onClick={() => onReject(orderId)}
-            disabled={isProcessing}
-            className="w-full rounded-lg bg-red-500 py-2.5 text-sm font-medium text-white hover:bg-red-600 active:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-          >
-            {isRejecting ? (
-              <>
-                <LoadingSpinner />
-                <span>Memproses...</span>
-              </>
-            ) : (
-              "Tolak Pesanan"
-            )}
-          </button>
+            <button
+              onClick={() => onReject(orderId)}
+              disabled={isProcessing}
+              className="flex-1 rounded-lg bg-red-500 py-2.5 text-sm font-medium text-white hover:bg-red-600 active:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+            >
+              {isRejecting ? (
+                <>
+                  <LoadingSpinner />
+                  <span>Memproses...</span>
+                </>
+              ) : (
+                "Tolak"
+              )}
+            </button>
+          </div>
         </div>
       );
     }
 
     return (
       <div className="flex gap-2 justify-end">
+        <ViewDetailButton />
+        
         <button
           onClick={() => onApprove(orderId)}
           disabled={isProcessing}
@@ -101,68 +136,124 @@ export default function OrderActionsMenu({
   }
 
   if (orderStatus === "CONFIRMED" && onUpdateStatus) {
-    const buttonClass = isMobile
-      ? "w-full rounded-lg bg-purple-500 py-2.5 text-sm font-medium text-white hover:bg-purple-600 active:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-      : "rounded-lg bg-purple-500 px-4 py-2 text-sm font-medium text-white hover:bg-purple-600 active:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors";
+    if (isMobile) {
+      return (
+        <div className="flex flex-col gap-2">
+          <ViewDetailButton />
+          <button
+            onClick={() => onUpdateStatus(orderId, "PRESCRIBED")}
+            disabled={isProcessing}
+            className="w-full rounded-lg bg-purple-500 py-2.5 text-sm font-medium text-white hover:bg-purple-600 active:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Tandai Diresepkan
+          </button>
+        </div>
+      );
+    }
 
     return (
-      <button
-        onClick={() => onUpdateStatus(orderId, "PRESCRIBED")}
-        disabled={isProcessing}
-        className={buttonClass}
-      >
-        Tandai Dikemas
-      </button>
+      <div className="flex gap-2 justify-end">
+        <ViewDetailButton />
+        <button
+          onClick={() => onUpdateStatus(orderId, "PRESCRIBED")}
+          disabled={isProcessing}
+          className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-medium text-white hover:bg-purple-600 active:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          Tandai Diresepkan
+        </button>
+      </div>
     );
   }
 
   if (orderStatus === "PRESCRIBED" && onUpdateStatus) {
-    const buttonClass = isMobile
-      ? "w-full rounded-lg bg-indigo-500 py-2.5 text-sm font-medium text-white hover:bg-indigo-600 active:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-      : "rounded-lg bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-600 active:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors";
+    if (isMobile) {
+      return (
+        <div className="flex flex-col gap-2">
+          <ViewDetailButton />
+          <button
+            onClick={() => onUpdateStatus(orderId, "SHIPPED")}
+            disabled={isProcessing}
+            className="w-full rounded-lg bg-indigo-500 py-2.5 text-sm font-medium text-white hover:bg-indigo-600 active:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Tandai Dikirim
+          </button>
+        </div>
+      );
+    }
 
     return (
-      <button
-        onClick={() => onUpdateStatus(orderId, "SHIPPED")}
-        disabled={isProcessing}
-        className={buttonClass}
-      >
-        Tandai Dikirim
-      </button>
+      <div className="flex gap-2 justify-end">
+        <ViewDetailButton />
+        <button
+          onClick={() => onUpdateStatus(orderId, "SHIPPED")}
+          disabled={isProcessing}
+          className="rounded-lg bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-600 active:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          Tandai Dikirim
+        </button>
+      </div>
     );
   }
 
   if (orderStatus === "SHIPPED" && onUpdateStatus) {
-    const buttonClass = isMobile
-      ? "w-full rounded-lg bg-emerald-500 py-2.5 text-sm font-medium text-white hover:bg-emerald-600 active:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-      : "rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 active:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors";
+    if (isMobile) {
+      return (
+        <div className="flex flex-col gap-2">
+          <ViewDetailButton />
+          <button
+            onClick={() => onUpdateStatus(orderId, "DELIVERED")}
+            disabled={isProcessing}
+            className="w-full rounded-lg bg-emerald-500 py-2.5 text-sm font-medium text-white hover:bg-emerald-600 active:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Tandai Terkirim
+          </button>
+        </div>
+      );
+    }
 
     return (
-      <button
-        onClick={() => onUpdateStatus(orderId, "DELIVERED")}
-        disabled={isProcessing}
-        className={buttonClass}
-      >
-        Tandai Terkirim
-      </button>
+      <div className="flex gap-2 justify-end">
+        <ViewDetailButton />
+        <button
+          onClick={() => onUpdateStatus(orderId, "DELIVERED")}
+          disabled={isProcessing}
+          className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 active:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          Tandai Terkirim
+        </button>
+      </div>
     );
   }
 
   if (orderStatus === "DELIVERED" || orderStatus === "CANCELLED") {
-    return isMobile ? (
-      <p className="text-xs text-center text-slate-400 py-2">
-        Pesanan sudah selesai
-      </p>
-    ) : null;
+    if (isMobile) {
+      return (
+        <div className="flex flex-col gap-2">
+          <ViewDetailButton />
+          <p className="text-xs text-center text-slate-400 py-2">
+            Pesanan sudah selesai
+          </p>
+        </div>
+      );
+    }
+
+    return <ViewDetailButton />;
   }
 
   if (orderStatus === "WAITING_PAYMENT") {
-    return isMobile ? (
-      <p className="text-xs text-center text-slate-400 py-2">
-        Menunggu pembayaran pelanggan
-      </p>
-    ) : null;
+    if (isMobile) {
+      return (
+        <div className="flex flex-col gap-2">
+          <ViewDetailButton />
+          <p className="text-xs text-center text-slate-400 py-2">
+            Menunggu pembayaran pelanggan
+          </p>
+        </div>
+      );
+    }
+
+    return <ViewDetailButton />;
   }
 
-  return null;
+  return <ViewDetailButton />;
 }
