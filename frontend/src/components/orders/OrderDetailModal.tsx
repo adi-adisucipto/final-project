@@ -1,6 +1,6 @@
 import { OrderDetail } from "@/types/checkout";
 import Image from "next/image";
-import { X, Download, Store } from "lucide-react";
+import { X, Download, Store, Package } from "lucide-react";
 import { useOrderStatus } from "@/hooks/useOrderStatus";
 
 interface OrderDetailModalProps {
@@ -10,7 +10,6 @@ interface OrderDetailModalProps {
 
 export default function OrderDetailModal({ order, onClose }: OrderDetailModalProps) {
   const { text, color, alert, trackSteps } = useOrderStatus(order.status);
-  const firstItem = order.items[0];
   const orderDate = new Date(order.createdAt).toLocaleDateString("en-US", {
     day: "2-digit",
     month: "2-digit",
@@ -70,19 +69,44 @@ export default function OrderDetailModal({ order, onClose }: OrderDetailModalPro
           </div>
         )}
 
-          {firstItem && (
-            <div className="flex items-center gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
-              <div className="relative w-20 h-20 bg-white rounded-lg overflow-hidden border">
-                <Image
-                  src={firstItem.product?.images[0]?.imageUrl || "/placeholder-product.png"}
-                  alt={firstItem.product?.name || "Product"}
-                  fill
-                  className="object-cover"
-                />
+          {order.items && order.items.length > 0 && (
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Package className="w-4 h-4 text-gray-500" />
+                <h3 className="font-semibold text-gray-700">
+                  Produk yang Dibeli ({order.items.length} item)
+                </h3>
               </div>
-              <div>
-                <h3 className="font-semibold">{firstItem.product?.name}</h3>
-                <p className="text-sm text-gray-500">{firstItem.quantity} Qty</p>
+              
+              <div className="space-y-3">
+                {order.items.map((item, index) => (
+                  <div
+                    key={item.id || index}
+                    className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <div className="relative w-20 h-20 bg-white rounded-lg overflow-hidden border shrink-0">
+                      <Image
+                        src={item.product?.images?.[0]?.imageUrl || "/placeholder-product.png"}
+                        alt={item.product?.name || "Product"}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-gray-900 truncate">
+                        {item.product?.name}
+                      </h4>
+                      <div className="flex items-center justify-between mt-1">
+                        <p className="text-sm text-gray-500">
+                          {item.quantity} x Rp{item.price?.toLocaleString("id-ID")}
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          Rp{item.subtotal?.toLocaleString("id-ID")}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
