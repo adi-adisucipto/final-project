@@ -11,6 +11,7 @@ interface OrderRowProps {
   onApprove: (orderId: string) => void;
   onReject: (orderId: string) => void;
   onUpdateStatus?: (orderId: string, newStatus: import("@/types/order").OrderStatus) => void;
+  onViewDetail?: (orderId: string) => void;
 }
 
 const formatDate = (dateString: string) => {
@@ -37,6 +38,7 @@ export default function OrderRow({
   onApprove,
   onReject,
   onUpdateStatus,
+  onViewDetail,
 }: OrderRowProps) {
   const customerName =
     `${order.user?.first_name || ""} ${order.user?.last_name || ""}`.trim() ||
@@ -87,6 +89,7 @@ export default function OrderRow({
           onApprove={onApprove}
           onReject={onReject}
           onUpdateStatus={onUpdateStatus}
+          onViewDetail={onViewDetail}
           isMobile={false}
         />
       </td>

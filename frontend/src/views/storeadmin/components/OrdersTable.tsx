@@ -21,6 +21,7 @@ interface OrdersTableProps {
   onApprove: (orderId: string) => void;
   onReject: (orderId: string) => void;
   onUpdateStatus?: (orderId: string, newStatus: import("@/types/order").OrderStatus) => void;
+  onViewDetail?: (orderId: string) => void;
   onPageChange: (page: number) => void;
 }
 
@@ -51,6 +52,7 @@ export default function OrdersTable({
   onApprove,
   onReject,
   onUpdateStatus,
+  onViewDetail,
   onPageChange,
 }: OrdersTableProps) {
   return (
@@ -110,6 +112,7 @@ export default function OrdersTable({
                     onApprove={onApprove}
                     onReject={onReject}
                     onUpdateStatus={onUpdateStatus}
+                    onViewDetail={onViewDetail}
                   />
                 ))}
               </tbody>
@@ -181,6 +184,7 @@ export default function OrdersTable({
                       onApprove={onApprove}
                       onReject={onReject}
                       onUpdateStatus={onUpdateStatus}
+                      onViewDetail={onViewDetail}
                       isMobile={true}
                     />
                   </div>

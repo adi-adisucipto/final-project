@@ -9,6 +9,7 @@ import { Order, OrderStatus } from "@/types/order";
 import OrdersTable from "../components/OrdersTable";
 import StatusConfirmDialog from "../components/Statusconfirmdialog";
 import RejectDialog from "../components/Rejectdialog";
+import OrderDetailModal from "../components/OrderDetail";
 
 interface OrdersResponse {
   success: boolean;
@@ -57,6 +58,16 @@ export default function StoreAdminDashboard() {
     isOpen: false,
     orderId: "",
     orderNumber: "",
+  });
+
+  const [detailModal, setDetailModal] = useState<{
+    isOpen: boolean;
+    order: Order | null;
+    loading: boolean;
+  }>({
+    isOpen: false,
+    order: null,
+    loading: false,
   });
 
   useEffect(() => {
@@ -210,6 +221,44 @@ export default function StoreAdminDashboard() {
     setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
   };
 
+  const handleViewDetail = async (orderId: string) => {
+    setDetailModal({
+      isOpen: true,
+      order: null,
+      loading: true,
+    });
+
+    try {
+      const response = await api.get<{ success: boolean; data: Order}>(
+        `/store-admin/orders/${orderId}`
+      );
+
+      setDetailModal({
+        isOpen: true,
+        order: response.data,
+        loading: false,
+      });
+    } catch (error) {
+      console.error(error);
+      enqueueSnackbar(getErrorMessage(error), {
+        variant: "error",
+      });
+      setDetailModal({
+        isOpen: false,
+        order: null,
+        loading: false,
+      });
+    }
+  };
+
+  const closeDetailModal = () => {
+    setDetailModal({
+      isOpen: false,
+      order: null,
+      loading: false,
+    });
+  };
+
   const handleFilterChange = (filter: string) => {
     setActiveFilter(filter);
     setPagination((prev) => ({ ...prev, page: 1 }));
@@ -231,6 +280,12 @@ export default function StoreAdminDashboard() {
         orderNumber={rejectDialog.orderNumber}
         onConfirm={confirmReject}
         onCancel={cancelReject}
+      />
+
+      <OrderDetailModal
+        isOpen={detailModal.isOpen}
+        order={detailModal.order}
+        onClose={closeDetailModal}
       />
       
       <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-3 duration-700">
@@ -256,6 +311,7 @@ export default function StoreAdminDashboard() {
           onApprove={handleApprove}
           onReject={handleReject}
           onUpdateStatus={handleUpdateStatus}
+          onViewDetail={handleViewDetail}
           onPageChange={fetchOrders}
         />
       </div>
