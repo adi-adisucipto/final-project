@@ -55,7 +55,7 @@ const buildSearchFilter = (search?: string) =>
     : undefined;
 
 const buildProductWhere = (params: AdminListParams): Prisma.ProductWhereInput => {
-  const where: Prisma.ProductWhereInput = {};
+  const where: Prisma.ProductWhereInput = { isActive: true };
   const price = buildPriceFilter(params);
   const searchFilter = buildSearchFilter(params.search);
   if (params.categoryId) where.categoryId = params.categoryId;

@@ -14,37 +14,37 @@ export default function OrderStatusBadge({ status }: OrderStatusBadgeProps) {
     WAITING_PAYMENT: {
       bg: "bg-orange-100",
       text: "text-orange-700",
-      label: "Menunggu Pembayaran",
+      label: "Waiting for Payment",
     },
     WAITING_CONFIRMATION: {
       bg: "bg-yellow-100",
       text: "text-yellow-700",
-      label: "Menunggu Konfirmasi",
+      label: "Waiting for Confirmation",
     },
     CONFIRMED: {
       bg: "bg-blue-100",
       text: "text-blue-700",
-      label: "Dikonfirmasi",
+      label: "Confirmed",
     },
     CANCELLED: {
       bg: "bg-red-100",
       text: "text-red-700",
-      label: "Dibatalkan",
+      label: "Cancelled",
     },
     PRESCRIBED: {
       bg: "bg-purple-100",
       text: "text-purple-700",
-      label: "Dikemas",
+      label: "Prescribed",
     },
     SHIPPED: {
       bg: "bg-indigo-100",
       text: "text-indigo-700",
-      label: "Dikirim",
+      label: "Shipped",
     },
     DELIVERED: {
       bg: "bg-emerald-100",
       text: "text-emerald-700",
-      label: "Terkirim",
+      label: "Delivered",
     },
   };
 

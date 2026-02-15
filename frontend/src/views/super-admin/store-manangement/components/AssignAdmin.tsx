@@ -41,8 +41,8 @@ function AssignAdmin({isOpen, onClose, store, onAssign}: AssignAdminModalProps) 
                             <UserPlus size={22} />
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold text-slate-900">Pilih Admin Toko</h3>
-                            <p className="text-xs text-slate-500 font-medium">Admin untuk Toko <span className="font-bold">{store?.name}</span></p>
+                            <h3 className="text-lg font-bold text-slate-900">Select Store Admin</h3>
+                            <p className="text-xs text-slate-500 font-medium">Admin for Store <span className="font-bold">{store?.name}</span></p>
                         </div>
                     </div>
                     <button 
@@ -58,7 +58,7 @@ function AssignAdmin({isOpen, onClose, store, onAssign}: AssignAdminModalProps) 
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                         <input 
                             type="text" 
-                            placeholder="Cari nama atau email admin..."
+                            placeholder="Search admin name or email..."
                             className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-[#22C55E] transition-all text-sm font-medium"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -112,7 +112,7 @@ function AssignAdmin({isOpen, onClose, store, onAssign}: AssignAdminModalProps) 
                     ) : (
                         <div className="py-12 flex flex-col items-center justify-center text-slate-400">
                             <User size={48} strokeWidth={1} className="mb-2 opacity-20" />
-                            <p className="text-sm font-medium">Admin tidak ditemukan</p>
+                            <p className="text-sm font-medium">No admin found</p>
                         </div>
                     )}
                     </div>

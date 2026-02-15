@@ -111,7 +111,7 @@ export default function StoreAdminDashboard() {
         `/store-admin/orders/${orderId}/approve`
       );
 
-      enqueueSnackbar(response.message || "Pesanan berhasil dikonfirmasi", {
+      enqueueSnackbar(response.message || "Order confirmed successfully", {
         variant: "success",
       });
 
@@ -149,7 +149,7 @@ export default function StoreAdminDashboard() {
         { reason }
       );
 
-      enqueueSnackbar(response.message || "Pesanan berhasil ditolak", {
+      enqueueSnackbar(response.message || "Order rejected successfully", {
         variant: "success",
       });
 
@@ -184,13 +184,13 @@ export default function StoreAdminDashboard() {
     const { orderId, nextStatus } = confirmDialog;
 
     const statusLabels: Record<OrderStatus, string> = {
-      WAITING_PAYMENT: "Menunggu Pembayaran",
-      WAITING_CONFIRMATION: "Menunggu Konfirmasi",
-      CONFIRMED: "Dikonfirmasi",
-      CANCELLED: "Dibatalkan",
-      PRESCRIBED: "Dikemas",
-      SHIPPED: "Dikirim",
-      DELIVERED: "Terkirim",
+      WAITING_PAYMENT: "Waiting for Payment",
+      WAITING_CONFIRMATION: "Waiting for Confirmation",
+      CONFIRMED: "Confirmed",
+      CANCELLED: "Cancelled",
+      PRESCRIBED: "Prescribed",
+      SHIPPED: "Shipped",
+      DELIVERED: "Delivered",
     };
     setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
 
@@ -202,7 +202,7 @@ export default function StoreAdminDashboard() {
       );
 
       enqueueSnackbar(
-        response.message || `Status pesanan berhasil diubah menjadi ${statusLabels[nextStatus]}`,
+        response.message || `Order status updated to ${statusLabels[nextStatus]}`,
         { variant: "success" }
       );
 
@@ -291,13 +291,13 @@ export default function StoreAdminDashboard() {
       <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-3 duration-700">
         <header className="space-y-2">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-500">
-            Manajemen Pesanan
+            Order Management
           </p>
           <h1 className="text-2xl font-semibold text-slate-900">
-            Kelola Pesanan Toko
+            Manage Store Orders
           </h1>
           <p className="text-sm text-slate-500">
-            Mengelola toko: <b>{session?.user?.storeName || "Loading..."}</b>
+            Managing store: <b>{session?.user?.storeName || "Loading..."}</b>
           </p>
         </header>
         <OrdersTable

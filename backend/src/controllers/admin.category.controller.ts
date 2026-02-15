@@ -15,11 +15,6 @@ const parseNumber = (value: unknown) => {
   return Number.isFinite(parsed) ? parsed : undefined;
 };
 
-const isUuid = (value: string) =>
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-    value
-  );
-
 export async function listAdminCategoriesController(
   req: Request,
   res: Response,
@@ -65,7 +60,7 @@ export async function updateAdminCategoryController(
 ) {
   try {
     const categoryId = parseString(req.params.categoryId);
-    if (!categoryId || !isUuid(categoryId)) {
+    if (!categoryId) {
       throw createCustomError(400, "categoryId");
     }
     const name = parseString(req.body.name);
@@ -84,7 +79,7 @@ export async function deleteAdminCategoryController(
 ) {
   try {
     const categoryId = parseString(req.params.categoryId);
-    if (!categoryId || !isUuid(categoryId)) {
+    if (!categoryId) {
       throw createCustomError(400, "categoryId");
     }
     await deleteAdminCategory(categoryId);

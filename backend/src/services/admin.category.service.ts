@@ -16,8 +16,11 @@ type CategoryListItem = {
 };
 
 const buildWhere = (search?: string): Prisma.ProductCategoryWhereInput => {
-  if (!search) return {};
-  return { name: { contains: search, mode: Prisma.QueryMode.insensitive } };
+  const where: Prisma.ProductCategoryWhereInput = { isActive: true };
+  if (search) {
+    where.name = { contains: search, mode: Prisma.QueryMode.insensitive };
+  }
+  return where;
 };
 
 const buildPagination = (page: number, limit: number, total: number) => ({
@@ -51,7 +54,7 @@ export async function listAdminCategories(params: AdminCategoryListParams) {
       include: { _count: { select: { products: true } } },
     }),
     prisma.productCategory.count({ where }),
-    prisma.product.count(),
+    prisma.product.count({ where: { isActive: true, category: { isActive: true } } }),
   ]);
 
   const avgProducts =
@@ -115,5 +118,8 @@ export async function deleteAdminCategory(categoryId: string) {
   if (productCount > 0) {
     throw createCustomError(400, "Category has products");
   }
-  await prisma.productCategory.delete({ where: { id: categoryId } });
+  await prisma.productCategory.update({
+    where: { id: categoryId },
+    data: { isActive: false },
+  });
 }

@@ -55,7 +55,7 @@ export default function OrderActionsMenu({
           className="w-full rounded-lg bg-blue-500 py-2.5 text-sm font-medium text-white hover:bg-blue-600 active:bg-blue-700 transition-colors flex items-center justify-center gap-2"
         >
           <Eye className="w-4 h-4" />
-          Lihat Detail
+          View Details
         </button>
       );
     }
@@ -66,7 +66,7 @@ export default function OrderActionsMenu({
         className="rounded-lg bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 active:bg-blue-700 transition-colors flex items-center gap-2"
       >
         <Eye className="w-4 h-4" />
-        Detail
+        Details
       </button>
     );
   };
@@ -86,10 +86,10 @@ export default function OrderActionsMenu({
               {isApproving ? (
                 <>
                   <LoadingSpinner />
-                  <span>Memproses...</span>
+                  <span>Processing...</span>
                 </>
               ) : (
-                "Konfirmasi"
+                "Confirm"
               )}
             </button>
 
@@ -101,10 +101,10 @@ export default function OrderActionsMenu({
               {isRejecting ? (
                 <>
                   <LoadingSpinner />
-                  <span>Memproses...</span>
+                  <span>Processing...</span>
                 </>
               ) : (
-                "Tolak"
+                "Reject"
               )}
             </button>
           </div>
@@ -121,7 +121,7 @@ export default function OrderActionsMenu({
           disabled={isProcessing}
           className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 active:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          {isApproving ? "Memproses..." : "Konfirmasi"}
+          {isApproving ? "Processing..." : "Confirm"}
         </button>
 
         <button
@@ -129,7 +129,7 @@ export default function OrderActionsMenu({
           disabled={isProcessing}
           className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 active:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          {isRejecting ? "Memproses..." : "Tolak"}
+          {isRejecting ? "Processing..." : "Reject"}
         </button>
       </div>
     );
@@ -145,7 +145,7 @@ export default function OrderActionsMenu({
             disabled={isProcessing}
             className="w-full rounded-lg bg-purple-500 py-2.5 text-sm font-medium text-white hover:bg-purple-600 active:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            Tandai Diresepkan
+            Mark as Prescribed
           </button>
         </div>
       );
@@ -159,7 +159,7 @@ export default function OrderActionsMenu({
           disabled={isProcessing}
           className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-medium text-white hover:bg-purple-600 active:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          Tandai Diresepkan
+          Mark as Prescribed
         </button>
       </div>
     );
@@ -175,7 +175,7 @@ export default function OrderActionsMenu({
             disabled={isProcessing}
             className="w-full rounded-lg bg-indigo-500 py-2.5 text-sm font-medium text-white hover:bg-indigo-600 active:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            Tandai Dikirim
+            Mark as Shipped
           </button>
         </div>
       );
@@ -189,7 +189,7 @@ export default function OrderActionsMenu({
           disabled={isProcessing}
           className="rounded-lg bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-600 active:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          Tandai Dikirim
+          Mark as Shipped
         </button>
       </div>
     );
@@ -205,7 +205,7 @@ export default function OrderActionsMenu({
             disabled={isProcessing}
             className="w-full rounded-lg bg-emerald-500 py-2.5 text-sm font-medium text-white hover:bg-emerald-600 active:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            Tandai Terkirim
+            Mark as Delivered
           </button>
         </div>
       );
@@ -219,7 +219,7 @@ export default function OrderActionsMenu({
           disabled={isProcessing}
           className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 active:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          Tandai Terkirim
+          Mark as Delivered
         </button>
       </div>
     );
@@ -231,7 +231,7 @@ export default function OrderActionsMenu({
         <div className="flex flex-col gap-2">
           <ViewDetailButton />
           <p className="text-xs text-center text-slate-400 py-2">
-            Pesanan sudah selesai
+            Order is completed
           </p>
         </div>
       );
@@ -246,7 +246,7 @@ export default function OrderActionsMenu({
         <div className="flex flex-col gap-2">
           <ViewDetailButton />
           <p className="text-xs text-center text-slate-400 py-2">
-            Menunggu pembayaran pelanggan
+            Waiting for customer payment
           </p>
         </div>
       );
