@@ -7,6 +7,7 @@ const prisma_1 = require("../lib/prisma");
 const customError_1 = require("../utils/customError");
 async function listUsersService() {
     return prisma_1.prisma.user.findMany({
+        where: { is_active: true },
         select: {
             id: true,
             email: true,
@@ -25,9 +26,9 @@ async function updateUserRoleService(userId, role) {
     }
     const user = await prisma_1.prisma.user.findUnique({
         where: { id: userId },
-        select: { role: true },
+        select: { role: true, is_active: true },
     });
-    if (!user)
+    if (!user || !user.is_active)
         throw (0, customError_1.createCustomError)(404, "User not found");
     if (user.role === "super") {
         throw (0, customError_1.createCustomError)(403, "Cannot update super user");
@@ -50,12 +51,19 @@ async function updateUserRoleService(userId, role) {
 async function deleteUserService(userId) {
     const user = await prisma_1.prisma.user.findUnique({
         where: { id: userId },
-        select: { role: true },
+        select: { role: true, is_active: true },
     });
-    if (!user)
+    if (!user || !user.is_active)
         throw (0, customError_1.createCustomError)(404, "User not found");
     if (user.role === "super") {
         throw (0, customError_1.createCustomError)(403, "Cannot delete super user");
     }
-    await prisma_1.prisma.user.delete({ where: { id: userId } });
+    await prisma_1.prisma.user.update({
+        where: { id: userId },
+        data: {
+            is_active: false,
+            updated_at: new Date(),
+        },
+    });
+    await prisma_1.prisma.refreshToken.deleteMany({ where: { user_id: userId } });
 }

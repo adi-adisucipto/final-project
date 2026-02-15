@@ -153,6 +153,78 @@ class OrdersService {
         });
         return updatedOrder;
     }
+    async updateOrderStatus(id, storeId, newStatus) {
+        const allowedStatuses = [
+            client_1.OrderStatus.PRESCRIBED,
+            client_1.OrderStatus.SHIPPED,
+            client_1.OrderStatus.DELIVERED
+        ];
+        if (!allowedStatuses.includes(newStatus)) {
+            throw (0, customError_1.createCustomError)(400, "Invalid status. Allowed: PRESCRIBED, SHIPPED, DELIVERED");
+        }
+        const order = await prisma_1.prisma.order.findFirst({
+            where: {
+                id: id,
+                storeId
+            }
+        });
+        if (!order) {
+            throw (0, customError_1.createCustomError)(404, "Order not found");
+        }
+        const allowedTransitions = {
+            WAITING_PAYMENT: [],
+            WAITING_CONFIRMATION: [],
+            CONFIRMED: [client_1.OrderStatus.PRESCRIBED],
+            PRESCRIBED: [client_1.OrderStatus.SHIPPED],
+            SHIPPED: [client_1.OrderStatus.DELIVERED],
+            DELIVERED: [],
+            CANCELLED: []
+        };
+        const currentStatus = order.status;
+        const allowedNextStatuses = allowedTransitions[currentStatus] || [];
+        if (!allowedNextStatuses.includes(newStatus)) {
+            throw (0, customError_1.createCustomError)(400, `Cannot change status from ${currentStatus} to ${newStatus}`);
+        }
+        const updateData = {
+            status: newStatus,
+            updatedAt: new Date()
+        };
+        if (newStatus === client_1.OrderStatus.SHIPPED) {
+            updateData.shippedAt = new Date();
+        }
+        const updatedOrder = await prisma_1.prisma.order.update({
+            where: { id: id },
+            data: updateData,
+            include: {
+                user: {
+                    select: {
+                        first_name: true,
+                        last_name: true,
+                        email: true
+                    }
+                },
+                userAddress: {
+                    select: {
+                        address: true,
+                        city: true,
+                        province: true,
+                        postal_code: true
+                    }
+                },
+                orderItems: {
+                    include: {
+                        product: {
+                            select: {
+                                name: true,
+                                price: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        return updatedOrder;
+    }
     async getOrderStats(storeId) {
         const [totalOrders, pendingOrders, confirmedOrders, cancelledOrders, totalRevenue] = await Promise.all([
             prisma_1.prisma.order.count({

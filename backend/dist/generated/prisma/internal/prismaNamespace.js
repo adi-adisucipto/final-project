@@ -143,6 +143,7 @@ exports.UserScalarFieldEnum = {
     id: 'id',
     email: 'email',
     is_verified: 'is_verified',
+    is_active: 'is_active',
     role: 'role',
     referral_code: 'referral_code',
     password: 'password',

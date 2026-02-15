@@ -24,8 +24,7 @@ async function nearStoreService(userLat, userLng) {
             return { ...store, distance };
         });
         storeDistance.sort((a, b) => a.distance - b.distance);
-        const nearStores = storeDistance.filter(store => store.distance <= 10).slice(0, 5);
-        return nearStores;
+        return storeDistance;
     }
     catch (error) {
         throw error;
