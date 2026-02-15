@@ -185,6 +185,8 @@ export async function getStockReport(params: StockReportParams) {
       });
     }
   }
+
+  history.sort((a, b) => b.date.getTime() - a.date.getTime());
   return {
     month: params.month,
     summary: {
