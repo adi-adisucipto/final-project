@@ -5,6 +5,7 @@ import { slides } from "../constant/hero";
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 function Hero() {
     const [current, setCurrent] = useState(0);
@@ -42,24 +43,26 @@ function Hero() {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.2 }}
                 >
-                <div className="inline-block px-4 py-1.5 rounded-full bg-green-500/20 backdrop-blur-md border border-green-400/30 xl:mb-6 mb-4">
-                    <span className="text-green-400 xl:text-[14px] text-[12px] font-medium tracking-widest">{slides[current].badge}</span>
-                </div>
-                
-                <h1 className="xl:text-5xl text-3xl font-black text-white leading-tight mb-2 xl:max-w-170">
-                    {slides[current].title}<br/>
-                    <span className="text-transparent bg-clip-text bg-linear-to-r from-green-400 to-emerald-200">
-                        {slides[current].subtitle}
-                    </span>
-                </h1>
-                
-                <p className="xl:text-lg text-[14px] text-gray-200 xl:mb-10 mb-6 xl:max-w-lg max-w-90 leading-relaxed">
-                    {slides[current].description}
-                </p>
-                
-                <Button className="rounded-md">
-                    {slides[current].button}
-                </Button>
+                  <div className="inline-block px-4 py-1.5 rounded-full bg-green-500/20 backdrop-blur-md border border-green-400/30 xl:mb-6 mb-4">
+                      <span className="text-green-400 xl:text-[14px] text-[12px] font-medium tracking-widest">{slides[current].badge}</span>
+                  </div>
+                  
+                  <h1 className="xl:text-5xl text-3xl font-black text-white leading-tight mb-2 xl:max-w-170">
+                      {slides[current].title}<br/>
+                      <span className="text-transparent bg-clip-text bg-linear-to-r from-green-400 to-emerald-200">
+                          {slides[current].subtitle}
+                      </span>
+                  </h1>
+                  
+                  <p className="xl:text-lg text-[14px] text-gray-200 xl:mb-10 mb-6 xl:max-w-lg max-w-90 leading-relaxed">
+                      {slides[current].description}
+                  </p>
+                  
+                  <Link href={"/products"}>
+                    <Button className="rounded-md">
+                      {slides[current].button}
+                    </Button>
+                  </Link>
                 </motion.div>
             </div>
         </motion.div>

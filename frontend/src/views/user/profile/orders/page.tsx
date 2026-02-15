@@ -100,7 +100,7 @@ export default function OrdersPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen gap-6 p-6">
+      <div className="flex min-h-screen gap-6">
         <div className="flex-1 p-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-6">Orders</h1>
           <div className="space-y-4">
@@ -115,8 +115,8 @@ export default function OrdersPage() {
 
   return (
     <>
-      <div className="flex min-h-screen flex-col md:flex-row gap-4 p-3 md:p-6">
-        <div className="flex-1 p-0 md:p-8">
+      <div className="flex min-h-screen flex-col md:flex-row gap-4">
+        <div className="flex-1 p-0">
           <h1 className="text-2xl font-bold text-gray-900 mb-6">Orders</h1>
           <div className="flex flex-col md:flex-row gap-4 mb-6 items-center">
             <div className="flex-1 w-full">

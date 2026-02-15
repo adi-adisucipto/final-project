@@ -41,7 +41,7 @@ function Categories({ storeId }: CategoriesProps) {
         <div className="text-sm text-slate-500">Loading categories...</div>
       ) : (
         <div className="flex gap-4 overflow-x-auto pb-2">
-          {categories.map((category, index) => (
+          {categories.slice(0,5).map((category, index) => (
             <motion.div 
               key={category.id}
               initial={{ opacity: 0, y: 20 }}
