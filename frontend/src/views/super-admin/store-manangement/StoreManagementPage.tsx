@@ -79,14 +79,6 @@ function StoreManagementPage() {
   return (
     <div>
         <div className="p-2 border border-black/20 rounded-xl mb-4 flex justify-between items-center">
-          <div className="relative flex-1 md:max-w-md">
-            <Search className={`absolute left-4 top-1/2 -translate-y-1/2`} size={18} />
-            <input 
-              type="text" 
-              placeholder="Cari nama toko..." 
-              className="w-full pl-11 pr-4 py-3 bg-slate-100 border border-transparent rounded-xl focus:outline-none focus:ring-4 focus:ring-green-100 focus:bg-white focus:border-[#22C55E] transition-all text-sm font-semibold" 
-            />
-          </div>
           <button
             className="bg-green-500 py-2 px-3 rounded-xl text-white group cursor-pointer shadow-xl shadow-green-100 flex gap-2 justify-center items-center font-semibold hover:bg-green-600"
             onClick={() => {setIsAddModalOpen(true); setSelectedStore(null)}}
