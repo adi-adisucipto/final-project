@@ -51,6 +51,13 @@ async function listProductsController(req, res, next) {
         if (lng !== undefined && (lng < -180 || lng > 180)) {
             throw (0, customError_1.createCustomError)(400, "lng");
         }
+        const storeIdRaw = parseString(req.query.storeId);
+        let storeId;
+        if (storeIdRaw) {
+            if (!isUuid(storeIdRaw))
+                throw (0, customError_1.createCustomError)(400, "storeId");
+            storeId = storeIdRaw;
+        }
         const params = {
             page,
             limit,
@@ -60,6 +67,7 @@ async function listProductsController(req, res, next) {
             maxPrice,
             lat,
             lng,
+            storeId,
             sort: parseSort(req.query.sort),
         };
         const data = await (0, product_service_1.getProductCatalog)(params);

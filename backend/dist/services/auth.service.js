@@ -179,6 +179,8 @@ async function loginService(email, password) {
             throw (0, customError_1.createCustomError)(404, "Email or password invalid");
         if (!user.password)
             throw (0, customError_1.createCustomError)(400, "Please login using social provider");
+        if (!user.is_active)
+            throw (0, customError_1.createCustomError)(403, "Account disabled");
         if (!user.is_verified)
             throw (0, customError_1.createCustomError)(403, "Please verify your email first");
         const passValid = await (0, bcrypt_1.compare)(password, user.password);
@@ -215,6 +217,9 @@ async function refreshTokensService(token) {
         });
         if (!findUser)
             throw (0, customError_1.createCustomError)(404, "InvalidToken");
+        if (!findUser.user.is_active) {
+            throw (0, customError_1.createCustomError)(403, "Account disabled");
+        }
         if (new Date() > findUser.expires_at) {
             await prisma_1.prisma.refreshToken.delete({ where: { id: findUser.id } });
             throw (0, customError_1.createCustomError)(401, "Refresh token expired. Please login again.");

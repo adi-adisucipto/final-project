@@ -94,7 +94,9 @@ const getCatalogResults = (storeId, params) => {
     ]);
 };
 async function getProductCatalog(params) {
-    const store = await (0, product_store_1.getStoreOrFail)((0, product_store_1.getCoords)(params));
+    const store = params.storeId
+        ? await (0, product_store_1.getStoreByIdOrFail)(params.storeId)
+        : await (0, product_store_1.getStoreOrFail)((0, product_store_1.getCoords)(params));
     const [items, total] = await getCatalogResults(store.id, params);
     return {
         store: (0, product_store_1.mapStoreSummary)(store),

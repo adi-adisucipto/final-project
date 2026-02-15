@@ -12,4 +12,5 @@ storeAdminrouter.get("/", ordersController.getOrders);
 storeAdminrouter.get("/:id", ordersController.getOrderById);
 storeAdminrouter.patch("/:id/approve", ordersController.approveOrder);
 storeAdminrouter.patch("/:id/reject", ordersController.rejectOrder);
+storeAdminrouter.patch("/:id/status", ordersController.updateOrderStatus.bind(ordersController));
 exports.default = storeAdminrouter;
