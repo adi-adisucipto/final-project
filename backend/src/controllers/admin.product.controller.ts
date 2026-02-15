@@ -15,17 +15,17 @@ const parseNumber = (value: unknown) => {
   return Number.isFinite(parsed) ? parsed : undefined;
 };
 
-const isUuid = (value: string) =>
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-    value
-  );
-
 const parseSort = (
   value: unknown
 ): "newest" | "price_asc" | "price_desc" => {
   if (value === "price_asc" || value === "price_desc") return value;
   return "newest";
 };
+
+const isUuid = (value: string) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    value
+  );
 
 export async function listAdminProductsController(
   req: Request,
@@ -126,7 +126,7 @@ export async function updateAdminProductController(
 ) {
   try {
     const productId = parseString(req.params.productId);
-    if (!productId || !isUuid(productId)) {
+    if (!productId) {
       throw createCustomError(400, "productId");
     }
 
@@ -170,7 +170,7 @@ export async function deleteAdminProductController(
 ) {
   try {
     const productId = parseString(req.params.productId);
-    if (!productId || !isUuid(productId)) {
+    if (!productId) {
       throw createCustomError(400, "productId");
     }
     await deleteAdminProduct(productId);

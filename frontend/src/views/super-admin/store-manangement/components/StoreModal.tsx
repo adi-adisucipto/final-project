@@ -95,7 +95,7 @@ function StoreModal({
             if (data.results && data.results.length > 0) {
                 return data.results[0];
             } else {
-                throw new Error("Lokasi tidak ditemukan");
+                throw new Error("Location not found");
             }
         } catch (error) {
             console.error("Error OpenCage:", error);
@@ -118,7 +118,7 @@ function StoreModal({
                     values.postalCode,
                     session?.accessToken!
                 )
-                enqueueSnackbar("Berhasil mengubah data toko", {variant: "success"})
+                enqueueSnackbar("Store updated successfully", {variant: "success"})
             } else {
                 await createStore(
                     values.name,
@@ -131,7 +131,7 @@ function StoreModal({
                     values.postalCode,
                     session?.accessToken!
                 )
-                enqueueSnackbar("Data Toko Berhasil Ditambahkan", {variant: "success"});
+                enqueueSnackbar("Store added successfully", {variant: "success"});
             }
             setIsLoading(false);
             isClose();
@@ -158,8 +158,8 @@ function StoreModal({
                                         <Store size={22} />
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-bold text-slate-900">Tambah Toko Baru</h3>
-                                        <p className="text-xs text-slate-500 font-medium">Lengkapi informasi dan tentukan lokasi peta.</p>
+                                        <h3 className="text-lg font-bold text-slate-900">Add New Store</h3>
+                                        <p className="text-xs text-slate-500 font-medium">Complete the info and set the map location.</p>
                                     </div>
                                 </div>
                                 <button 
@@ -173,13 +173,13 @@ function StoreModal({
                             <Form className="px-6 py-4">
                                 <div className="flex flex-col gap-2">
                                     <label className="flex gap-2 items-center text-black/60 font-semibold text-sm">
-                                        <StoreIcon size={16}/> Nama Toko
+                                        <StoreIcon size={16}/> Store Name
                                     </label>
                                     <Field
                                         type="text"
                                         name="name"
                                         className="h-10 w-full rounded-xl bg-[#F7FBFF] border border-[#D4D7E3] px-4 text-sm focus:ring-4 focus:ring-green-100 focus:border-green-400 focus:outline-none transition-all"
-                                        placeholder="Contoh: Groceria Jakarta Pusat"
+                                        placeholder="Example: Groceria Central Jakarta"
                                     />
                                 </div>
 
@@ -215,7 +215,7 @@ function StoreModal({
                                 <div className="flex flex-col gap-2 mt-4">
                                     <div className="flex justify-between">
                                         <label className="flex gap-2 items-center text-black/60 font-semibold text-sm">
-                                            <MapPin size={16}/> Alamat Lengkap
+                                            <MapPin size={16}/> Full Address
                                         </label>
                                         <button
                                             type="button"
@@ -231,39 +231,39 @@ function StoreModal({
                                                     console.log(address)
                                                 }
                                             } else {
-                                                    alert("Koordinat belum tersedia. Pastikan GPS aktif.");
+                                                    alert("Coordinates not available. Make sure GPS is on.");
                                                 }
                                             }}
                                         >
-                                            <MapPin size={14}/> Gunakan Lokasi Saat Ini
+                                            <MapPin size={14}/> Use Current Location
                                         </button>
                                     </div>
                                     <Field
                                         as="textarea"
                                         name="address"
                                         className="h-25 w-full rounded-xl bg-[#F7FBFF] border border-[#D4D7E3] px-4 py-2 text-sm focus:ring-4 focus:ring-green-100 focus:border-green-400 focus:outline-none transition-all"
-                                        placeholder="Masukkan alamat lengkap toko"
+                                        placeholder="Enter the full store address"
                                     />
                                 </div>
 
                                 <div className="flex flex-col gap-2 mt-4">
                                     <label className="flex gap-2 items-center text-black/60 font-semibold text-sm">
-                                        <Activity size={16}/> Status Operasional
+                                        <Activity size={16}/> Operating Status
                                     </label>
                                     <Field
                                         as="select" 
                                         name="isActive"
                                         className="h-10 w-full appearance-none rounded-xl bg-[#F7FBFF] border border-[#D4D7E3] px-4 text-sm focus:ring-4 focus:ring-green-100 focus:border-green-400 focus:outline-none transition-all"
                                     >
-                                        <option value="" disabled>-- Pilih Status --</option>
+                                        <option value="" disabled>-- Select Status --</option>
                                         
-                                        <option value="true">🟢 Buka</option>
-                                        <option value="false">⚪ Tutup</option>
+                                        <option value="true">🟢 Open</option>
+                                        <option value="false">⚪ Closed</option>
                                     </Field>
                                 </div>
 
                                 <div className="flex justify-end gap-4 mt-4">
-                                    <button type="button" className="px-4 py-1 rounded-md cursor-pointer hover:bg-slate-100" onClick={isClose}>Batal</button>
+                                    <button type="button" className="px-4 py-1 rounded-md cursor-pointer hover:bg-slate-100" onClick={isClose}>Cancel</button>
                                     <ConfirmDialog
                                         onConfirm={submitForm}
                                         trigger={

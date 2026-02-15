@@ -177,6 +177,7 @@ export async function getProductDetail(params: DetailParams) {
 export async function getProductCategories() {
   return prisma.productCategory.findMany({
     select: { id: true, name: true },
+    where: { isActive: true },
     orderBy: { name: "asc" },
   });
 }

@@ -44,7 +44,7 @@ export default function OrderDetailModal({
         <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-slate-50">
           <div>
             <h2 className="text-xl font-semibold text-slate-900">
-              Detail Pesanan
+              Order Details
             </h2>
             <p className="text-sm text-slate-500 mt-1">
               {order.orderNumber}
@@ -61,11 +61,11 @@ export default function OrderDetailModal({
         <div className="overflow-y-auto max-h-[calc(90vh-80px)] p-6 space-y-6">
           <section className="bg-slate-50 rounded-xl p-4">
             <h3 className="text-sm font-semibold text-slate-900 mb-3">
-              Informasi Pelanggan
+              Customer Information
             </h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-slate-500">Nama:</span>
+                <span className="text-slate-500">Name:</span>
                 <span className="font-medium text-slate-900">
                   {customerName}
                 </span>
@@ -77,7 +77,7 @@ export default function OrderDetailModal({
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Tanggal Order:</span>
+                <span className="text-slate-500">Order Date:</span>
                 <span className="font-medium text-slate-900">
                   {formatDate(order.createdAt)}
                 </span>
@@ -87,13 +87,13 @@ export default function OrderDetailModal({
 
           <section className="bg-slate-50 rounded-xl p-4">
             <h3 className="text-sm font-semibold text-slate-900 mb-3">
-              Alamat Pengiriman
+              Shipping Address
             </h3>
             <div className="text-sm text-slate-700">
               <p className="mb-1">{order.userAddress?.address}</p>
               {order.userAddress?.postal_code && (
                 <p className="text-slate-500">
-                  Kode Pos: {order.userAddress.postal_code}
+                  Postal Code: {order.userAddress.postal_code}
                 </p>
               )}
             </div>
@@ -101,20 +101,20 @@ export default function OrderDetailModal({
 
           <section>
             <h3 className="text-sm font-semibold text-slate-900 mb-3">
-              Produk yang Dipesan
+              Products Ordered
             </h3>
             <div className="border border-slate-200 rounded-xl overflow-hidden">
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 text-slate-600">
                   <tr>
                     <th className="px-4 py-3 text-left font-semibold">
-                      Produk
+                      Product
                     </th>
                     <th className="px-4 py-3 text-center font-semibold">
                       Qty
                     </th>
                     <th className="px-4 py-3 text-right font-semibold">
-                      Harga
+                      Price
                     </th>
                     <th className="px-4 py-3 text-right font-semibold">
                       Subtotal
@@ -145,7 +145,7 @@ export default function OrderDetailModal({
 
           <section className="bg-slate-50 rounded-xl p-4">
             <h3 className="text-sm font-semibold text-slate-900 mb-3">
-              Ringkasan Pembayaran
+              Payment Summary
             </h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
@@ -156,21 +156,21 @@ export default function OrderDetailModal({
               </div>
               {order.discountAmount > 0 && (
                 <div className="flex justify-between">
-                  <span className="text-slate-600">Diskon Produk:</span>
+                  <span className="text-slate-600">Product Discount:</span>
                   <span className="font-medium text-emerald-600">
                     -{formatCurrency(order.discountAmount)}
                   </span>
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="text-slate-600">Ongkos Kirim:</span>
+                <span className="text-slate-600">Shipping Cost:</span>
                 <span className="font-medium text-slate-900">
                   {formatCurrency(order.shippingCost)}
                 </span>
               </div>
               {order.shippingDiscount > 0 && (
                 <div className="flex justify-between">
-                  <span className="text-slate-600">Diskon Ongkir:</span>
+                  <span className="text-slate-600">Shipping Discount:</span>
                   <span className="font-medium text-emerald-600">
                     -{formatCurrency(order.shippingDiscount)}
                   </span>
@@ -178,7 +178,7 @@ export default function OrderDetailModal({
               )}
               {order.voucherCodeUsed && (
                 <div className="flex justify-between">
-                  <span className="text-slate-600">Kode Voucher:</span>
+                  <span className="text-slate-600">Voucher Code:</span>
                   <span className="font-medium text-purple-600">
                     {order.voucherCodeUsed}
                   </span>
@@ -186,7 +186,7 @@ export default function OrderDetailModal({
               )}
               <div className="pt-2 border-t border-slate-300 flex justify-between">
                 <span className="font-semibold text-slate-900">
-                  Total Pembayaran:
+                  Total Payment:
                 </span>
                 <span className="font-bold text-lg text-emerald-600">
                   {formatCurrency(order.totalAmount)}
@@ -198,13 +198,13 @@ export default function OrderDetailModal({
           {order.paymentProof && (
             <section>
               <h3 className="text-sm font-semibold text-slate-900 mb-3">
-                Bukti Transfer
+                Payment Proof
               </h3>
               <div className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50 p-4">
                 <div className="relative w-full aspect-4/3 bg-white rounded-lg overflow-hidden">
                   <Image
                     src={order.paymentProof}
-                    alt="Bukti Transfer"
+                    alt="Payment Proof"
                     fill
                     className="object-contain"
                     unoptimized
@@ -229,7 +229,7 @@ export default function OrderDetailModal({
                       d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                     />
                   </svg>
-                  Buka di Tab Baru
+                  Open in New Tab
                 </a>
               </div>
             </section>
@@ -241,13 +241,13 @@ export default function OrderDetailModal({
             order.cancelledAt) && (
             <section className="bg-blue-50 rounded-xl p-4">
               <h3 className="text-sm font-semibold text-slate-900 mb-3">
-                Informasi Tambahan
+                Additional Information
               </h3>
               <div className="space-y-2 text-sm">
                 {order.confirmedAt && (
                   <div className="flex justify-between">
                     <span className="text-slate-600">
-                      Dikonfirmasi pada:
+                      Confirmed at:
                     </span>
                     <span className="font-medium text-slate-900">
                       {formatDate(order.confirmedAt)}
@@ -256,7 +256,7 @@ export default function OrderDetailModal({
                 )}
                 {order.shippedAt && (
                   <div className="flex justify-between">
-                    <span className="text-slate-600">Dikirim pada:</span>
+                    <span className="text-slate-600">Shipped at:</span>
                     <span className="font-medium text-slate-900">
                       {formatDate(order.shippedAt)}
                     </span>
@@ -265,7 +265,7 @@ export default function OrderDetailModal({
                 {order.estimatedDelivery && (
                   <div className="flex justify-between">
                     <span className="text-slate-600">
-                      Estimasi Pengiriman:
+                      Estimated Delivery:
                     </span>
                     <span className="font-medium text-slate-900">
                       {formatDate(order.estimatedDelivery)}
@@ -274,7 +274,7 @@ export default function OrderDetailModal({
                 )}
                 {order.cancelledAt && (
                   <div className="flex justify-between">
-                    <span className="text-slate-600">Dibatalkan pada:</span>
+                    <span className="text-slate-600">Cancelled at:</span>
                     <span className="font-medium text-red-600">
                       {formatDate(order.cancelledAt)}
                     </span>
@@ -283,7 +283,7 @@ export default function OrderDetailModal({
                 {order.cancellationReason && (
                   <div className="mt-2 pt-2 border-t border-blue-200">
                     <span className="text-slate-600 block mb-1">
-                      Alasan Pembatalan:
+                      Cancellation Reason:
                     </span>
                     <p className="text-slate-900 font-medium">
                       {order.cancellationReason}
@@ -300,7 +300,7 @@ export default function OrderDetailModal({
             onClick={onClose}
             className="w-full rounded-lg bg-slate-600 py-2.5 text-sm font-medium text-white hover:bg-slate-700 active:bg-slate-800 transition-colors"
           >
-            Tutup
+            Close
           </button>
         </div>
       </div>

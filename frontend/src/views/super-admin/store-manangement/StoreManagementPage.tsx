@@ -36,7 +36,7 @@ function StoreManagementPage() {
     try {
       await deleteStore(id, session?.accessToken!);
 
-      enqueueSnackbar("Berhasil Menghapus Toko", {variant: "success"})
+      enqueueSnackbar("Store deleted successfully", {variant: "success"})
     } catch (error) {
       console.log(error);
     }
@@ -71,7 +71,7 @@ function StoreManagementPage() {
       if (selectedStore) {
         await assignAdmin(admin.id, selectedStore.id, session?.accessToken!)
       }
-      enqueueSnackbar("Berhasil!", {variant: "success"})
+      enqueueSnackbar("Success!", {variant: "success"})
     } catch (error) {
       console.log(error);
     }
@@ -84,7 +84,7 @@ function StoreManagementPage() {
             onClick={() => {setIsAddModalOpen(true); setSelectedStore(null)}}
           >
             <Plus size={20} className="group-hover:rotate-90 transition-transform duration-300"/>
-            <span>Daftarkan Toko Baru</span>
+            <span>Register New Store</span>
           </button>
         </div>
         <StoreGrid

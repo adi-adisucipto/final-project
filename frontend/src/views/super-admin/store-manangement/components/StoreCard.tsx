@@ -42,7 +42,7 @@ function StoreCard({
                 </div>
 
                 <div className={`px-2.5 py-1 rounded-xl font-bold text-[12px] ${store.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                    {store.isActive ? "Buka" : "Tutup"}
+                    {store.isActive ? "Open" : "Closed"}
                 </div>
             </div>
 
@@ -73,7 +73,7 @@ function StoreCard({
         <div
             className="absolute inset-0 rounded-xl bodrer border border-slate-200 backface-hidden rotate-y-180 flex flex-col gap-2 justify-center items-center bg-slate-800"
         >
-            <p className='text-slate-400 font-bold tracking-widest'>ADMIN TOKO</p>
+            <p className='text-slate-400 font-bold tracking-widest'>STORE ADMIN</p>
 
             <div>
                 {store.admins?.user.first_name ? (
@@ -85,7 +85,7 @@ function StoreCard({
                         )}
                     </div>
                 ) : (
-                    <p className='text-slate-500'>Belum Ada Admin</p>
+                    <p className='text-slate-500'>No admin assigned</p>
                 ) }
             </div>
 

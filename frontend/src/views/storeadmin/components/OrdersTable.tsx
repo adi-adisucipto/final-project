@@ -67,11 +67,11 @@ export default function OrdersTable({
         <OrdersTableSkeleton rows={pagination.limit} />
       ) : orders.length === 0 ? (
         <div className="px-6 py-10 text-center text-sm text-slate-500">
-          <p className="text-lg mb-2">Tidak ada pesanan</p>
+          <p className="text-lg mb-2">No orders</p>
           <p className="text-slate-400">
             {activeFilter !== "all"
-              ? "Coba ubah filter"
-              : "Pesanan akan muncul di sini ketika pelanggan melakukan pemesanan"}
+              ? "Try changing the filter"
+              : "Orders will appear here when customers place an order"}
           </p>
         </div>
       ) : (
@@ -81,22 +81,22 @@ export default function OrdersTable({
               <thead className="bg-slate-50 text-slate-600">
                 <tr>
                   <th className="px-6 py-3 text-left font-semibold">
-                    Nomor Pesanan
+                    Order Number
                   </th>
                   <th className="px-6 py-3 text-left font-semibold">
-                    Pelanggan
+                    Customer
                   </th>
                   <th className="px-6 py-3 text-left font-semibold">
-                    Total Harga
+                    Total Amount
                   </th>
                   <th className="px-6 py-3 text-left font-semibold">
                     Status
                   </th>
                   <th className="px-6 py-3 text-left font-semibold">
-                    Tanggal
+                    Date
                   </th>
                   <th className="px-6 py-3 text-right font-semibold">
-                    Aksi
+                    Actions
                   </th>
                 </tr>
               </thead>
@@ -134,7 +134,7 @@ export default function OrdersTable({
                   <div className="flex justify-between items-start mb-3 pb-3 border-b border-slate-100">
                     <div>
                       <p className="text-xs text-slate-500 mb-1">
-                        Nomor Pesanan
+                        Order Number
                       </p>
                       <p className="font-semibold text-slate-900 text-base">
                         {order.orderNumber}
@@ -149,7 +149,7 @@ export default function OrdersTable({
 
                   <div className="space-y-2.5 mb-3">
                     <div>
-                      <p className="text-xs text-slate-500 mb-0.5">Pelanggan</p>
+                      <p className="text-xs text-slate-500 mb-0.5">Customer</p>
                       <p className="text-sm font-medium text-slate-900">
                         {customerName}
                       </p>
@@ -161,14 +161,14 @@ export default function OrdersTable({
                     </div>
 
                     <div className="flex justify-between items-center pt-1">
-                      <span className="text-xs text-slate-500">Total Harga</span>
+                      <span className="text-xs text-slate-500">Total Amount</span>
                       <span className="text-sm font-semibold text-slate-900">
                         {formatCurrency(Number(order.totalAmount))}
                       </span>
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <span className="text-xs text-slate-500">Tanggal</span>
+                      <span className="text-xs text-slate-500">Date</span>
                       <span className="text-xs text-slate-700">
                         {formatDate(order.createdAt)}
                       </span>
@@ -197,7 +197,7 @@ export default function OrdersTable({
             <div className="border-t border-slate-200 px-4 md:px-6 py-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-xs sm:text-sm text-slate-500 text-center sm:text-left">
-                  Menampilkan{" "}
+                  Showing{" "}
                   <span className="font-medium text-slate-700">
                     {(pagination.page - 1) * pagination.limit + 1}
                   </span>{" "}
@@ -209,7 +209,7 @@ export default function OrdersTable({
                   <span className="font-medium text-slate-700">
                     {pagination.total}
                   </span>{" "}
-                  pesanan
+                  orders
                 </p>
 
                 <div className="flex gap-2 justify-center sm:justify-end">
@@ -218,7 +218,7 @@ export default function OrdersTable({
                     disabled={pagination.page === 1 || loading}
                     className="rounded-lg border border-slate-200 bg-white px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-slate-700 hover:bg-slate-50 active:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 transition-colors min-w-[80px]"
                   >
-                    Sebelumnya
+                    Previous
                   </button>
 
                   <button
@@ -226,7 +226,7 @@ export default function OrdersTable({
                     disabled={pagination.page === pagination.totalPages || loading}
                     className="rounded-lg border border-slate-200 bg-white px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-slate-700 hover:bg-slate-50 active:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 transition-colors min-w-[80px]"
                   >
-                    Selanjutnya
+                    Next
                   </button>
                 </div>
               </div>

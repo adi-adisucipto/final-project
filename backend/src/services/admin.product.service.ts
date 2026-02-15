@@ -88,9 +88,10 @@ const updateProductRecord = async (params: UpdateParams) => {
 };
 
 const deleteProductRecord = async (productId: string) => {
-  await prisma.productImage.deleteMany({ where: { productId } });
-  await prisma.productStock.deleteMany({ where: { productId } });
-  await prisma.product.delete({ where: { id: productId } });
+  await prisma.product.update({
+    where: { id: productId },
+    data: { isActive: false },
+  });
 };
 
 export async function createAdminProduct(params: CreateParams) {
