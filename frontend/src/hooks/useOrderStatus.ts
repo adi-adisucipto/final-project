@@ -57,7 +57,7 @@ const ORDER_STATUS_MAP: Record<OrderStatus, OrderStatusConfig> = {
     color: "bg-green-500",
     alert: {
       label: "Prescribed",
-      message: "Your order has been prescribed by the pharmacist.",
+      message: "Your order has been prescribed by the Store Admin.",
       wrapperClass: "bg-green-50 border-green-200",
       badgeClass: "bg-green-100 text-green-800",
     },
